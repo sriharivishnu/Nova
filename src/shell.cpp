@@ -15,7 +15,7 @@ int main() {
         Lexer lex(command.c_str());
         std::vector<Token> a = lex.getTokens();
         for (Token& token : a) {
-            std::cout << "\n" << token << "END of " << std::to_string(a.size()) << std::endl;
+            std::cout << "\n" << token << std::endl;
         }
     }
     return 0;

@@ -15,11 +15,8 @@
 
             const char* cur = nullptr;
         private:
-            int pos = 0;
             char peek() const { return *cur;}
             char get() { 
-                pos++;
-                printf("WE DOING IT %s at Pos:%d\n", cur, pos);
                 return *cur++; }
     };
 #endif

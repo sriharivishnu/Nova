@@ -118,25 +118,22 @@ Token Lexer::makeNumber() {
 }
 
 Token Lexer::advance() {
-    printf("Has Char: |%c|\n", peek());
     while(isSpace(peek())) get();
-    printf("Has Charq: %c\n", peek());
     switch (peek()) {
         case '\0':
-            printf("FINISH\n");
             return Token(Token::Type::END, "FINISHED", 1);
-        // case '+':
-        //     return Token(Token::Type::PLUS, cur++, 1);
-        // case '-':
-        //     return Token(Token::Type::MINUS, cur++, 1);
-        // case '*':
-        //     return Token(Token::Type::MULT, cur++, 1);
-        // case '/':
-        //     return Token(Token::Type::DIV, cur++, 1);
-        // case '(':
-        //     return Token(Token::Type::LPAREN, cur++, 1);
-        // case ')':
-        //     return Token(Token::Type::LPAREN, cur++, 1);
+        case '+':
+            return Token(Token::Type::PLUS, cur++, 1);
+        case '-':
+            return Token(Token::Type::MINUS, cur++, 1);
+        case '*':
+            return Token(Token::Type::MULT, cur++, 1);
+        case '/':
+            return Token(Token::Type::DIV, cur++, 1);
+        case '(':
+            return Token(Token::Type::LPAREN, cur++, 1);
+        case ')':
+            return Token(Token::Type::LPAREN, cur++, 1);
         case 'a':
         case 'b':
         case 'c':
@@ -202,7 +199,6 @@ Token Lexer::advance() {
         case '0':
             return makeNumber();
         default:
-            printf("UNKNOWN TOKEN");
             return Token(Token::Type::UNKNOWN, cur++, 1);
     }
 }
