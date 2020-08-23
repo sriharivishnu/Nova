@@ -1,13 +1,12 @@
 #include <vector>
 #include "Lexer.h"
-
-Lexer::Lexer(std::string _text) {
-    this->text = _text;
-    cur = text.c_str();
+#include <string.h>
+Lexer::Lexer(const char* text) {
+    cur = text;
 }
 
 bool Lexer::isIdentifier(char c) {
-    if (isNumber(c)) return true;
+    if (isDigit(c)) return true;
     switch(c) {
         case 'a':
         case 'b':
@@ -67,7 +66,7 @@ bool Lexer::isIdentifier(char c) {
     }
 }
 
-bool Lexer::isNumber(char c) {
+bool Lexer::isDigit(char c) {
     switch(c) {
         case '1':
         case '2':
@@ -83,7 +82,6 @@ bool Lexer::isNumber(char c) {
         default:
             return false;
     }
-    return false;
 }
 
 bool Lexer::isSpace(char c) {
@@ -98,33 +96,125 @@ bool Lexer::isSpace(char c) {
     }
     return false;
 }
+Token Lexer::makeIdentifier() {
+    const char* start = cur;
+    get();
+    while (isIdentifier(peek())) get();
+    return Token(Token::Type::IDENTIFIER, start, cur);
+}
+
+Token Lexer::makeNumber() {
+    const char* start = cur;
+    int dotCount = 0;
+    get();
+    while (isDigit(peek()) || peek() == '.') {
+        if (peek() == '.') dotCount++;
+        if (dotCount > 1) break;
+        get();
+    }
+    if (dotCount > 1) return Token(Token::Type::UNKNOWN, start, cur);
+    else if (dotCount == 1) return Token(Token::Type::FLOAT, start, cur);
+    else return Token(Token::Type::INT, start, cur);
+}
 
 Token Lexer::advance() {
+    printf("Has Char: |%c|\n", peek());
     while(isSpace(peek())) get();
+    printf("Has Charq: %c\n", peek());
     switch (peek()) {
         case '\0':
-            return Token(Token::Type::END);
-        case '+':
-            return Token(Token::Type::PLUS);
-        case '-':
-            return Token(Token::Type::MINUS);
-        case '*':
-            return Token(Token::Type::MULT);
-        case '/':
-            return Token(Token::Type::DIV);
-        case '(':
-            return Token(Token::Type::LPAREN);
-        case ')':
-            return Token(Token::Type::LPAREN);
+            printf("FINISH\n");
+            return Token(Token::Type::END, "FINISHED", 1);
+        // case '+':
+        //     return Token(Token::Type::PLUS, cur++, 1);
+        // case '-':
+        //     return Token(Token::Type::MINUS, cur++, 1);
+        // case '*':
+        //     return Token(Token::Type::MULT, cur++, 1);
+        // case '/':
+        //     return Token(Token::Type::DIV, cur++, 1);
+        // case '(':
+        //     return Token(Token::Type::LPAREN, cur++, 1);
+        // case ')':
+        //     return Token(Token::Type::LPAREN, cur++, 1);
+        case 'a':
+        case 'b':
+        case 'c':
+        case 'd':
+        case 'e':
+        case 'f':
+        case 'g':
+        case 'h':
+        case 'i':
+        case 'j':
+        case 'k':
+        case 'l':
+        case 'm':
+        case 'n':
+        case 'o':
+        case 'p':
+        case 'q':
+        case 'r':
+        case 's':
+        case 't':
+        case 'u':
+        case 'v':
+        case 'w':
+        case 'x':
+        case 'y':
+        case 'z':
+        case 'A':
+        case 'B':
+        case 'C':
+        case 'D':
+        case 'E':
+        case 'F':
+        case 'G':
+        case 'H':
+        case 'I':
+        case 'J':
+        case 'K':
+        case 'L':
+        case 'M':
+        case 'O':
+        case 'P':
+        case 'Q':
+        case 'R':
+        case 'S':
+        case 'T':
+        case 'U':
+        case 'V':
+        case 'W':
+        case 'X':
+        case 'Y':
+        case 'Z':
+        case '_':
+            return makeIdentifier();
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+        case '0':
+            return makeNumber();
         default:
-            return Token(Token::Type::UNKNOWN);
+            printf("UNKNOWN TOKEN");
+            return Token(Token::Type::UNKNOWN, cur++, 1);
     }
 }
+
 std::vector<Token> Lexer::getTokens() {
     std::vector<Token> tokens;
     Token next = advance();
-    while (next.type != Token::Type::END && next.type != Token::Type::UNKNOWN) {
+    while (!next.is(Token::Type::END)) {
         tokens.push_back(next);
         next = advance();
     }
+    tokens.push_back(next);
+    return tokens;
 }
+//123.2 1231.123123 123.1
