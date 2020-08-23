@@ -13,10 +13,14 @@ class Token {
             MULT,
             DIV,
             LPAREN,
-            RPAREN
+            RPAREN,
+            UNKNOWN,
+            END
         };
         Token(Type t);
         Token(Type t, std::string value);
+        Token(Type t, const char* start, const char* end);
+        Token(Type t, const char* start, size_t length);
         
         bool is(Type);
         bool isOneOf(Type, Type);
@@ -26,7 +30,7 @@ class Token {
         }
         friend std::ostream& operator<<(std::ostream& os, const Token& token);
         friend std::ostream& operator<<(std::ostream& os, const Token::Type& token);
-
+    private:
         Type type;
         std::string value;
 };

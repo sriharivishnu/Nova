@@ -7,7 +7,7 @@ int main() {
     std::string command;
     Token t(Token::Type::FLOAT, "1.23f");
     while (true) {
-        std::cout << "nova>> " << t;
+        std::cout << "nova>> ";
         std::getline(std::cin, command);
         std::cout << command << std::endl;
     }
