@@ -8,7 +8,7 @@ class Token {
         enum class Type {
             IDENTIFIER,
             INT,
-            FLOAT,
+            DOUBLE,
             PLUS,
             MINUS,
             MULT,
@@ -24,6 +24,7 @@ class Token {
         Token(Type t, const char* start, const char* end);
         Token(Type t, const char* start, size_t length);
         
+        std::string getValue();
         bool is(Type);
         bool isOneOf(Type, Type);
         template<typename... types>

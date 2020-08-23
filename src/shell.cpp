@@ -9,7 +9,7 @@
 
 int main() {
     std::string command;
-    Token t(Token::Type::FLOAT, "1.23f");
+    Token t(Token::Type::DOUBLE, "1.23f");
     while (true) {
         std::cout << "nova>> ";
         std::getline(std::cin, command);
@@ -19,9 +19,9 @@ int main() {
         for (Error e : errors) {
             std::cout << e.toString() << std::endl;
         }
-        for (Token& token : a) {
-            std::cout << "\n" << token << std::endl;
-        }
+        // for (Token& token : a) {
+        //     std::cout << "\n" << token << std::endl;
+        // }
     }
     return 0;
 }

@@ -118,7 +118,7 @@ Token Lexer::makeNumber() {
         get();
     }
     if (dotCount > 1) return Token(Token::Type::UNKNOWN, start, cur);
-    else if (dotCount == 1) return Token(Token::Type::FLOAT, start, cur);
+    else if (dotCount == 1) return Token(Token::Type::DOUBLE, start, cur);
     else return Token(Token::Type::INT, start, cur);
 }
 

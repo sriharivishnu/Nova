@@ -1,5 +1,8 @@
 #include "Token.h"
 #include <string>
+std::string Token::getValue() {
+    return value;
+}
 bool Token::is(Type t) {
     return this->type == t;
 }
