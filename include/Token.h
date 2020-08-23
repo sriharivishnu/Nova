@@ -24,6 +24,9 @@ class Token {
         bool isOneOf(Type t1, Type t2, types... args) {
             return is(t1) || isOneOf(t2, args...);
         }
+        friend std::ostream& operator<<(std::ostream& os, const Token& token);
+        friend std::ostream& operator<<(std::ostream& os, const Token::Type& token);
+
         Type type;
         std::string value;
 };
