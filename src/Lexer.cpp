@@ -1,8 +1,13 @@
 #include <vector>
 #include "Lexer.h"
 #include <string.h>
-Lexer::Lexer(const char* text) {
+
+/*
+LEXER
+*/
+Lexer::Lexer(std::string fileName, const char* text) {
     cur = text;
+    position = Position(0,0,0, fileName, std::string(text));
 }
 
 bool Lexer::isIdentifier(char c) {
@@ -123,17 +128,17 @@ Token Lexer::advance() {
         case '\0':
             return Token(Token::Type::END, "FINISHED", 1);
         case '+':
-            return Token(Token::Type::PLUS, cur++, 1);
+            return Token(Token::Type::PLUS, getLast());
         case '-':
-            return Token(Token::Type::MINUS, cur++, 1);
+            return Token(Token::Type::MINUS, getLast());
         case '*':
-            return Token(Token::Type::MULT, cur++, 1);
+            return Token(Token::Type::MULT, getLast());
         case '/':
-            return Token(Token::Type::DIV, cur++, 1);
+            return Token(Token::Type::DIV, getLast());
         case '(':
-            return Token(Token::Type::LPAREN, cur++, 1);
+            return Token(Token::Type::LPAREN, getLast());
         case ')':
-            return Token(Token::Type::LPAREN, cur++, 1);
+            return Token(Token::Type::LPAREN, getLast());
         case 'a':
         case 'b':
         case 'c':
@@ -199,7 +204,8 @@ Token Lexer::advance() {
         case '0':
             return makeNumber();
         default:
-            return Token(Token::Type::UNKNOWN, cur++, 1);
+            errors.push_back(IllegalCharException(position, std::string("Unknown Character found: ") += peek()));
+            return Token(Token::Type::UNKNOWN, getLast());
     }
 }
 
@@ -212,5 +218,9 @@ std::vector<Token> Lexer::getTokens() {
     }
     tokens.push_back(next);
     return tokens;
+}
+
+std::vector<Error> Lexer::getErrors() {
+    return errors;
 }
 //123.2 1231.123123 123.1

@@ -5,6 +5,7 @@
 
 #include "Token.h"
 #include "Lexer.h"
+#include "Error.h"
 
 int main() {
     std::string command;
@@ -12,8 +13,12 @@ int main() {
     while (true) {
         std::cout << "nova>> ";
         std::getline(std::cin, command);
-        Lexer lex(command.c_str());
+        Lexer lex("shell.cpp", command.c_str());
         std::vector<Token> a = lex.getTokens();
+        std::vector<Error> errors = lex.getErrors();
+        for (Error e : errors) {
+            std::cout << e.toString() << std::endl;
+        }
         for (Token& token : a) {
             std::cout << "\n" << token << std::endl;
         }

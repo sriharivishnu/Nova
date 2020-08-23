@@ -20,6 +20,7 @@ class Token {
         };
         Token(Type t);
         Token(Type t, std::string value);
+        Token(Type t, char value);
         Token(Type t, const char* start, const char* end);
         Token(Type t, const char* start, size_t length);
         
