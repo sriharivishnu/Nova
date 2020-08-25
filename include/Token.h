@@ -18,6 +18,7 @@ class Token {
             UNKNOWN,
             END
         };
+        Token() {};
         Token(Type t);
         Token(Type t, std::string value);
         Token(Type t, char value);

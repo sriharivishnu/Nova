@@ -1,37 +1,30 @@
-#include "Token.h"
 #include <vector>
+
+#include "Token.h"
+#include "Node.h"
+#include "Error.h"
+
 #ifndef PARSER_CLASS
 #define PARSER_CLASS
-class Node {
+
+class ParseResult {
     public:
-        Node(Token t) : tok(t) {};
-        Token tok; 
-};
-class NumberNode : public Node {
-    public:
-        NumberNode(Token t) : Node(t) {};
-};
-class IntNode : public NumberNode {
-    public:
-        int value = 0;
-        IntNode(Token t) : NumberNode(t) {
-            value = std::stoi(t.getValue());
-        };
-};
-class DoubleNode : public NumberNode {
-    public:
-        double value = 0.0f;
-        DoubleNode(Token t) : NumberNode(t) {
-            value = std::stod(t.getValue());
+        bool result = false;
+        Error error;
+        Node node;
+        ParseResult() {};
+        ParseResult onError(Error e) {
+            this->error = e;
+            result = false;
+            return *this;
+        }
+        ParseResult onSuccess(Node n) {
+            this->node = n;
+            result = true;
+            return *this;
         }
 };
-class BinaryOpNode : public Node {
-    Node leftNode;
-    Node rightNode;
-    public:
-        BinaryOpNode(Node leftNode, Token op, Node rightNode) : Node(op), leftNode(leftNode), rightNode(rightNode) {
-        }
-};
+
 class Parser {
     public:
         std::vector<Token> tokens;
@@ -40,10 +33,18 @@ class Parser {
 
         Parser() { cur = 0; }
         
-        Token next();
+        Token advance();
 
-        NumberNode factor();
+        ParseResult factor();
 
-        BinaryOpNode term();
+        ParseResult term();
+
+        ParseResult binOp();
+
+        // ParseResult nextExpr();
+
+        // ParseResult parse();
+        
 };
+
 #endif
