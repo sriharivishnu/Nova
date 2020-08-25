@@ -15,8 +15,8 @@ class Error {
         Error (Position pos, std::string cause, std::string details) : cause(cause), details(details), pos(pos) {};
         std::string toString() {
             return 
-            pos.file + 
-            " Ln " + std::to_string(pos.ln) + " Col " + std::to_string(pos.col) + 
+            "File<" + pos.file + ">" + 
+            " Line " + std::to_string(pos.ln) + " Col " + std::to_string(pos.col) + 
             ": " + cause + ": "+ details;
         }
 };
@@ -29,6 +29,6 @@ class IllegalCharException : public Error {
 class SyntaxError : public Error {
     public:
         SyntaxError(std::string details) : Error("SyntaxError", details) {};
-        SyntaxError(Position pos, std::string details) : Error(pos, "SytaxError") {};
+        SyntaxError(Position pos, std::string details) : Error(pos, "SytaxError", details) {};
 };
 #endif

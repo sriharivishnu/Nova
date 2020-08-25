@@ -17,9 +17,9 @@ int main() {
         Lexer lex("shell.cpp", command.c_str());
         std::vector<Token> a = lex.getTokens();
         std::vector<Error> errors = lex.getErrors();
-        // for (Token t : a) {
-        //     std::cout << t.getValue() << std::endl;
-        // }
+        for (Token t : a) {
+            std::cout << t << std::endl;
+        }
 
         Parser par(a);
         ParseResult res = par.parse();

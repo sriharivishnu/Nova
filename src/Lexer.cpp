@@ -138,7 +138,7 @@ Token Lexer::advance() {
         case '(':
             return Token(Token::Type::LPAREN, getLast(), position);
         case ')':
-            return Token(Token::Type::LPAREN, getLast(), position);
+            return Token(Token::Type::RPAREN, getLast(), position);
         case 'a':
         case 'b':
         case 'c':

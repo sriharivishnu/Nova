@@ -6,6 +6,7 @@
 #define NODE_CLASSES
 
 enum struct Operation {
+    UNARY,
     BINARY,
     LITERAL
 };
@@ -29,6 +30,10 @@ class Node {
                 case Operation::BINARY:
                     if (children.size() == 2) {
                         return "(" + children[0].toString() + tok.getValue() + children[1].toString() + ")";
+                    }
+                case Operation::UNARY:
+                    if (children.size() == 1) {
+                        return tok.getValue() + children[0].toString();
                     }
             }
             return "("+ tok.getValue() + ")";

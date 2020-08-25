@@ -7,29 +7,46 @@ Parser::Parser(std::vector<Token> tokens) : tokens(tokens) {
 
 //Expression -> Operation 
 Token Parser::advance() {
+    std::cout << curToken.getValue() << std::endl;
     cur += 1;
-    if (cur < tokens.size() && !tokens[cur].is(Token::Type::END)) {
+    if (cur < tokens.size()) {
         curToken = tokens[cur];
     }
-    std::cout << curToken.getValue() << std::endl;
     return curToken;
 }
 
 ParseResult Parser::parse() {
     ParseResult res = expr();
+    if (res.result && !curToken.is(Token::Type::END)) {
+        std::cout << curToken;
+        return ParseResult().onError(SyntaxError(curToken.startPos, "Expected '+', '-', '*', '/'"));
+    }
     return res;
 }
 
 ParseResult Parser::factor() {
     ParseResult res = ParseResult();
     Token tok = curToken;
-    if (tok.is(Token::Type::INT)) {
+    if (tok.isOneOf(Token::Type::PLUS, Token::Type::MINUS)) {
+        advance();
+        res = factor();
+        if (!res.result) return res;
+        return res.onSuccess(Node(tok, {res.node}));
+    }
+    else if (tok.isOneOf(Token::Type::INT, Token::Type::DOUBLE)) {
         advance();
         return res.onSuccess(Node(tok));
     }
-    else if (tok.is(Token::Type::DOUBLE)) {
+    else if (tok.is(Token::Type::LPAREN)) {
         advance();
-        return res.onSuccess(Node(tok));
+        res = expr();
+        if (!res.result) return res;
+        std::cout << curToken.getValue().c_str();
+        if (curToken.is(Token::Type::RPAREN)) {
+            advance();
+            return res.onSuccess(res.node);
+        }
+        else return res.onError(SyntaxError(curToken.startPos, "Expected ')"));
     }
     return res.onError(SyntaxError("Expected an int or a double type"));
 }
