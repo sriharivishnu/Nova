@@ -7,7 +7,7 @@
 #include "Lexer.h"
 #include "Error.h"
 #include "Parser.h"
-
+#include "Interpreter.h"
 int main() {
     std::string command;
     Token t(Token::Type::DOUBLE, "1.23f", Position());
@@ -30,6 +30,9 @@ int main() {
         for (Error err : errors) {
             std::cout << "\n" << err.toString() << std::endl;
         }
+
+        Interpreter interpreter;
+        interpreter.visit(res.node);
     }
     return 0;
 }

@@ -15,10 +15,10 @@ class Node {
     public:
         Node() {};
         Node(Token t, std::vector<Node> children) : children(children), tok(t) {
-            assignType(t);
+            assignType(t, children);
         }
         Node(Token t) : tok(t) {
-            assignType(t);
+            assignType(t, {});
         };
         std::vector<Node> children;
         Operation op = Operation::LITERAL;
@@ -39,12 +39,15 @@ class Node {
             return "("+ tok.getValue() + ")";
         }
     private:
-        void assignType(Token t) {
-            switch(t.type) {
-                case Token::Type::DIV:
-                case Token::Type::MULT:
-                case Token::Type::MINUS:
-                case Token::Type::PLUS:
+        void assignType(Token t, std::vector<Node> children) {
+            switch(children.size()) {
+                case 0:
+                    op = Operation::LITERAL;
+                    break;
+                case 1:
+                    op = Operation::UNARY;
+                    break;
+                case 2:
                     op = Operation::BINARY;
                     break;
                 default:
