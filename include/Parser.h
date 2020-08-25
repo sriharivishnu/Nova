@@ -1,4 +1,6 @@
 #include <vector>
+#include <string>
+#include <functional>
 
 #include "Token.h"
 #include "Node.h"
@@ -23,25 +25,32 @@ class ParseResult {
             result = true;
             return *this;
         }
+        std::string toString() {
+            return node.toString();
+        }
 };
 
 class Parser {
     public:
         std::vector<Token> tokens;
         int cur;
-        Token curToken {Token::Type::UNKNOWN, ""};
+        Token curToken;
 
         Parser() { cur = 0; }
-        
+        Parser(std::vector<Token> tokens);
+
         Token advance();
+
+        ParseResult parse();
 
         ParseResult factor();
 
         ParseResult term();
 
-        ParseResult binOp();
+        ParseResult expr();
 
-        // ParseResult nextExpr();
+        ParseResult binOp(std::function<ParseResult ()> fun, std::vector<Token::Type> ops);
+
 
         // ParseResult parse();
         

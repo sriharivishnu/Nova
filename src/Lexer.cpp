@@ -105,7 +105,7 @@ Token Lexer::makeIdentifier() {
     const char* start = cur;
     get();
     while (isIdentifier(peek())) get();
-    return Token(Token::Type::IDENTIFIER, start, cur);
+    return Token(Token::Type::IDENTIFIER, start, cur, position);
 }
 
 Token Lexer::makeNumber() {
@@ -117,28 +117,28 @@ Token Lexer::makeNumber() {
         if (dotCount > 1) break;
         get();
     }
-    if (dotCount > 1) return Token(Token::Type::UNKNOWN, start, cur);
-    else if (dotCount == 1) return Token(Token::Type::DOUBLE, start, cur);
-    else return Token(Token::Type::INT, start, cur);
+    if (dotCount > 1) return Token(Token::Type::UNKNOWN, start, cur, position);
+    else if (dotCount == 1) return Token(Token::Type::DOUBLE, start, cur, position);
+    else return Token(Token::Type::INT, start, cur, position);
 }
 
 Token Lexer::advance() {
     while(isSpace(peek())) get();
     switch (peek()) {
         case '\0':
-            return Token(Token::Type::END, "FINISHED", 1);
+            return Token(Token::Type::END, "FINISHED", 1, position);
         case '+':
-            return Token(Token::Type::PLUS, getLast());
+            return Token(Token::Type::PLUS, getLast(), position);
         case '-':
-            return Token(Token::Type::MINUS, getLast());
+            return Token(Token::Type::MINUS, getLast(), position);
         case '*':
-            return Token(Token::Type::MULT, getLast());
+            return Token(Token::Type::MULT, getLast(), position);
         case '/':
-            return Token(Token::Type::DIV, getLast());
+            return Token(Token::Type::DIV, getLast(), position);
         case '(':
-            return Token(Token::Type::LPAREN, getLast());
+            return Token(Token::Type::LPAREN, getLast(), position);
         case ')':
-            return Token(Token::Type::LPAREN, getLast());
+            return Token(Token::Type::LPAREN, getLast(), position);
         case 'a':
         case 'b':
         case 'c':
@@ -205,7 +205,7 @@ Token Lexer::advance() {
             return makeNumber();
         default:
             errors.push_back(IllegalCharException(position, std::string("Unknown Character found: ") += peek()));
-            return Token(Token::Type::UNKNOWN, getLast());
+            return Token(Token::Type::UNKNOWN, getLast(), position);
     }
 }
 

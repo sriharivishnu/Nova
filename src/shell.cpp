@@ -6,22 +6,30 @@
 #include "Token.h"
 #include "Lexer.h"
 #include "Error.h"
+#include "Parser.h"
 
 int main() {
     std::string command;
-    Token t(Token::Type::DOUBLE, "1.23f");
+    Token t(Token::Type::DOUBLE, "1.23f", Position());
     while (true) {
         std::cout << "nova>> ";
         std::getline(std::cin, command);
         Lexer lex("shell.cpp", command.c_str());
         std::vector<Token> a = lex.getTokens();
         std::vector<Error> errors = lex.getErrors();
-        for (Error e : errors) {
-            std::cout << e.toString() << std::endl;
-        }
-        // for (Token& token : a) {
-        //     std::cout << "\n" << token << std::endl;
+        // for (Token t : a) {
+        //     std::cout << t.getValue() << std::endl;
         // }
+
+        Parser par(a);
+        ParseResult res = par.parse();
+        if (!res.result) errors.push_back(res.error);
+        else {
+            std::cout << "\n" << res.node.toString() << std::endl;
+        }
+        for (Error err : errors) {
+            std::cout << "\n" << err.toString() << std::endl;
+        }
     }
     return 0;
 }

@@ -1,5 +1,6 @@
 #include <string>
-
+#include <Position.h>
+#include <vector>
 #ifndef TOKEN_CLASS
 #define TOKEN_CLASS
 
@@ -19,11 +20,11 @@ class Token {
             END
         };
         Token() {};
-        Token(Type t);
-        Token(Type t, std::string value);
-        Token(Type t, char value);
-        Token(Type t, const char* start, const char* end);
-        Token(Type t, const char* start, size_t length);
+        Token(Type t, Position pos);
+        Token(Type t, std::string value, Position pos);
+        Token(Type t, char value, Position pos);
+        Token(Type t, const char* start, const char* end, Position pos);
+        Token(Type t, const char* start, size_t length, Position pos);
         
         std::string getValue();
         bool is(Type);
@@ -31,6 +32,10 @@ class Token {
         template<typename... types>
         bool isOneOf(Type t1, Type t2, types... args) {
             return is(t1) || isOneOf(t2, args...);
+        }
+        bool isOneOf(std::vector<Type> vec) {
+            for (int i = 0; i < vec.size() ; i++) {if (vec[i] == type) return true;}
+            return false;
         }
         friend std::ostream& operator<<(std::ostream& os, const Token& token) {
             os << std::string("TYPE: <") << token.type << std::string(">");
@@ -43,8 +48,9 @@ class Token {
             os << std::to_string(static_cast<std::underlying_type<Token::Type>::type>(obj));
             return os;
         }
-    private:
         Type type;
+        Position startPos;
+    private:
         std::string value;
 };
     
