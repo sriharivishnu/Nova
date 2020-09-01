@@ -1,6 +1,7 @@
 #include <vector>
 #include "Lexer.h"
 #include <string.h>
+#include <exception>
 
 /*
 LEXER
@@ -11,82 +12,9 @@ Lexer::Lexer(std::string fileName, const char* text) {
 }
 
 bool Lexer::isIdentifier(char c) {
-    if (isDigit(c)) return true;
-    switch(c) {
-        case 'a':
-        case 'b':
-        case 'c':
-        case 'd':
-        case 'e':
-        case 'f':
-        case 'g':
-        case 'h':
-        case 'i':
-        case 'j':
-        case 'k':
-        case 'l':
-        case 'm':
-        case 'n':
-        case 'o':
-        case 'p':
-        case 'q':
-        case 'r':
-        case 's':
-        case 't':
-        case 'u':
-        case 'v':
-        case 'w':
-        case 'x':
-        case 'y':
-        case 'z':
-        case 'A':
-        case 'B':
-        case 'C':
-        case 'D':
-        case 'E':
-        case 'F':
-        case 'G':
-        case 'H':
-        case 'I':
-        case 'J':
-        case 'K':
-        case 'L':
-        case 'M':
-        case 'O':
-        case 'P':
-        case 'Q':
-        case 'R':
-        case 'S':
-        case 'T':
-        case 'U':
-        case 'V':
-        case 'W':
-        case 'X':
-        case 'Y':
-        case 'Z':
-        case '_':
-            return true;
-        default:
-            return false;
-    }
-}
-
-bool Lexer::isDigit(char c) {
-    switch(c) {
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-        case '0':
-            return true;
-        default:
-            return false;
-    }
+    if (isdigit(c)) return true;
+    if (isalnum(c) || c == '_') return true;
+    return false;
 }
 
 bool Lexer::isSpace(char c) {
@@ -105,19 +33,26 @@ Token Lexer::makeIdentifier() {
     const char* start = cur;
     get();
     while (isIdentifier(peek())) get();
-    return Token(Token::Type::IDENTIFIER, start, cur, position);
+    std::string value(start, cur);
+    if (value == "if") return Token(Token::Type::IF, start ,cur, position);
+    else if (value == "else") return Token(Token::Type::ELSE, start, cur, position);
+    else if (value == "while") return Token(Token::Type::WHILE, start, cur, position);
+    else if (value == "for") return Token(Token::Type::FOR, start, cur, position);
+    else if (value == "var") return Token(Token::Type::VAR, start, cur, position);
+    else if (value == "func") return Token(Token::Type::FUNCTION, start, cur, position);
+    else return Token(Token::Type::IDENTIFIER, start, cur, position);
 }
 
 Token Lexer::makeNumber() {
     const char* start = cur;
     int dotCount = 0;
     get();
-    while (isDigit(peek()) || peek() == '.') {
+    while (isdigit(peek()) || peek() == '.') {
         if (peek() == '.') dotCount++;
         if (dotCount > 1) break;
         get();
     }
-    if (dotCount > 1) return Token(Token::Type::UNKNOWN, start, cur, position);
+    if (dotCount > 1) throw ParseException(position, "Could not parse expression: " + std::string(start, cur));
     else if (dotCount == 1) return Token(Token::Type::DOUBLE, start, cur, position);
     else return Token(Token::Type::INT, start, cur, position);
 }
@@ -139,6 +74,12 @@ Token Lexer::advance() {
             return Token(Token::Type::LPAREN, getLast(), position);
         case ')':
             return Token(Token::Type::RPAREN, getLast(), position);
+        case ';':
+            return Token(Token::Type::STMT_END, getLast(), position);
+        case '{':
+            return Token(Token::Type::LCURL, getLast(), position);
+        case '}':
+            return Token(Token::Type::RCURL, getLast(), position);
         case 'a':
         case 'b':
         case 'c':
@@ -204,8 +145,7 @@ Token Lexer::advance() {
         case '0':
             return makeNumber();
         default:
-            errors.push_back(IllegalCharException(position, std::string("Unknown Character found: ") += peek()));
-            return Token(Token::Type::UNKNOWN, getLast(), position);
+            throw IllegalCharException(position, std::string("Unknown Character found while parsing: ") += peek());
     }
 }
 
@@ -218,9 +158,5 @@ std::vector<Token> Lexer::getTokens() {
     }
     tokens.push_back(next);
     return tokens;
-}
-
-std::vector<Error> Lexer::getErrors() {
-    return errors;
 }
 //123.2 1231.123123 123.1

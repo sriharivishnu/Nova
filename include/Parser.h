@@ -1,59 +1,42 @@
-#include <vector>
-#include <string>
-#include <functional>
-
-#include "Token.h"
-#include "Node.h"
-#include "Error.h"
-
 #ifndef PARSER_CLASS
 #define PARSER_CLASS
 
-class ParseResult {
-    public:
-        bool result = false;
-        Error error;
-        Node node;
-        ParseResult() {};
-        ParseResult onError(Error e) {
-            this->error = e;
-            result = false;
-            return *this;
-        }
-        ParseResult onSuccess(Node n) {
-            this->node = n;
-            result = true;
-            return *this;
-        }
-        std::string toString() {
-            return node.toString();
-        }
-};
+#include <vector>
+#include <string>
+#include <functional>
+#include <memory>
+#include <unordered_map>
 
+#include "Token.h"
+#include "Expression.h"
+#include "ParseHelper.h"
+#include "Error.h"
+class PrefixParser;
+class InfixParser;
 class Parser {
     public:
-        std::vector<Token> tokens;
-        int cur;
-        Token curToken;
-
-        Parser() { cur = 0; }
         Parser(std::vector<Token> tokens);
+        void addType(Token::Type type, shared_ptr<PrefixParser> prefix);
+        void addType(Token::Type type, shared_ptr<InfixParser> prefix);
+        Token consume();
+        Token consume(Token::Type expected);
 
-        Token advance();
+        shared_ptr<Expression> parseExpression(int precedence);
+        shared_ptr<Expression> parseExpression();
 
-        ParseResult parse();
+        shared_ptr<Statement> parseStatement();
 
-        ParseResult factor();
+        shared_ptr<Expression> parse();
 
-        ParseResult term();
-
-        ParseResult expr();
-
-        ParseResult binOp(std::function<ParseResult ()> fun, std::vector<Token::Type> ops);
-
-
-        // ParseResult parse();
-        
+        bool match(Token::Type expected);
+        Token lookAhead(int distance);
+        int getPrecedence();
+    private:
+        int cur = 0;
+        vector<Token> tokens;
+        vector<Token> mRead;
+        unordered_map<Token::Type, std::shared_ptr<PrefixParser>> mPrefixParsables;
+        unordered_map<Token::Type, std::shared_ptr<InfixParser>> mInfixParsables;
 };
 
 #endif

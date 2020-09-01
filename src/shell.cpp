@@ -15,24 +15,30 @@ int main() {
         std::cout << "nova>> ";
         std::getline(std::cin, command);
         Lexer lex("shell.cpp", command.c_str());
-        std::vector<Token> a = lex.getTokens();
-        std::vector<Error> errors = lex.getErrors();
-        for (Token t : a) {
-            std::cout << t << std::endl;
+        std::vector<Token> a;
+        try {
+            a = lex.getTokens();
+            for (Token t : a) {
+                std::cout << t << std::endl;
+            }
+        } catch (std::exception& e) {
+            std::cout << e.what() << std::endl;
+            continue;
         }
-
         Parser par(a);
-        ParseResult res = par.parse();
-        if (!res.result) errors.push_back(res.error);
-        else {
-            std::cout << "\n" << res.node.toString() << std::endl;
+        try {
+            std::shared_ptr<Expression> expression = par.parse();
+            std::cout << expression->toString() << std::endl;
+        } catch (std::exception& e) {
+            std::cout << e.what() << std::endl;
+            continue;
         }
-        for (Error err : errors) {
-            std::cout << "\n" << err.toString() << std::endl;
-        }
+        // for (Error err : errors) {
+        //     std::cout << "\n" << err.toString() << std::endl;
+        // }
 
-        Interpreter interpreter;
-        interpreter.visit(res.node);
+        // Interpreter interpreter;
+        // interpreter.visit(res.node);
     }
     return 0;
 }

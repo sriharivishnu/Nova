@@ -4,7 +4,7 @@ SRCDIR := src
 BUILDDIR := build
 TARGET := nova
 
-CFLAGS  := -g -Wall -std=c++11
+CFLAGS  := -g -Wall -std=c++17
 SRCS := $(shell find $(SRCDIR) -name '*.cpp')
 OBJECTS := $(SRCS:$(SRCDIR)/%.cpp=$(BUILDDIR)/%.o)
 

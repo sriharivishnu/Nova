@@ -1,8 +1,8 @@
+#ifndef TOKEN_CLASS
+#define TOKEN_CLASS
 #include <string>
 #include <Position.h>
 #include <vector>
-#ifndef TOKEN_CLASS
-#define TOKEN_CLASS
 
 class Token {
     public: 
@@ -16,6 +16,15 @@ class Token {
             DIV,
             LPAREN,
             RPAREN,
+            LCURL,
+            RCURL,
+            IF,
+            ELSE,
+            WHILE,
+            FOR,
+            VAR,
+            STMT_END,
+            FUNCTION,
             UNKNOWN,
             END
         };

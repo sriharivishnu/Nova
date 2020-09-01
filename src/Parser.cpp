@@ -1,74 +1,97 @@
 #include "Parser.h"
 #include <iostream>
-Parser::Parser(std::vector<Token> tokens) : tokens(tokens) {
-    cur = 0;
-    if (tokens.size() > 0) curToken = tokens[cur];
+using namespace std;
+Parser::Parser(vector<Token> tokens) : tokens(tokens) {
+    addType(Token::Type::IDENTIFIER, std::make_shared<NameParser>());
+    addType(Token::Type::INT, std::make_shared<NumberParser>());
+    addType(Token::Type::DOUBLE, std::make_shared<NumberParser>());
+    addType(Token::Type::LPAREN, std::make_shared<GroupParser>());
+
+    addType(Token::Type::PLUS, std::make_shared<PrefixOperatorParser>(Precedence::PREFIX));
+    addType(Token::Type::MINUS, std::make_shared<PrefixOperatorParser>(Precedence::PREFIX));
+
+    addType(Token::Type::PLUS, std::make_shared<BinaryOperatorParser>(Precedence::SUM, false));            
+    addType(Token::Type::MINUS, std::make_shared<BinaryOperatorParser>(Precedence::SUM, false));            
+    addType(Token::Type::MULT, std::make_shared<BinaryOperatorParser>(Precedence::PRODUCT, false));            
+    addType(Token::Type::DIV, std::make_shared<BinaryOperatorParser>(Precedence::PRODUCT, false));    
 };
 
-//Expression -> Operation 
-Token Parser::advance() {
-    std::cout << curToken.getValue() << std::endl;
-    cur += 1;
-    if (cur < tokens.size()) {
-        curToken = tokens[cur];
-    }
-    return curToken;
+shared_ptr<Expression> Parser::parse() {
+    return parseExpression();
 }
 
-ParseResult Parser::parse() {
-    ParseResult res = expr();
-    if (res.result && !curToken.is(Token::Type::END)) {
-        std::cout << curToken;
-        return ParseResult().onError(SyntaxError(curToken.startPos, "Expected '+', '-', '*', '/'"));
+shared_ptr<Expression> Parser::parseExpression(int precedence) {
+    Token token = consume();
+    auto it = mPrefixParsables.find(token.type);
+    if (it == mPrefixParsables.end()) {
+        throw new runtime_error("Whatever");
     }
-    return res;
-}
 
-ParseResult Parser::factor() {
-    ParseResult res = ParseResult();
-    Token tok = curToken;
-    if (tok.isOneOf(Token::Type::PLUS, Token::Type::MINUS)) {
-        advance();
-        res = factor();
-        if (!res.result) return res;
-        return res.onSuccess(Node(tok, {res.node}));
-    }
-    else if (tok.isOneOf(Token::Type::INT, Token::Type::DOUBLE)) {
-        advance();
-        return res.onSuccess(Node(tok));
-    }
-    else if (tok.is(Token::Type::LPAREN)) {
-        advance();
-        res = expr();
-        if (!res.result) return res;
-        std::cout << curToken.getValue().c_str();
-        if (curToken.is(Token::Type::RPAREN)) {
-            advance();
-            return res.onSuccess(res.node);
-        }
-        else return res.onError(SyntaxError(curToken.startPos, "Expected ')"));
-    }
-    return res.onError(SyntaxError("Expected an int or a double type"));
-}
-
-ParseResult Parser::term() {
-    return binOp(std::bind(&Parser::factor, this), {Token::Type::MULT, Token::Type::DIV});
-}
-
-ParseResult Parser::expr() {
-    return binOp(std::bind(&Parser::term, this), {Token::Type::PLUS, Token::Type::MINUS});
-}
-
-ParseResult Parser::binOp(std::function<ParseResult ()> fun, std::vector<Token::Type> ops) {
-    ParseResult left = fun();
-    if (!left.result) return left;
-    while (curToken.isOneOf(ops)) {
-        Token opToken(curToken);
-        advance();
-        ParseResult right = fun();
-        if (!right.result) return right;
-        left = ParseResult().onSuccess(Node(opToken, {left.node, right.node}));
+    shared_ptr<PrefixParser> prefix = it->second;
+    
+    shared_ptr<Expression> left = prefix->parse(*this, token);
+    while (precedence < getPrecedence()) {
+        token = consume();
+        shared_ptr<InfixParser> infix = mInfixParsables[token.type];
+        left = infix->parse(*this, left, token);
     }
     return left;
 }
+
+shared_ptr<Expression> Parser::parseExpression() {
+    return parseExpression(0);
+}
+
+shared_ptr<Statement> Parser::parseStatement() {
+    return make_shared<Statement>();
+}
+
+void Parser::addType(Token::Type type, shared_ptr<PrefixParser> prefix) {
+    mPrefixParsables[type] = prefix;
+}
+void Parser::addType(Token::Type type, shared_ptr<InfixParser> prefix) {
+    mInfixParsables[type] = prefix;
+}
+
+Token Parser::consume() {
+    Token start = lookAhead(0);
+    mRead.erase(mRead.begin());
+    return start;
+}
+Token Parser::consume(Token::Type expected) {
+    Token token = lookAhead(0);
+    if (token.type != expected) {
+        throw new runtime_error("WRONG TOKEN");
+    }
+    return consume();
+}
+Token Parser::lookAhead(int distance)  {
+    while (distance >= mRead.size()) {
+        mRead.push_back(tokens[cur++]);
+    }
+    return mRead[distance];
+}     
+  
+int Parser::getPrecedence()  {
+    Token next = lookAhead(0);
+    auto it = mInfixParsables.find(next.type);
+    if (it != mInfixParsables.end()) {
+        return it->second->getPrecedence();
+    }
+    // std::cout << "TY{" << next.type << "}" << endl;
+    return -1;
+}
+
+// ParseResult Parser::binOp(function<ParseResult ()> fun, vector<Token::Type> ops) {
+//     ParseResult left = fun();
+//     if (!left.result) return left;
+//     while (curToken.isOneOf(ops)) {
+//         Token opToken(curToken);
+//         advance();
+//         ParseResult right = fun();
+//         if (!right.result) return right;
+//         if (opToken.is(Token::Type::PLUS)) left = ParseResult().onSuccess(Node(opToken, {left.node, right.node}));
+//     }
+//     return left;
+// }
 
