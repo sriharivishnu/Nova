@@ -1,7 +1,7 @@
 #include "Interpreter.h"
 #include "Error.h"
 #include "Expression.h"
-Object Interpreter::visit(std::shared_ptr<Expression> n) {
+// Object Interpreter::visit(std::shared_ptr<Expression> n) {
     // switch (n->op)
     // {
     // case Operation::LITERAL:
@@ -20,5 +20,5 @@ Object Interpreter::visit(std::shared_ptr<Expression> n) {
     //     throw UndefinedOperationException(n->tok.getValue());
     //     break;
     // };
-    return Object(types::INT);
-}
+    // return Object(types::INT);
+// }

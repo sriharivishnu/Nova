@@ -2,12 +2,11 @@
 #define EXPRESSION_CLASS
 #include <string>
 #include <memory>
-#include "Token.h"
 #include <variant>
+#include "Interpreter.h"
+#include "Token.h"
+#define SRIHARI = 5
 using namespace std;
-class Statement {
-
-};
 
 class Expression {
     public:
@@ -15,6 +14,7 @@ class Expression {
         virtual std::string toString() {
             return "()";
         };
+        // virtual void accept(Visitor v);
         virtual ~Expression() = default;
 };
 class PostfixExpression : public Expression {
@@ -23,6 +23,9 @@ class PostfixExpression : public Expression {
         std::string toString() override {
             return "(" + left->toString() + tok.getValue() + ")";
         }
+        // void accept(Visitor v) override {
+            
+        // }
     private:
         shared_ptr<Expression> left;
         Token tok;
@@ -60,6 +63,14 @@ class NumberExpression : public Expression {
             if (str != nullptr) return to_string(*str);
             else return to_string(get<double>(value));
         }
+        int getInt() {
+            auto* val = get_if<int>(&value);
+            if (val == nullptr) return (int) get<double>(value);
+            return *val;
+        }
+        double getDouble() {
+            return get<double>(value);
+        }
     private:
         std::variant<int, double> value;
 };
@@ -71,9 +82,8 @@ class OperatorExpression : public Expression {
         std::string toString() override {
             return "(" + left->toString() + op.getValue()+ right->toString() + ")";
         }
-    private:
-        shared_ptr<Expression> left;
         Token op;
+        shared_ptr<Expression> left;
         shared_ptr<Expression> right;
 };
 #endif

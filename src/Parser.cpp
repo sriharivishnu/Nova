@@ -45,6 +45,41 @@ shared_ptr<Expression> Parser::parseExpression() {
 }
 
 shared_ptr<Statement> Parser::parseStatement() {
+    // Statement s;
+    // Token curToken = lookAhead(0);
+    // switch(curToken.type) {
+    //     case Token::Type::IF:
+    //         if (curToken.type == Token::Type::LPAREN) {
+    //             shared_ptr<Expression> expression = parseExpression();
+    //             curToken = consume();
+    //             if (curToken.type == Token::Type::RPAREN) {
+    //                 return stmt();
+    //             } else {
+    //                 throw SyntaxError(curToken.startPos, "Expected a ')'");
+    //             }
+    //         } else {
+    //             throw SyntaxError(curToken.startPos, "Expected a '('");
+    //         }
+    //         break;
+    //     case Token::Type::LCURL: {
+    //             shared_ptr<Statement> block = stmt();
+    //             curToken = consume();
+    //             if (curToken.type != Token::Type::RCURL) {
+    //                 throw SyntaxError(curToken.startPos, "Expected a '}'");
+    //             }
+    //             return block;
+    //             break;
+    //         }
+    //     default: {
+    //         shared_ptr<Expression> expression = parseExpression();
+    //         curToken = consume();
+    //         if (curToken.type != Token::Type::STMT_END) {
+    //             throw SyntaxError(curToken.startPos, "Expected a ';'");
+    //         }
+    //         return expression;
+    //     }
+            
+    // }
     return make_shared<Statement>();
 }
 

@@ -26,13 +26,17 @@ int main() {
             continue;
         }
         Parser par(a);
+        std::shared_ptr<Expression> expression;
         try {
-            std::shared_ptr<Expression> expression = par.parse();
+            expression = par.parse();
             std::cout << expression->toString() << std::endl;
         } catch (std::exception& e) {
             std::cout << e.what() << std::endl;
             continue;
         }
+        // Visitor v;
+        // int result = v.visit(expression);
+        // cout << result << endl;
         // for (Error err : errors) {
         //     std::cout << "\n" << err.toString() << std::endl;
         // }

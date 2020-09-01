@@ -9,6 +9,7 @@
 
 #include "Token.h"
 #include "Expression.h"
+#include "Statement.h"
 #include "ParseHelper.h"
 #include "Error.h"
 class PrefixParser;
