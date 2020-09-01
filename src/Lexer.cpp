@@ -80,6 +80,14 @@ Token Lexer::advance() {
             return Token(Token::Type::LCURL, getLast(), position);
         case '}':
             return Token(Token::Type::RCURL, getLast(), position);
+        case '^':
+            return Token(Token::Type::CAROT, getLast(), position);
+        case '[':
+            return Token(Token::Type::LSQUARE, getLast(), position);
+        case ']':
+            return Token(Token::Type::RSQUARE, getLast(), position);
+        case '=':
+            return Token(Token::Type::EQUALS, getLast(), position);
         case 'a':
         case 'b':
         case 'c':

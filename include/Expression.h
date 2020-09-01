@@ -15,6 +15,7 @@ class Expression {
         virtual std::string toString() {
             return "()";
         };
+        virtual ~Expression() = default;
 };
 class PostfixExpression : public Expression {
     public:

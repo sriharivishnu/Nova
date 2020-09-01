@@ -14,6 +14,7 @@ Parser::Parser(vector<Token> tokens) : tokens(tokens) {
     addType(Token::Type::MINUS, std::make_shared<BinaryOperatorParser>(Precedence::SUM, false));            
     addType(Token::Type::MULT, std::make_shared<BinaryOperatorParser>(Precedence::PRODUCT, false));            
     addType(Token::Type::DIV, std::make_shared<BinaryOperatorParser>(Precedence::PRODUCT, false));    
+    addType(Token::Type::CAROT, std::make_shared<BinaryOperatorParser>(Precedence::EXPONENT, true));
 };
 
 shared_ptr<Expression> Parser::parse() {
@@ -24,7 +25,8 @@ shared_ptr<Expression> Parser::parseExpression(int precedence) {
     Token token = consume();
     auto it = mPrefixParsables.find(token.type);
     if (it == mPrefixParsables.end()) {
-        throw new runtime_error("Whatever");
+        if (token.is(Token::Type::END)) throw ParseException(token.startPos, "Unexpected End of File while Parsing");
+        throw SyntaxError(token.startPos, "Could not parse: '" + token.getValue() + "'");
     }
 
     shared_ptr<PrefixParser> prefix = it->second;
@@ -61,7 +63,8 @@ Token Parser::consume() {
 Token Parser::consume(Token::Type expected) {
     Token token = lookAhead(0);
     if (token.type != expected) {
-        throw new runtime_error("WRONG TOKEN");
+        if (token.is(Token::Type::END)) throw ParseException(token.startPos, "Unexpected EOF while parsing");
+        throw ParseException(token.startPos, "Unexpected token: " + token.getValue());
     }
     return consume();
 }
@@ -71,7 +74,7 @@ Token Parser::lookAhead(int distance)  {
     }
     return mRead[distance];
 }     
-  
+
 int Parser::getPrecedence()  {
     Token next = lookAhead(0);
     auto it = mInfixParsables.find(next.type);
@@ -81,17 +84,4 @@ int Parser::getPrecedence()  {
     // std::cout << "TY{" << next.type << "}" << endl;
     return -1;
 }
-
-// ParseResult Parser::binOp(function<ParseResult ()> fun, vector<Token::Type> ops) {
-//     ParseResult left = fun();
-//     if (!left.result) return left;
-//     while (curToken.isOneOf(ops)) {
-//         Token opToken(curToken);
-//         advance();
-//         ParseResult right = fun();
-//         if (!right.result) return right;
-//         if (opToken.is(Token::Type::PLUS)) left = ParseResult().onSuccess(Node(opToken, {left.node, right.node}));
-//     }
-//     return left;
-// }
 

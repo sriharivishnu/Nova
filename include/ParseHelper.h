@@ -22,11 +22,13 @@ class Parser;
 class PrefixParser {
     public:
         virtual shared_ptr<Expression> parse(Parser& parser, Token token);
+        virtual ~PrefixParser() = default;
 };
 class InfixParser {
     public:
         virtual shared_ptr<Expression> parse(Parser& parser, shared_ptr<Expression> left, Token token);
         virtual int getPrecedence();
+        virtual ~InfixParser() = default;
 };
 
 class NameParser : public PrefixParser {
