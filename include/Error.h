@@ -35,7 +35,7 @@ class ParseException : public Error {
 class SyntaxError : public Error {
     public:
         SyntaxError(std::string details) : Error("SyntaxError", details) {};
-        SyntaxError(Position pos, std::string details) : Error(pos, "SytaxError", details) {};
+        SyntaxError(Position pos, std::string details) : Error(pos, "SyntaxError", details) {};
 };
 
 class UndefinedOperationException : public Error {
