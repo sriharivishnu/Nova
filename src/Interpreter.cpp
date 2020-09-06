@@ -1,24 +1,31 @@
 #include "Interpreter.h"
 #include "Error.h"
-#include "Expression.h"
-// Object Interpreter::visit(std::shared_ptr<Expression> n) {
-    // switch (n->op)
-    // {
-    // case Operation::LITERAL:
-    //     printf("WE GOT A LITERAL\n");
-    //     break;
-    // case Operation::BINARY:
-    //     printf("WE GOT A BINARY\n");
-    //     visit(n->children[0]);
-    //     visit(n->children[1]);
-    //     break;
-    // case Operation::UNARY:
-    //     printf("WE GOT A UNARY\n");
-    //     visit(n->children[0]);
-    //     break;
-    // default:
-    //     throw UndefinedOperationException(n->tok.getValue());
-    //     break;
-    // };
-    // return Object(types::INT);
-// }
+
+Result Visitor::visit(Expression* e) {
+    throw UndefinedOperationException(Position(0,0,0), "Visited unknown expression");
+}
+Result Visitor::visit(OperatorExpression* e) {
+    Result leftRes = e->left.get()->accept(*this);
+    Result rightRes = e->right.get()->accept(*this);
+    switch(e->op.type) {
+        case Token::Type::PLUS:
+            return Result(leftRes.getTypeOrThrow<int>(e->op.startPos) + rightRes.getTypeOrThrow<int>(e->op.startPos));
+        case Token::Type::MINUS:
+            return Result(leftRes.getTypeOrThrow<int>(e->op.startPos) - rightRes.getTypeOrThrow<int>(e->op.startPos));
+        case Token::Type::MULT:
+            return Result(leftRes.getTypeOrThrow<int>(e->op.startPos) * rightRes.getTypeOrThrow<int>(e->op.startPos));
+        case Token::Type::DIV:
+            return Result(leftRes.getTypeOrThrow<int>(e->op.startPos) / rightRes.getTypeOrThrow<int>(e->op.startPos));
+        case Token::Type::CAROT:
+            return Result((int) pow(leftRes.getTypeOrThrow<int>(e->op.startPos), rightRes.getTypeOrThrow<int>(e->op.startPos)));
+        default:
+            throw UndefinedOperationException(e->op.startPos, e->op.getValue());
+    }
+    return Result(-1);
+}
+
+Result Visitor::visit(NumberExpression* e) {
+    // return e->getInt();
+    return Result(e->getInt());
+}
+

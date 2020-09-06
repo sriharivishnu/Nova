@@ -10,7 +10,7 @@
 #include "Interpreter.h"
 int main() {
     std::string command;
-    Token t(Token::Type::DOUBLE, "1.23f", Position());
+    Token t(Token::Type::DOUBLE, "1.23", Position());
     while (true) {
         std::cout << "nova>> ";
         std::getline(std::cin, command);
@@ -34,15 +34,11 @@ int main() {
             std::cout << e.what() << std::endl;
             continue;
         }
-        // Visitor v;
-        // int result = v.visit(expression);
-        // cout << result << endl;
-        // for (Error err : errors) {
-        //     std::cout << "\n" << err.toString() << std::endl;
-        // }
-
-        // Interpreter interpreter;
-        // interpreter.visit(res.node);
+        Visitor v;
+        Result res = expression->accept(v);
+        if (res.isType<int>()) {
+            std::cout << res.getValue<int>() << std::endl;
+        }
     }
     return 0;
 }

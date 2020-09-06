@@ -38,12 +38,17 @@ class SyntaxError : public Error {
         SyntaxError(Position pos, std::string details) : Error(pos, "SyntaxError", details) {};
 };
 
+class TypeException: public Error {
+    public:
+        TypeException(Position pos, std::string details) : Error(pos, "TypeException", details) {};
+};
+
 class UndefinedOperationException : public Error {
     public:
         UndefinedOperationException(std::string t1, std::string t2) : Error("Undefined Operation") {
             details = "Between " + t1 + " and " + t2;
         }
-        UndefinedOperationException(std::string op) : Error("Undefined Operation") {
+        UndefinedOperationException(Position pos, std::string op) : Error(pos, "Undefined Operation") {
             details = "Unknown Operation Found: " + op;
         }        
 };
