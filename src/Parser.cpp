@@ -1,4 +1,5 @@
 #include "Parser.h"
+#include <string>
 using namespace std;
 Parser::Parser(vector<Token> tokens) : tokens(tokens) {
     addType(Token::Type::IDENTIFIER, std::make_shared<NameParser>());
@@ -16,6 +17,7 @@ Parser::Parser(vector<Token> tokens) : tokens(tokens) {
     addType(Token::Type::CAROT, std::make_shared<BinaryOperatorParser>(Precedence::EXPONENT, true));
 
     addType(Token::Type::VAR, std::make_shared<AssignmentParser>());
+    addType(Token::Type::EQUALS, std::make_shared<UpdateOrAssignParser>());
 };
 
 shared_ptr<Expression> Parser::parse() {
@@ -95,11 +97,11 @@ Token Parser::consume() {
     mRead.erase(mRead.begin());
     return start;
 }
-Token Parser::consume(Token::Type expected) {
+Token Parser::consume(Token::Type expected, std::string expectedStr) {
     Token token = lookAhead(0);
     if (token.type != expected) {
         if (token.is(Token::Type::END)) throw ParseException(token.startPos, "Unexpected EOF while parsing");
-        throw ParseException(token.startPos, "Unexpected token: " + token.getValue());
+        throw SyntaxError(token.startPos, "Unexpected token: " + token.getValue() + expectedStr);
     }
     return consume();
 }

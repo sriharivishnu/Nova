@@ -62,14 +62,42 @@ Token Lexer::advance() {
     switch (peek()) {
         case '\0':
             return Token(Token::Type::END, "FINISHED", 1, position);
-        case '+':
-            return Token(Token::Type::PLUS, getLast(), position);
-        case '-':
-            return Token(Token::Type::MINUS, getLast(), position);
+        case '+': {
+                char next = get();
+                if (next == '+') {
+                    get();
+                    return Token(Token::Type::INC, "++", position);
+                }
+                else if (next == '=') {
+                    get();
+                    return Token(Token::Type::PLUS_EQUAL, "+=", position);
+                }
+                return Token(Token::Type::PLUS, '+', position);
+            }
+        case '-': {
+                char next = get();
+                if (next == '-') {
+                    get();
+                    return Token(Token::Type::DEC, "--", position);
+                }
+                else if (next == '=') {
+                    get();
+                    return Token(Token::Type::MINUS_EQUAL, "-=", position);
+                }
+                return Token(Token::Type::MINUS, '-', position);
+            }
         case '*':
-            return Token(Token::Type::MULT, getLast(), position);
+            if (get() == '=') {
+                get();
+                return Token(Token::Type::MULT_EQUAL, "*=", position);
+            }
+            return Token(Token::Type::MULT, '*', position);
         case '/':
-            return Token(Token::Type::DIV, getLast(), position);
+            if (get() == '=') {
+                get();
+                return Token(Token::Type::DIV_EQUAL, "/=", position);
+            }
+            return Token(Token::Type::DIV, '/', position);
         case '(':
             return Token(Token::Type::LPAREN, getLast(), position);
         case ')':
@@ -87,7 +115,29 @@ Token Lexer::advance() {
         case ']':
             return Token(Token::Type::RSQUARE, getLast(), position);
         case '=':
-            return Token(Token::Type::EQUALS, getLast(), position);
+            if (get() == '=') {
+                get();
+                return Token(Token::Type::EE, "==", position);
+            }
+            return Token(Token::Type::EQUALS, '=', position);
+        case '!':
+            if (get() == '=') {
+                get();
+                return Token(Token::Type::NE, "!=", position);
+            }
+            return Token(Token::Type::NOT, '!', position);
+        case '>':
+            if (get() == '=') {
+                get();
+                return Token(Token::Type::GE, ">=", position);
+            }
+            return Token(Token::Type::GT, '>', position);
+        case '<':
+            if (get() == '=') {
+                get();
+                return Token(Token::Type::GE, "<=", position);
+            }
+            return Token(Token::Type::GT, '<', position);
         case 'a' ... 'z':
         case 'A' ... 'Z':
         case '_':

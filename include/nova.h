@@ -24,7 +24,7 @@ namespace nova {
         std::shared_ptr<Expression> expression;
         try {
             expression = par.parse();
-            std::cout << expression->toString() << std::endl;
+            // std::cout << expression->toString() << std::endl;
         } catch (std::exception& e) {
             std::cout << e.what() << std::endl;
             return 1;

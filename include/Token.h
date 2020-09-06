@@ -20,6 +20,8 @@ class Token {
             EQUALS,
             PLUS_EQUAL,
             MINUS_EQUAL,
+            MULT_EQUAL,
+            DIV_EQUAL,
             INC,
             DEC,
             LPAREN,
@@ -37,6 +39,13 @@ class Token {
             VAR,
             STMT_END,
             FUNCTION,
+            NOT, //!
+            EE, //==
+            NE, //!=
+            LE, //<=
+            GE, //>=
+            GT, //>
+            LT, //<
             END
         };
         Token() {};

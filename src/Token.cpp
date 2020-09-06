@@ -21,4 +21,3 @@ Token::Token(Type t, const char* start, const char* end, Position pos)
     : type(t), startPos(pos), value(std::string(start, end)) {}
 Token::Token(Type t, const char* start, size_t length, Position pos) 
     : type(t), startPos(pos), value(std::string(start, length)) {}
-
