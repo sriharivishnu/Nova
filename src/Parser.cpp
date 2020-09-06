@@ -1,5 +1,4 @@
 #include "Parser.h"
-#include <iostream>
 using namespace std;
 Parser::Parser(vector<Token> tokens) : tokens(tokens) {
     addType(Token::Type::IDENTIFIER, std::make_shared<NameParser>());
@@ -15,6 +14,8 @@ Parser::Parser(vector<Token> tokens) : tokens(tokens) {
     addType(Token::Type::MULT, std::make_shared<BinaryOperatorParser>(Precedence::PRODUCT, false));            
     addType(Token::Type::DIV, std::make_shared<BinaryOperatorParser>(Precedence::PRODUCT, false));    
     addType(Token::Type::CAROT, std::make_shared<BinaryOperatorParser>(Precedence::EXPONENT, true));
+
+    addType(Token::Type::EQUALS, std::make_shared<AssignmentParser>());
 };
 
 shared_ptr<Expression> Parser::parse() {
@@ -30,7 +31,6 @@ shared_ptr<Expression> Parser::parseExpression(int precedence) {
     }
 
     shared_ptr<PrefixParser> prefix = it->second;
-    
     shared_ptr<Expression> left = prefix->parse(*this, token);
     while (precedence < getPrecedence()) {
         token = consume();

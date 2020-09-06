@@ -7,9 +7,12 @@
 class Token {
     public: 
         enum class Type {
+            UNKNOWN,
             IDENTIFIER,
             INT,
             DOUBLE,
+            BOOL,
+            STRING,
             PLUS,
             MINUS,
             MULT,
@@ -34,7 +37,6 @@ class Token {
             VAR,
             STMT_END,
             FUNCTION,
-            UNKNOWN,
             END
         };
         Token() {};

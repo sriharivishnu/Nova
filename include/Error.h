@@ -3,6 +3,7 @@
 #include <string>
 #include <exception>
 #include "Position.h"
+#include "Context.h"
 class Error : public std::exception {
     public:
         std::string cause;
@@ -13,7 +14,7 @@ class Error : public std::exception {
         Error (std::string cause, std::string details) : cause(cause), details(details), pos(Position(0,0,0)) {};
         Error (Position pos, std::string cause) : cause(cause), details(""), pos(pos) {};
         Error (Position pos, std::string cause, std::string details) : cause(cause), details(details), pos(pos) {};
-        virtual const char* what() const throw() { 
+        virtual const char* what() const throw() override { 
             std::string msg = "File<" + pos.file + ">" + 
             " Line " + std::to_string(pos.ln) + " Col " + std::to_string(pos.col) + 
             ": " + cause + ": "+ details;
@@ -21,6 +22,30 @@ class Error : public std::exception {
         }
 };
 
+class RunTimeError : public Error {
+    public:
+        RunTimeError (Context& context, Position pos, std::string cause, std::string details) 
+        : Error(pos, cause, details), context(context) {};
+        virtual const char* what() const throw() override { 
+            std::string traceback;
+            Context tmp_ctx = context;
+            Position tmp_pos = pos;
+            while (true) {
+                traceback = "   File<"+pos.file+">"+", Line "+std::to_string(tmp_pos.ln)+", in " + tmp_ctx.name + "\n" + traceback;
+                if (!tmp_ctx.parent) break;
+                tmp_ctx = *tmp_ctx.parent;
+                tmp_pos = tmp_ctx.entry_pos;
+            };
+            traceback = cause + ": "+ details + "\nTraceback (most recent call last): \n" + traceback;
+            return traceback.c_str();
+        }
+    protected:
+        Context context;
+};
+
+/*
+EXCEPTIONS
+*/
 
 class IllegalCharException : public Error {
     public:
@@ -51,5 +76,14 @@ class UndefinedOperationException : public Error {
         UndefinedOperationException(Position pos, std::string op) : Error(pos, "Undefined Operation") {
             details = "Unknown Operation Found: " + op;
         }        
+};
+/*
+RUNTIME ERRORS 
+*/
+
+class DivisionByZero : public RunTimeError {
+    public:
+        DivisionByZero(Context& context, Position pos) 
+        : RunTimeError(context, pos, "Division By Zero", "Attempted division by zero") {}
 };
 #endif

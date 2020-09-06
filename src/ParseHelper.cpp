@@ -1,5 +1,5 @@
 #include "ParseHelper.h"
-
+#include <iostream>
 shared_ptr<Expression> PrefixParser::parse(Parser& parser, Token token) {
     return make_shared<Expression>();
 }
@@ -11,7 +11,7 @@ int InfixParser::getPrecedence() {return -1;}
 
 
 shared_ptr<Expression> NameParser::parse(Parser& parser, Token token) {
-    return make_shared<NameExpression>(token.getValue());
+    return make_shared<NameExpression>(token.getValue(), token);
 }
 
 shared_ptr<Expression> NumberParser::parse(Parser& parser, Token token) {
@@ -40,6 +40,21 @@ shared_ptr<Expression> BinaryOperatorParser::parse(Parser& parser, shared_ptr<Ex
     return make_shared<BinOpExpression>(left, tok, right);
 }
 int BinaryOperatorParser::getPrecedence() {return precedence;}
+
+
+AssignmentParser::AssignmentParser() {}
+
+shared_ptr<Expression> AssignmentParser::parse(Parser& parser, shared_ptr<Expression> left, Token tok) {
+    shared_ptr<Expression> right = parser.parseExpression(
+        Precedence::ASSIGNMENT - 1
+    );
+    if (!left->getToken().is(Token::Type::IDENTIFIER)) {
+        throw SyntaxError(left->getToken().startPos, "Expected an identifier");
+    }
+    return make_shared<AssignmentExpression>(left->getToken().getValue(), right, tok);
+
+}
+int AssignmentParser::getPrecedence() {return Precedence::ASSIGNMENT;}
 
 shared_ptr<Expression> GroupParser::parse(Parser& parser, Token token) {
     shared_ptr<Expression> expression = parser.parseExpression();

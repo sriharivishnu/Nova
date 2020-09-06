@@ -4,27 +4,26 @@
 #include <math.h>
 #include <memory>
 #include <variant>
+#include "Context.h"
 #include "Expression.h"
-#include "Types.h"
 #include "Error.h"
 #include "Token.h"
 #include "Result.h"
 using std::string;
 
-class Interpreter {
-    // public:
-    //     Object visit(std::shared_ptr<Expression> n);
-};
 class Expression;
 class PrefixExpression;
 class BinOpExpression;
 class NumberExpression;
+class AssignmentExpression;
+
 class Visitor {
     public:
-        Result visit(Expression* e);
-        Result visit(PrefixExpression* e);
-        Result visit(BinOpExpression* e);
-        Result visit(NumberExpression* e);
+        Result visit(Context& context, Expression* e);
+        Result visit(Context& context, PrefixExpression* e);
+        Result visit(Context& context, BinOpExpression* e);
+        Result visit(Context& context, NumberExpression* e);
+        Result visit(Context& context, AssignmentExpression* e);
     private:
 };
 #endif
