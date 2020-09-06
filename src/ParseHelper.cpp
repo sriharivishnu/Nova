@@ -37,7 +37,7 @@ shared_ptr<Expression> BinaryOperatorParser::parse(Parser& parser, shared_ptr<Ex
     shared_ptr<Expression> right = parser.parseExpression(
         precedence - (isRight ? 1 : 0)
     );
-    return make_shared<OperatorExpression>(left, tok, right);
+    return make_shared<BinOpExpression>(left, tok, right);
 }
 int BinaryOperatorParser::getPrecedence() {return precedence;}
 

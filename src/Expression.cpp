@@ -9,7 +9,7 @@ std::string Expression::toString() {
     return "()";
 }
 Result Expression::accept(Visitor& v) {
-    v.visit(this);
+    return v.visit(this);
 }
 Expression::~Expression() = default;
 
@@ -24,7 +24,7 @@ std::string PrefixExpression::toString() {
     return "(" + tok.getValue() + right->toString() + ")";
 }
 Result PrefixExpression::accept(Visitor& v) {
-    v.visit(this);
+    return v.visit(this);
 }
 
 /*
@@ -57,11 +57,11 @@ Result NumberExpression::accept(Visitor& v) {
     return v.visit(this);
 }
 
-OperatorExpression::OperatorExpression(shared_ptr<Expression> left, Token op, shared_ptr<Expression> right) 
+BinOpExpression::BinOpExpression(shared_ptr<Expression> left, Token op, shared_ptr<Expression> right) 
     : left(left), op(op), right(right) {}
-std::string OperatorExpression::toString() {
+std::string BinOpExpression::toString() {
     return "(" + left->toString() + op.getValue()+ right->toString() + ")";
 }
-Result OperatorExpression::accept(Visitor& v) {
+Result BinOpExpression::accept(Visitor& v) {
     return v.visit(this);
 }

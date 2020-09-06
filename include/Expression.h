@@ -14,6 +14,7 @@ class Expression {
         virtual std::string toString();
         virtual Result accept(Visitor& v);
         virtual ~Expression();
+        Token tok;
 };
 class PostfixExpression : public Expression {
     public:
@@ -29,9 +30,8 @@ class PrefixExpression : public Expression {
         PrefixExpression(Token tok, shared_ptr<Expression> right);
         std::string toString() override;
         Result accept(Visitor& v) override;
-    private:
-        Token tok;
         shared_ptr<Expression> right;
+        Token tok;
 };
 
 class NameExpression : public Expression {
@@ -53,9 +53,9 @@ class NumberExpression : public Expression {
         std::variant<int, double> value;
 };
 
-class OperatorExpression : public Expression {
+class BinOpExpression : public Expression {
     public:
-        OperatorExpression(shared_ptr<Expression> left, Token op, shared_ptr<Expression> right);
+        BinOpExpression(shared_ptr<Expression> left, Token op, shared_ptr<Expression> right);
         std::string toString() override;
         Result accept(Visitor& v) override;
         Token op;
