@@ -44,17 +44,21 @@ int BinaryOperatorParser::getPrecedence() {return precedence;}
 
 AssignmentParser::AssignmentParser() {}
 
-shared_ptr<Expression> AssignmentParser::parse(Parser& parser, shared_ptr<Expression> left, Token tok) {
+shared_ptr<Expression> AssignmentParser::parse(Parser& parser, Token tok) {
+    Token name = parser.consume();
+    if (!name.is(Token::Type::IDENTIFIER)) {
+        throw SyntaxError(name.startPos, "Expected an identifier");
+    }
+    Token equals = parser.consume();
+    if (!equals.is(Token::Type::EQUALS)) {
+        throw SyntaxError(equals.startPos, "Expected '=', but instead got '" + equals.getValue() + "'");
+    }
     shared_ptr<Expression> right = parser.parseExpression(
         Precedence::ASSIGNMENT - 1
     );
-    if (!left->getToken().is(Token::Type::IDENTIFIER)) {
-        throw SyntaxError(left->getToken().startPos, "Expected an identifier");
-    }
-    return make_shared<AssignmentExpression>(left->getToken().getValue(), right, tok);
+    return make_shared<AssignmentExpression>(name.getValue(), right, equals);
 
 }
-int AssignmentParser::getPrecedence() {return Precedence::ASSIGNMENT;}
 
 shared_ptr<Expression> GroupParser::parse(Parser& parser, Token token) {
     shared_ptr<Expression> expression = parser.parseExpression();

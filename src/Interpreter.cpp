@@ -52,6 +52,16 @@ Result Visitor::visit(Context& context, NumberExpression* e) {
 }
 
 Result Visitor::visit(Context& context, AssignmentExpression* e) {
-    return e->right->accept(context, *this);
+    Result res = e->right->accept(context, *this);
+    context.symbols->set(e->name, res.getResult());
+    return res;
+}
+
+Result Visitor::visit(Context& context, NameExpression* e) {
+    std::optional<type> value = context.symbols->get(e->name);
+    if (value) {
+        return Result(*value);
+    }
+    throw UndefinedVariable(e->name, e->getToken().startPos);
 }
 

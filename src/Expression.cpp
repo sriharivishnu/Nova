@@ -41,6 +41,9 @@ SPECIFICS
 NameExpression::NameExpression(std::string name, Token tok_) : name(name) {
     tok = tok_;
 }
+Result NameExpression::accept(Context& context, Visitor& v) {
+    return v.visit(context, this);
+}
 std::string NameExpression::toString() {
     return name;
 }

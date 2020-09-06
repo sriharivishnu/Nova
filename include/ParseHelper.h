@@ -68,12 +68,10 @@ class BinaryOperatorParser : public InfixParser {
         bool isRight = false;
 };
 
-class AssignmentParser : public InfixParser {
+class AssignmentParser : public PrefixParser {
     public:
         AssignmentParser();
-        shared_ptr<Expression> parse(Parser& parser, shared_ptr<Expression> left, Token token) override;
-        int getPrecedence() override;
-        
+        shared_ptr<Expression> parse(Parser& parser, Token token) override;        
 };
 
 class GroupParser : public PrefixParser {

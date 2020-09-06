@@ -15,7 +15,7 @@ Parser::Parser(vector<Token> tokens) : tokens(tokens) {
     addType(Token::Type::DIV, std::make_shared<BinaryOperatorParser>(Precedence::PRODUCT, false));    
     addType(Token::Type::CAROT, std::make_shared<BinaryOperatorParser>(Precedence::EXPONENT, true));
 
-    addType(Token::Type::EQUALS, std::make_shared<AssignmentParser>());
+    addType(Token::Type::VAR, std::make_shared<AssignmentParser>());
 };
 
 shared_ptr<Expression> Parser::parse() {

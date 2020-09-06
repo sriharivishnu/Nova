@@ -16,6 +16,7 @@ class PrefixExpression;
 class BinOpExpression;
 class NumberExpression;
 class AssignmentExpression;
+class NameExpression;
 
 class Visitor {
     public:
@@ -24,6 +25,6 @@ class Visitor {
         Result visit(Context& context, BinOpExpression* e);
         Result visit(Context& context, NumberExpression* e);
         Result visit(Context& context, AssignmentExpression* e);
-    private:
+        Result visit(Context& context, NameExpression* e);
 };
 #endif

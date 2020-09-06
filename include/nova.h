@@ -8,7 +8,7 @@
 #include "Token.h"
 #include "Context.h"
 namespace nova {
-    int run(std::string command) {
+    int run(std::string command, Context& context) {
         Lexer lex("main", command.c_str());
         std::vector<Token> a;
         try {
@@ -30,7 +30,6 @@ namespace nova {
             return 1;
         }
         Visitor v;
-        Context context("<main>");
         try {
             Result res = expression->accept(context, v);
             if (res.isType<int>()) {

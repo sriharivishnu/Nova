@@ -77,6 +77,12 @@ class UndefinedOperationException : public Error {
             details = "Unknown Operation Found: " + op;
         }        
 };
+
+class UndefinedVariable : public Error {
+    public:
+        UndefinedVariable(std::string name, Position pos) 
+        : Error(pos, "Undefined Identifier", name + " is not defined") {}
+};
 /*
 RUNTIME ERRORS 
 */

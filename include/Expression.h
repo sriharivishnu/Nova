@@ -38,7 +38,7 @@ class NameExpression : public Expression {
     public:
         NameExpression(std::string name, Token tok);
         std::string toString() override;
-    private:
+        Result accept(Context& context, Visitor& v) override;
         std::string name;
 };
 
