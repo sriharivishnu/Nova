@@ -9,4 +9,4 @@
 - [ ] Parser
 - Converts tokens into an Abstract Syntax Tree. Constructed the Tree with Pratt Parsing Algorithm
 - [ ] Interpretor
-- Evaluates an expressoin
+- Evaluates an expression, implementing Visitor pattern.
