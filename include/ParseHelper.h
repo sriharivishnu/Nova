@@ -88,6 +88,12 @@ class UpdateOrAssignParser : public InfixParser {
         int getPrecedence() override;
 };
 
+class ConditionalParser : public PrefixParser {
+    public:
+        ConditionalParser();
+        shared_ptr<Expression> parse(Parser& parser, Token tok) override;
+};
+
 class GroupParser : public PrefixParser {
     public:
         shared_ptr<Expression> parse(Parser& parser, Token token) override;

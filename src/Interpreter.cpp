@@ -1,7 +1,7 @@
 #include "Interpreter.h"
 
 Result Visitor::visit(Context& context, Expression* e) {
-    throw UndefinedOperationException(Position(0,0,0), "Visited unknown expression");
+    throw UndefinedOperationException(e->getToken().startPos, "Visited unknown expression");
 }
 Result Visitor::visit(Context& context, PrefixExpression* e) {
     Result rightSide = e->right->accept(context, *this);
@@ -94,3 +94,14 @@ Result Visitor::visit(Context& context, NameExpression* e) {
     throw UndefinedVariable(e->name, e->getToken().startPos);
 }
 
+Result Visitor::visit(Context& context, ConditionalExpression* e) {
+    if (e->condition->accept(context, *this).getTypeOrThrow<int>(e->getToken().startPos)) {
+        return e->thenBranch->accept(context, *this);
+    } 
+    for (int i = 0; i< e->elif_conditions.size(); i++) {
+        if (e->elif_conditions[i]->accept(context, *this).getTypeOrThrow<int>(e->getToken().startPos)) {
+            return e->elif_thens[i]->accept(context, *this);
+        }
+    }
+    return e->elseBranch->accept(context, *this);
+}

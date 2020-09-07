@@ -74,6 +74,32 @@ int UpdateOrAssignParser::getPrecedence() {
     return Precedence::ASSIGNMENT;
 }
 
+ConditionalParser::ConditionalParser() {}
+shared_ptr<Expression> ConditionalParser::parse(Parser& parser, Token tok) {
+    //IF
+    parser.consume(Token::Type::LPAREN, ", expected '(");
+    shared_ptr<Expression> condition = parser.parseExpression(Precedence::CONDITION -1 );
+    parser.consume(Token::Type::RPAREN, ", expected ')'");
+    shared_ptr<Expression> then = parser.parseExpression(Precedence::CONDITION - 1);
+
+    //ELIF
+    Token next = parser.consume();
+    vector<shared_ptr<Expression>> elif_conditions;
+    vector<shared_ptr<Expression>> elif_thens;
+    while (next.is(Token::Type::ELIF)) {
+        parser.consume(Token::Type::LPAREN, ", expected '(");
+        elif_conditions.push_back(parser.parseExpression(Precedence::CONDITION -1 ));
+        parser.consume(Token::Type::RPAREN, ", expected ')'");
+        elif_thens.push_back(parser.parseExpression(Precedence::CONDITION -1));
+        next = parser.consume();
+    }
+
+    //ELSE
+    if (!next.is(Token::Type::ELSE)) throw SyntaxError(next.startPos, "Unexpected token: " +  next.getValue() + ", expected 'else' or 'elif'");
+    shared_ptr<Expression> elseBranch = parser.parseExpression(Precedence::CONDITION - 1);
+    return make_shared<ConditionalExpression>(tok, condition, then, elif_conditions, elif_thens, elseBranch);
+}
+
 shared_ptr<Expression> GroupParser::parse(Parser& parser, Token token) {
     shared_ptr<Expression> expression = parser.parseExpression();
     parser.consume(Token::Type::RPAREN, ", expected '}'");

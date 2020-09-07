@@ -102,3 +102,26 @@ std::string AssignmentExpression::toString() {
 Result AssignmentExpression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
 }
+
+//Conditional
+ConditionalExpression::ConditionalExpression(
+            Token tok_, 
+            shared_ptr<Expression> condition_, 
+            shared_ptr<Expression> then_, 
+            vector<shared_ptr<Expression>> elif_conditions_, 
+            vector<shared_ptr<Expression>> elif_thens_, 
+            shared_ptr<Expression> elseBranch_)
+: condition(condition_), 
+    thenBranch(then_), 
+    elif_conditions(elif_conditions_), 
+    elif_thens(elif_thens_), 
+    elseBranch(elseBranch_) 
+{
+    tok = tok_;
+}
+Result ConditionalExpression::accept(Context& context, Visitor& v) {
+    return v.visit(context, this);
+}
+std::string ConditionalExpression::toString() {
+    return "(if " + condition->toString() + ", then {" + thenBranch->toString() + "} else {" + elseBranch->toString() + "})";
+}

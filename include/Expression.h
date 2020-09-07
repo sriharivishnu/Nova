@@ -3,6 +3,7 @@
 #include <string>
 #include <memory>
 #include <variant>
+#include <vector>
 #include "Interpreter.h"
 #include "Token.h"
 using namespace std;
@@ -78,5 +79,23 @@ class AssignmentExpression : public Expression {
         std::string toString() override;
         std::string name;
         shared_ptr<Expression> right;
+};
+
+class ConditionalExpression : public Expression {
+    public:
+        ConditionalExpression(
+            Token tok_, 
+            shared_ptr<Expression> condition, 
+            shared_ptr<Expression> then, 
+            vector<shared_ptr<Expression>> elif_conditions, 
+            vector<shared_ptr<Expression>> elif_thens, 
+            shared_ptr<Expression> elseBranch);
+        Result accept(Context& context, Visitor& v) override;
+        std::string toString() override;
+        shared_ptr<Expression> condition;
+        shared_ptr<Expression> thenBranch;
+        vector<shared_ptr<Expression>> elif_conditions; 
+        vector<shared_ptr<Expression>> elif_thens;
+        shared_ptr<Expression> elseBranch;
 };
 #endif

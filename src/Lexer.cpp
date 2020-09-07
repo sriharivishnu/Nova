@@ -35,6 +35,7 @@ Token Lexer::makeIdentifier() {
     while (isIdentifier(peek())) get();
     std::string value(start, cur);
     if (value == "if") return Token(Token::Type::IF, value, position);
+    else if(value == "elif") return Token(Token::Type::ELIF, value, position);
     else if (value == "else") return Token(Token::Type::ELSE, value, position);
     else if (value == "while") return Token(Token::Type::WHILE, value, position);
     else if (value == "for") return Token(Token::Type::FOR, value, position);

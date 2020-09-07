@@ -33,6 +33,7 @@ class Token {
             LSQUARE,
             RSQUARE,
             IF,
+            ELIF,
             ELSE,
             WHILE,
             FOR,

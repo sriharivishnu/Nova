@@ -18,6 +18,7 @@ class ComparisonExpression;
 class NumberExpression;
 class AssignmentExpression;
 class NameExpression;
+class ConditionalExpression;
 
 class Visitor {
     public:
@@ -28,5 +29,6 @@ class Visitor {
         Result visit(Context& context, NumberExpression* e);
         Result visit(Context& context, AssignmentExpression* e);
         Result visit(Context& context, NameExpression* e);
+        Result visit(Context& context, ConditionalExpression* e);
 };
 #endif

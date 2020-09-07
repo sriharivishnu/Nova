@@ -27,6 +27,8 @@ Parser::Parser(vector<Token> tokens) : tokens(tokens) {
     addType(Token::Type::LE, std::make_shared<ComparisonParser>());
     addType(Token::Type::GT, std::make_shared<ComparisonParser>());
     addType(Token::Type::LT, std::make_shared<ComparisonParser>());
+
+    addType(Token::Type::IF, std::make_shared<ConditionalParser>());
 };
 
 shared_ptr<Expression> Parser::parse() {
