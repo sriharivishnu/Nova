@@ -29,4 +29,12 @@ nova>> a * 2
 22
 nova >> b = 10
 10
+nova >> a = false
+0
+nova >> a + 10
+10
+nova >> 10 >= 0
+1
+nova >> !a
+1
 ```
