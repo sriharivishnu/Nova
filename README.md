@@ -39,4 +39,10 @@ nova >> !a
 1
 nova>> a = if (a < 0) 12 elif (a == 5) 123 else -1
 123
+nova>> a = 1
+1
+nova>>a++
+1
+nova>>a
+2
 ```
