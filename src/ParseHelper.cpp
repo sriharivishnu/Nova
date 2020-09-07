@@ -41,9 +41,17 @@ shared_ptr<Expression> BinaryOperatorParser::parse(Parser& parser, shared_ptr<Ex
 }
 int BinaryOperatorParser::getPrecedence() {return precedence;}
 
+ComparisonParser::ComparisonParser() {}
+
+shared_ptr<Expression> ComparisonParser::parse(Parser& parser, shared_ptr<Expression> left, Token tok) {
+    shared_ptr<Expression> right = parser.parseExpression(getPrecedence());
+    return make_shared<ComparisonExpression>(left, tok, right);
+}
+int ComparisonParser::getPrecedence() {
+    return Precedence::CONDITION;
+}
 
 AssignmentParser::AssignmentParser() {}
-
 shared_ptr<Expression> AssignmentParser::parse(Parser& parser, Token tok) {
     Token name = parser.consume(Token::Type::IDENTIFIER, ", expected an identifier");
     Token equals = parser.consume(Token::Type::EQUALS, ", expected '='");

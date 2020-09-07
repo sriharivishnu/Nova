@@ -6,7 +6,7 @@
 #include "Position.h"
 #include "Error.h"
 // using std::string;
-using type = std::variant<std::string, int, double, bool>;
+using type = std::variant<std::string, int, double>;
 struct Result {
     public:
         Result(type a) : mResult(a) {};
@@ -44,7 +44,6 @@ struct Result {
         std::string getStringType() {
             if constexpr(std::is_same_v<T, std::string>) return "string";
             else if constexpr(std::is_same_v<T, int>) return "integer";
-            else if constexpr(std::is_same_v<T, bool>) return "boolean";
             else if constexpr(std::is_same_v<T, double>) return "double";
             else return "null";
         }

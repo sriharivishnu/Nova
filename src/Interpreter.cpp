@@ -22,10 +22,10 @@ Result Visitor::visit(Context& context, PrefixExpression* e) {
     return rightSide;
 }
 Result Visitor::visit(Context& context, BinOpExpression* e) {
-    Result leftRes = e->left.get()->accept(context, *this);
-    Result rightRes = e->right.get()->accept(context, *this); 
-    int first = leftRes.getTypeOrThrow<int>(e->getToken().startPos);
-    int second = rightRes.getTypeOrThrow<int>(e->getToken().startPos);
+    Result leftRes = e->left->accept(context, *this);
+    Result rightRes = e->right->accept(context, *this); 
+    int first = leftRes.getTypeOrThrow<int>(e->left->getToken().startPos);
+    int second = rightRes.getTypeOrThrow<int>(e->right->getToken().startPos);
     switch(e->getToken().type) {
         case Token::Type::PLUS:
             return Result(first + second);
@@ -35,7 +35,7 @@ Result Visitor::visit(Context& context, BinOpExpression* e) {
             return Result(first * second);
         case Token::Type::DIV:
             if (second == 0) {
-                throw DivisionByZero(context, e->getToken().startPos);
+                throw DivisionByZero(context, e->right->getToken().startPos);
             }
             return Result(first / second);
         case Token::Type::CAROT:
@@ -46,9 +46,33 @@ Result Visitor::visit(Context& context, BinOpExpression* e) {
     return Result(-1);
 }
 
+Result Visitor::visit(Context& context, ComparisonExpression* e) {
+    Result leftRes = e->left->accept(context, *this);
+    Result rightRes = e->right->accept(context, *this);
+    int first = leftRes.getTypeOrThrow<int>(e->left->getToken().startPos);
+    int second = rightRes.getTypeOrThrow<int>(e->right->getToken().startPos);
+    switch(e->getToken().type) {
+        case Token::Type::NE:
+            return Result(first != second);
+        case Token::Type::EE:
+            return Result(first == second);
+        case Token::Type::GE:
+            return Result(first >= second);
+        case Token::Type::LE:
+            return Result(first <= second);
+        case Token::Type::GT:
+            return Result(first > second);
+        case Token::Type::LT:
+            return Result(first < second);
+        default:
+            throw UndefinedOperationException(e->getToken().startPos, e->getToken().getValue());
+    }
+}
+
 Result Visitor::visit(Context& context, NumberExpression* e) {
-    // return e->getInt();
-    return Result(e->getInt());
+    if (e->getToken().is(Token::Type::INT)) return Result(e->getInt());
+    else if (e->getToken().is(Token::Type::DOUBLE)) return Result(e->getDouble());
+    throw Error(e->getToken().startPos, "Unknown Error: Not integer or double type" + e->getToken().getValue());
 }
 
 Result Visitor::visit(Context& context, AssignmentExpression* e) {

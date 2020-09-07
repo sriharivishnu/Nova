@@ -13,9 +13,9 @@ namespace nova {
         std::vector<Token> a;
         try {
             a = lex.getTokens();
-            for (Token t : a) {
-                std::cout << t << std::endl;
-            }
+            // for (Token t : a) {
+            //     std::cout << t << std::endl;
+            // }
         } catch (std::exception& e) {
             std::cout << e.what() << std::endl;
             return 1;
@@ -36,9 +36,6 @@ namespace nova {
                 std::cout << res.getValue<int>() << std::endl;
             } else if (res.isType<double>()) {
                 std::cout << res.getValue<double>() << std::endl;
-            } else if (res.isType<bool>()) {
-                if (res.getValue<bool>()) std::cout << "true" << std::endl;
-                else std::cout << "false" << std::endl;
             } else if (res.isType<std::string>()) {
                 std::cout << res.getValue<std::string>() << std::endl;
             }

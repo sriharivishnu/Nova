@@ -62,6 +62,15 @@ class BinOpExpression : public Expression {
         shared_ptr<Expression> right;
 };
 
+class ComparisonExpression : public Expression {
+    public:
+        ComparisonExpression(shared_ptr<Expression> left, Token op, shared_ptr<Expression> right);
+        std::string toString() override;
+        Result accept(Context& context, Visitor& v) override;
+        shared_ptr<Expression> left;
+        shared_ptr<Expression> right;
+};
+
 class AssignmentExpression : public Expression {
     public:
         AssignmentExpression(std::string name, shared_ptr<Expression> right, Token eq);

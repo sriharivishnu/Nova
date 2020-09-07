@@ -4,7 +4,7 @@
 #include <string>
 #include <variant>
 #include <optional>
-using type = std::variant<std::string, int, double, bool>;
+using type = std::variant<std::string, int, double>;
 class SymbolTable {
     public:
         SymbolTable() {}

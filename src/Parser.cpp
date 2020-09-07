@@ -5,6 +5,7 @@ Parser::Parser(vector<Token> tokens) : tokens(tokens) {
     addType(Token::Type::IDENTIFIER, std::make_shared<NameParser>());
     addType(Token::Type::INT, std::make_shared<NumberParser>());
     addType(Token::Type::DOUBLE, std::make_shared<NumberParser>());
+    addType(Token::Type::BOOL, std::make_shared<NameParser>());
     addType(Token::Type::LPAREN, std::make_shared<GroupParser>());
 
     addType(Token::Type::PLUS, std::make_shared<PrefixOperatorParser>(Precedence::PREFIX));
@@ -18,6 +19,13 @@ Parser::Parser(vector<Token> tokens) : tokens(tokens) {
 
     addType(Token::Type::VAR, std::make_shared<AssignmentParser>());
     addType(Token::Type::EQUALS, std::make_shared<UpdateOrAssignParser>());
+
+    addType(Token::Type::EE, std::make_shared<ComparisonParser>());
+    addType(Token::Type::NE, std::make_shared<ComparisonParser>());
+    addType(Token::Type::GE, std::make_shared<ComparisonParser>());
+    addType(Token::Type::LE, std::make_shared<ComparisonParser>());
+    addType(Token::Type::GT, std::make_shared<ComparisonParser>());
+    addType(Token::Type::LT, std::make_shared<ComparisonParser>());
 };
 
 shared_ptr<Expression> Parser::parse() {

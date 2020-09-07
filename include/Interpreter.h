@@ -14,6 +14,7 @@ using std::string;
 class Expression;
 class PrefixExpression;
 class BinOpExpression;
+class ComparisonExpression;
 class NumberExpression;
 class AssignmentExpression;
 class NameExpression;
@@ -23,6 +24,7 @@ class Visitor {
         Result visit(Context& context, Expression* e);
         Result visit(Context& context, PrefixExpression* e);
         Result visit(Context& context, BinOpExpression* e);
+        Result visit(Context& context, ComparisonExpression* e);
         Result visit(Context& context, NumberExpression* e);
         Result visit(Context& context, AssignmentExpression* e);
         Result visit(Context& context, NameExpression* e);

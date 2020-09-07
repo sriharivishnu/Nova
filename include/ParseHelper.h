@@ -70,11 +70,9 @@ class BinaryOperatorParser : public InfixParser {
 
 class ComparisonParser : public InfixParser {
     public:
-        ComparisonParser(int precedence);
+        ComparisonParser();
         shared_ptr<Expression> parse(Parser& parser, shared_ptr<Expression> left, Token tok) override;
         int getPrecedence() override;
-    private:
-        int precedence = 0;
 };
 
 class AssignmentParser : public PrefixParser {

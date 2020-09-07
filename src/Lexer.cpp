@@ -34,13 +34,14 @@ Token Lexer::makeIdentifier() {
     get();
     while (isIdentifier(peek())) get();
     std::string value(start, cur);
-    if (value == "if") return Token(Token::Type::IF, start ,cur, position);
-    else if (value == "else") return Token(Token::Type::ELSE, start, cur, position);
-    else if (value == "while") return Token(Token::Type::WHILE, start, cur, position);
-    else if (value == "for") return Token(Token::Type::FOR, start, cur, position);
-    else if (value == "var") return Token(Token::Type::VAR, start, cur, position);
-    else if (value == "func") return Token(Token::Type::FUNCTION, start, cur, position);
-    else return Token(Token::Type::IDENTIFIER, start, cur, position);
+    if (value == "if") return Token(Token::Type::IF, value, position);
+    else if (value == "else") return Token(Token::Type::ELSE, value, position);
+    else if (value == "while") return Token(Token::Type::WHILE, value, position);
+    else if (value == "for") return Token(Token::Type::FOR, value, position);
+    else if (value == "var") return Token(Token::Type::VAR, value, position);
+    else if (value == "func") return Token(Token::Type::FUNCTION, value, position);
+    else if (value == "true" || value == "false") return Token(Token::Type::BOOL, value, position);
+    else return Token(Token::Type::IDENTIFIER, value, position);
 }
 
 Token Lexer::makeNumber() {
@@ -135,9 +136,9 @@ Token Lexer::advance() {
         case '<':
             if (get() == '=') {
                 get();
-                return Token(Token::Type::GE, "<=", position);
+                return Token(Token::Type::LE, "<=", position);
             }
-            return Token(Token::Type::GT, '<', position);
+            return Token(Token::Type::LT, '<', position);
         case 'a' ... 'z':
         case 'A' ... 'Z':
         case '_':

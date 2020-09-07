@@ -52,6 +52,7 @@ std::string NameExpression::toString() {
 NumberExpression::NumberExpression(Token t) {
     if (t.is(Token::Type::INT)) value = stoi(t.getValue());
     else if(t.is(Token::Type::DOUBLE)) value = stod(t.getValue());
+    tok = t;
 }
 std::string NumberExpression::toString() {
     auto* str = get_if<int>(&value);
@@ -77,6 +78,18 @@ std::string BinOpExpression::toString() {
     return "(" + left->toString() + tok.getValue()+ right->toString() + ")";
 }
 Result BinOpExpression::accept(Context& context, Visitor& v) {
+    return v.visit(context, this);
+}
+
+ComparisonExpression::ComparisonExpression(shared_ptr<Expression> left, Token op, shared_ptr<Expression> right) 
+:left(left), right(right) {
+    tok = op;
+}
+std::string ComparisonExpression::toString() {
+    return "(" + left->toString() + tok.getValue() + right->toString() + ")";
+}
+
+Result ComparisonExpression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
 }
 
