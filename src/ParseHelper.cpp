@@ -21,6 +21,9 @@ shared_ptr<Expression> NumberParser::parse(Parser& parser, Token token) {
 PrefixOperatorParser::PrefixOperatorParser(int precedence) : precedence(precedence) {}
 shared_ptr<Expression> PrefixOperatorParser::parse(Parser& parser, Token token) {
     shared_ptr<Expression> right = parser.parseExpression(precedence);
+    if (token.isOneOf(Token::Type::INC, Token::Type::DEC) && !right->getToken().is(Token::Type::IDENTIFIER)) {
+        throw SyntaxError(right->getToken().startPos, "Expected an identifier"); 
+    }
     return make_shared<PrefixExpression>(token, right);
 }
 int PrefixOperatorParser::getPrecedence() {
@@ -29,6 +32,12 @@ int PrefixOperatorParser::getPrecedence() {
 
 
 PostfixOperatorParser::PostfixOperatorParser(int precedence) : precedence(precedence) {}
+shared_ptr<Expression> PostfixOperatorParser::parse(Parser& parser, shared_ptr<Expression> left, Token token) {
+    if (token.isOneOf(Token::Type::INC, Token::Type::DEC) && !left->getToken().is(Token::Type::IDENTIFIER)) {
+        throw SyntaxError(left->getToken().startPos, "Expected an identifier"); 
+    }
+    return make_shared<PostfixExpression>(left, token);
+}
 int PostfixOperatorParser::getPrecedence() {return precedence;}
 
 

@@ -22,8 +22,8 @@ class Expression {
 class PostfixExpression : public Expression {
     public:
         PostfixExpression(shared_ptr<Expression> left, Token tok);
+        Result accept(Context& context, Visitor& v) override;
         std::string toString() override;
-    private:
         shared_ptr<Expression> left;
 };
 

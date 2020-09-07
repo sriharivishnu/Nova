@@ -3,7 +3,18 @@
 Result Visitor::visit(Context& context, Expression* e) {
     throw UndefinedOperationException(e->getToken().startPos, "Visited unknown expression");
 }
+
 Result Visitor::visit(Context& context, PrefixExpression* e) {
+    if (e->getToken().isOneOf(Token::Type::INC, Token::Type::DEC)) {
+        std::string name = e->right->getToken().getValue();
+        std::optional<type> value = context.symbols->get(name);
+        if (!value) throw UndefinedVariable(e->right->getToken().getValue(), e->getToken().startPos);
+        int val = std::get<int>(*value);
+        if (e->getToken().is(Token::Type::INC)) val++;
+        else if (e->getToken().is(Token::Type::DEC)) val--;
+        context.symbols->set(name, val);
+        return Result(val);
+    }
     Result rightSide = e->right->accept(context, *this);
     switch(e->getToken().type) {
         case Token::Type::PLUS:
@@ -26,6 +37,21 @@ Result Visitor::visit(Context& context, PrefixExpression* e) {
     }
     return rightSide;
 }
+
+Result Visitor::visit(Context& context, PostfixExpression* e) {
+    if (e->getToken().isOneOf(Token::Type::INC, Token::Type::DEC)) {
+        std::string name = e->left->getToken().getValue();
+        std::optional<type> value = context.symbols->get(name);
+        if (!value) throw UndefinedVariable(e->left->getToken().getValue(), e->getToken().startPos);
+        int val = std::get<int>(*value);
+        if (e->getToken().is(Token::Type::INC)) context.symbols->set(name, val + 1);
+        else if (e->getToken().is(Token::Type::DEC)) context.symbols->set(name, val - 1);;
+        return Result(val);
+    }
+    throw UndefinedOperationException(e->getToken().startPos, "Visited unknown unary operation: " + e->getToken().getValue());
+}
+
+
 Result Visitor::visit(Context& context, BinOpExpression* e) {
     Result leftRes = e->left->accept(context, *this);
     Result rightRes = e->right->accept(context, *this); 

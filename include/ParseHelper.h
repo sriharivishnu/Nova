@@ -53,6 +53,7 @@ class PrefixOperatorParser : public PrefixParser {
 class PostfixOperatorParser : public InfixParser {
     public:
         PostfixOperatorParser(int precedence);
+        shared_ptr<Expression> parse(Parser& parser, shared_ptr<Expression> left, Token token) override;
         int getPrecedence() override;
     private:
         int precedence = 0;

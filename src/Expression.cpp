@@ -19,6 +19,9 @@ Expression::~Expression() = default;
 PostfixExpression::PostfixExpression(shared_ptr<Expression> left, Token tok_) : left(left){
     tok = tok_;
 }
+Result PostfixExpression::accept(Context& context, Visitor& v) {
+    return v.visit(context, this);
+}
 std::string PostfixExpression::toString() {
     return "(" + left->toString() + tok.getValue() + ")";
 }

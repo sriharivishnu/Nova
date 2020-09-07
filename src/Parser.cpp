@@ -11,6 +11,8 @@ Parser::Parser(vector<Token> tokens) : tokens(tokens) {
     addType(Token::Type::PLUS, std::make_shared<PrefixOperatorParser>(Precedence::PREFIX));
     addType(Token::Type::MINUS, std::make_shared<PrefixOperatorParser>(Precedence::PREFIX));
     addType(Token::Type::NOT, std::make_shared<PrefixOperatorParser>(Precedence::PREFIX));
+    addType(Token::Type::INC, std::make_shared<PrefixOperatorParser>(Precedence::PREFIX));
+    addType(Token::Type::DEC, std::make_shared<PrefixOperatorParser>(Precedence::PREFIX));
 
     addType(Token::Type::PLUS, std::make_shared<BinaryOperatorParser>(Precedence::SUM, false));            
     addType(Token::Type::MINUS, std::make_shared<BinaryOperatorParser>(Precedence::SUM, false));            
@@ -20,6 +22,8 @@ Parser::Parser(vector<Token> tokens) : tokens(tokens) {
 
     addType(Token::Type::VAR, std::make_shared<AssignmentParser>());
     addType(Token::Type::EQUALS, std::make_shared<UpdateOrAssignParser>());
+    addType(Token::Type::INC, std::make_shared<PostfixOperatorParser>(Precedence::POSTFIX));
+    addType(Token::Type::DEC, std::make_shared<PostfixOperatorParser>(Precedence::POSTFIX));
 
     addType(Token::Type::EE, std::make_shared<ComparisonParser>());
     addType(Token::Type::NE, std::make_shared<ComparisonParser>());
