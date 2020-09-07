@@ -42,7 +42,7 @@ Result Visitor::visit(Context& context, PostfixExpression* e) {
     if (e->getToken().isOneOf(Token::Type::INC, Token::Type::DEC)) {
         std::string name = e->left->getToken().getValue();
         std::optional<type> value = context.symbols->get(name);
-        if (!value) throw UndefinedVariable(e->left->getToken().getValue(), e->getToken().startPos);
+        if (!value) throw UndefinedVariable(e->left->getToken().getValue(), e->left->getToken().startPos);
         int val = std::get<int>(*value);
         if (e->getToken().is(Token::Type::INC)) context.symbols->set(name, val + 1);
         else if (e->getToken().is(Token::Type::DEC)) context.symbols->set(name, val - 1);;
