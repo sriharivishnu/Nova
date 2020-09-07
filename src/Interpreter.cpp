@@ -16,6 +16,11 @@ Result Visitor::visit(Context& context, PrefixExpression* e) {
                 return Result(-1 * rightSide.getValue<double>());
             }
             throw TypeException(e->getToken().startPos, "Expected 'int' or 'double' type");
+        case Token::Type::NOT:
+            if (rightSide.isType<int>()) {
+                return Result(rightSide.getValue<int>() == 0);
+            }
+            throw TypeException(e->getToken().startPos, "Expected 'int' type");
         default:
             throw UndefinedOperationException(e->getToken().startPos, "Visited unknown unary expression: " + e->getToken().getValue());
     }

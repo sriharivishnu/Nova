@@ -10,6 +10,7 @@ Parser::Parser(vector<Token> tokens) : tokens(tokens) {
 
     addType(Token::Type::PLUS, std::make_shared<PrefixOperatorParser>(Precedence::PREFIX));
     addType(Token::Type::MINUS, std::make_shared<PrefixOperatorParser>(Precedence::PREFIX));
+    addType(Token::Type::NOT, std::make_shared<PrefixOperatorParser>(Precedence::PREFIX));
 
     addType(Token::Type::PLUS, std::make_shared<BinaryOperatorParser>(Precedence::SUM, false));            
     addType(Token::Type::MINUS, std::make_shared<BinaryOperatorParser>(Precedence::SUM, false));            
