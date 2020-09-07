@@ -40,6 +40,8 @@ shared_ptr<Expression> Parser::parseExpression(int precedence) {
     auto it = mPrefixParsables.find(token.type);
     if (it == mPrefixParsables.end()) {
         if (token.is(Token::Type::END)) throw ParseException(token.startPos, "Unexpected End of File while Parsing");
+        else if (token.is(Token::Type::ELIF)) throw SyntaxError(token.startPos, "'elif' without an 'if' statement");
+        else if (token.is(Token::Type::ELSE)) throw SyntaxError(token.startPos, "'else' without an 'if' statement");
         throw SyntaxError(token.startPos, "Could not parse: '" + token.getValue() + "'");
     }
 
@@ -47,7 +49,9 @@ shared_ptr<Expression> Parser::parseExpression(int precedence) {
     shared_ptr<Expression> left = prefix->parse(*this, token);
     while (precedence < getPrecedence()) {
         token = consume();
-        shared_ptr<InfixParser> infix = mInfixParsables[token.type];
+        auto it2 = mInfixParsables.find(token.type);
+        if (it2 == mInfixParsables.end()) throw UndefinedOperationException(token.startPos, token.getValue());
+        shared_ptr<InfixParser> infix = it2->second;
         left = infix->parse(*this, left, token);
     }
     return left;

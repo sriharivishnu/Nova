@@ -59,6 +59,12 @@ Token Lexer::makeNumber() {
     else return Token(Token::Type::INT, start, cur, position);
 }
 
+void Lexer::skipComment() {
+    while (peek() != '\n' && peek() != '\0') {
+        get();
+    }
+}
+
 Token Lexer::advance() {
     while(isSpace(peek())) get();
     switch (peek()) {
@@ -94,12 +100,19 @@ Token Lexer::advance() {
                 return Token(Token::Type::MULT_EQUAL, "*=", position);
             }
             return Token(Token::Type::MULT, '*', position);
-        case '/':
-            if (get() == '=') {
-                get();
-                return Token(Token::Type::DIV_EQUAL, "/=", position);
+        case '/': {
+                char next = get();
+                if (next == '=') {
+                    get();
+                    return Token(Token::Type::DIV_EQUAL, "/=", position);
+                }
+                else if (next == '/') {
+                    get();
+                    skipComment();
+                    return advance();
+                }
+                return Token(Token::Type::DIV, '/', position);
             }
-            return Token(Token::Type::DIV, '/', position);
         case '(':
             return Token(Token::Type::LPAREN, getLast(), position);
         case ')':

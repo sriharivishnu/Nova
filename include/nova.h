@@ -20,6 +20,7 @@ namespace nova {
             std::cout << e.what() << std::endl;
             return 1;
         }
+        if (a.size() <= 1) return 0;
         Parser par(a);
         std::shared_ptr<Expression> expression;
         try {

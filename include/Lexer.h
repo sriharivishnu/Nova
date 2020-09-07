@@ -15,7 +15,8 @@ class Lexer {
         bool isIdentifier(char c);
         bool isSpace(char c);
         Token makeNumber();
-        Token makeIdentifier();            
+        Token makeIdentifier();
+        void skipComment();            
         const char* cur = nullptr;
     private:
         std::vector<Error> errors;
