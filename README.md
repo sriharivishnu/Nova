@@ -45,4 +45,6 @@ nova>>a++
 1
 nova>>a
 2
+nova>>a=b=c=d = 1     //This is valid syntax
+1
 ```
