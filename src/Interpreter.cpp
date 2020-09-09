@@ -121,11 +121,11 @@ Result Visitor::visit(Context& context, NameExpression* e) {
 }
 
 Result Visitor::visit(Context& context, ConditionalExpression* e) {
-    if (e->condition->accept(context, *this).getTypeOrThrow<int>(e->getToken().startPos)) {
+    if (e->condition->accept(context, *this)) {
         return e->thenBranch->accept(context, *this);
     } 
     for (int i = 0; i< e->elif_conditions.size(); i++) {
-        if (e->elif_conditions[i]->accept(context, *this).getTypeOrThrow<int>(e->getToken().startPos)) {
+        if (e->elif_conditions[i]->accept(context, *this)) {
             return e->elif_thens[i]->accept(context, *this);
         }
     }

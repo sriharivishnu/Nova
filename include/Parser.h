@@ -25,9 +25,9 @@ class Parser {
         shared_ptr<Expression> parseExpression(int precedence);
         shared_ptr<Expression> parseExpression();
 
-        shared_ptr<Statement> parseStatement();
+        shared_ptr<statement> parseStatement();
 
-        shared_ptr<Expression> parse();
+        shared_ptr<statement> parse();
 
         bool match(Token::Type expected);
         Token lookAhead(int distance);

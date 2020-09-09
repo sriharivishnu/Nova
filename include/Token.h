@@ -37,9 +37,12 @@ class Token {
             ELSE,
             WHILE,
             FOR,
+            COLON,//:
             VAR,
             STMT_END,
             FUNCTION,
+            RETURN,
+            CONTINUE,
             NOT, //!
             EE, //==
             NE, //!=

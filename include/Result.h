@@ -38,6 +38,22 @@ struct Result {
             else return false;
         }
 
+        operator int() const { 
+            return std::visit([&](auto&& arg) {
+                using T = std::decay_t<decltype(arg)>;
+                if constexpr(std::is_same_v<T, int>) return std::get<int>(mResult);
+                else if constexpr(std::is_same_v<T, std::string>) {
+                    if (std::get<std::string>(mResult).empty()) {
+                        return 1;
+                    } else return 0;
+                }
+                else if constexpr(std::is_same_v<T, double>) {
+                    if (std::get<double>(mResult) != 0) return 1; else return 0;
+                }
+                return 0;
+            }, mResult);
+        }
+
     private:
         type mResult;
         template<class T>

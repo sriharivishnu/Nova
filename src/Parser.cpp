@@ -35,8 +35,8 @@ Parser::Parser(vector<Token> tokens) : tokens(tokens) {
     addType(Token::Type::IF, std::make_shared<ConditionalParser>());
 };
 
-shared_ptr<Expression> Parser::parse() {
-    return parseExpression();
+shared_ptr<statement> Parser::parse() {
+    return parseStatement();
 }
 
 shared_ptr<Expression> Parser::parseExpression(int precedence) {
@@ -65,43 +65,53 @@ shared_ptr<Expression> Parser::parseExpression() {
     return parseExpression(0);
 }
 
-shared_ptr<Statement> Parser::parseStatement() {
-    // Statement s;
-    // Token curToken = lookAhead(0);
-    // switch(curToken.type) {
-    //     case Token::Type::IF:
-    //         if (curToken.type == Token::Type::LPAREN) {
-    //             shared_ptr<Expression> expression = parseExpression();
-    //             curToken = consume();
-    //             if (curToken.type == Token::Type::RPAREN) {
-    //                 return stmt();
-    //             } else {
-    //                 throw SyntaxError(curToken.startPos, "Expected a ')'");
-    //             }
-    //         } else {
-    //             throw SyntaxError(curToken.startPos, "Expected a '('");
-    //         }
-    //         break;
-    //     case Token::Type::LCURL: {
-    //             shared_ptr<Statement> block = stmt();
-    //             curToken = consume();
-    //             if (curToken.type != Token::Type::RCURL) {
-    //                 throw SyntaxError(curToken.startPos, "Expected a '}'");
-    //             }
-    //             return block;
-    //             break;
-    //         }
-    //     default: {
-    //         shared_ptr<Expression> expression = parseExpression();
-    //         curToken = consume();
-    //         if (curToken.type != Token::Type::STMT_END) {
-    //             throw SyntaxError(curToken.startPos, "Expected a ';'");
-    //         }
-    //         return expression;
-    //     }
+shared_ptr<statement> Parser::parseStatement() {
+    Token curToken = lookAhead(0);
+    switch(curToken.type) {
+        // case Token::Type::IF: {
+        //         consume();
+        //         consume(Token::Type::LPAREN, ", expected a '('");
+        //         shared_ptr<Expression> ifCondition = parseExpression();
+        //         consume(Token::Type::RPAREN, ", expected a ')'");
+        //         shared_ptr<statement> ifBlock = parseStatement();
+        //         vector<shared_ptr<Expression>> elifsConditions;
+        //         vector<shared_ptr<statement>> elifBlocks;
+        //         shared_ptr<statement> elseBlock = nullptr;
+
+        //         return make_shared<if_statement>(ifCondition, ifBlock, elifsConditions, elifBlocks, elseBlock);
+        //         break;
+        //     }
+        case Token::Type::LCURL: {
+                consume();
+                vector<shared_ptr<statement>> statements;
+                while (!lookAhead(0).isOneOf(Token::Type::RCURL, Token::Type::END)) {
+                    statements.push_back(parseStatement());
+                }
+                consume(Token::Type::RCURL, ", expected a '}'");
+                return make_shared<block_statement>(statements);
+                break;
+            }
+        case Token::Type::WHILE: {
+            consume();
+            consume(Token::Type::LPAREN, ", expected a '('");
+            shared_ptr<Expression> condition = parseExpression();
+            consume(Token::Type::RPAREN, ", expected a ')'");
+            shared_ptr<statement> statement = parseStatement();
+            return make_shared<while_statement>(condition, statement);
+        }
             
-    // }
-    return make_shared<Statement>();
+        default: {
+            shared_ptr<Expression> expression = parseExpression();
+            curToken = consume();
+            if (!curToken.isOneOf(Token::Type::STMT_END, Token::Type::END)
+             && !curToken.is(Token::Type::RCURL)) {
+                throw SyntaxError(curToken.startPos, "Expected end of statement");
+            }
+            return make_shared<simple_statement>(expression);
+        }
+            
+    }
+    return make_shared<statement>();
 }
 
 void Parser::addType(Token::Type type, shared_ptr<PrefixParser> prefix) {
@@ -119,7 +129,7 @@ Token Parser::consume() {
 Token Parser::consume(Token::Type expected, std::string expectedStr) {
     Token token = lookAhead(0);
     if (token.type != expected) {
-        if (token.is(Token::Type::END)) throw ParseException(token.startPos, "Unexpected EOF while parsing");
+        if (token.is(Token::Type::END) && expectedStr.empty()) throw ParseException(token.startPos, "Unexpected EOF while parsing");
         throw SyntaxError(token.startPos, "Unexpected token: " + token.getValue() + expectedStr);
     }
     return consume();
