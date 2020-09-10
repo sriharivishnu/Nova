@@ -1,0 +1,25 @@
+{
+    "name": "nova-syntax-highlight",
+    "displayName": "Nova Syntax Highlight",
+    "description": "Syntax highlighting for Nova Language",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.48.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "nova",
+            "aliases": ["Nova", "nova"],
+            "extensions": [".nov"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "nova",
+            "scopeName": "source.nov",
+            "path": "./syntaxes/nova.tmLanguage.json"
+        }]
+    }
+}
