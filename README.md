@@ -47,3 +47,17 @@ nova>>a;
 2
 nova>> while(a > 0) a--;
 ```
+
+## Mutli-line support
+```
+var a = 10;
+while (a > 0) {
+    a--;
+}
+a;
+-----------------
+output: 0
+```
+
+
+
