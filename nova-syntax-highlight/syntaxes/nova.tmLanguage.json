@@ -26,7 +26,7 @@
       "patterns": [
         {
           "name": "keyword.control.nova",
-          "match": "\\b(if|while|for|return|in|fun)\\b"
+          "match": "\\b(if|elif|else|while|for|return|in|fun|var)\\b"
         }
       ]
     },
