@@ -31,6 +31,7 @@ namespace nova {
                 std::cout << e.what() << std::endl;
                 return 1;
             }
+            if (!stmt) continue;
             try {
                 std::optional<Result> res = stmt->execute(context);
                 if (res) {

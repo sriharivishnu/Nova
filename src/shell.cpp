@@ -12,7 +12,7 @@ int main() {
     symbols->set("false", 0);
     symbols->set("true", 1);
     Context global("<main>", symbols);
-    ifstream myfile ("src/test.txt");
+    ifstream myfile ("src/test.nov");
     if (myfile.is_open())
     {
         while ( std::getline (myfile,command) )

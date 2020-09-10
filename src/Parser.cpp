@@ -1,4 +1,5 @@
 #include "Parser.h"
+#include "iostream"
 #include <string>
 using namespace std;
 Parser::Parser(vector<Token> tokens) : tokens(tokens) {
@@ -46,6 +47,7 @@ shared_ptr<Expression> Parser::parseExpression(int precedence) {
         if (token.is(Token::Type::END)) throw ParseException(token.startPos, "Unexpected End of File while Parsing");
         else if (token.is(Token::Type::ELIF)) throw SyntaxError(token.startPos, "'elif' without an 'if' statement");
         else if (token.is(Token::Type::ELSE)) throw SyntaxError(token.startPos, "'else' without an 'if' statement");
+        else if (token.is(Token::Type::STMT_END)) throw SyntaxError(token.startPos, "unexpected end of statement");
         throw SyntaxError(token.startPos, "Could not parse: '" + token.getValue() + "'");
     }
 
@@ -65,53 +67,71 @@ shared_ptr<Expression> Parser::parseExpression() {
     return parseExpression(0);
 }
 
+#define ENSURE_END if (!lookAhead(0).isOneOf(Token::Type::STMT_END, Token::Type::END)\
+        && !lookAhead(0).is(Token::Type::RCURL)) {\
+        throw SyntaxError(lookAhead(0).startPos, "Expected end of statement, instead got '"+lookAhead(0).getValue() + "'");\
+    }
+
 shared_ptr<statement> Parser::parseStatement() {
     Token curToken = lookAhead(0);
+    shared_ptr<statement> stmt = make_shared<statement>();
     switch(curToken.type) {
-        // case Token::Type::IF: {
-        //         consume();
-        //         consume(Token::Type::LPAREN, ", expected a '('");
-        //         shared_ptr<Expression> ifCondition = parseExpression();
-        //         consume(Token::Type::RPAREN, ", expected a ')'");
-        //         shared_ptr<statement> ifBlock = parseStatement();
-        //         vector<shared_ptr<Expression>> elifsConditions;
-        //         vector<shared_ptr<statement>> elifBlocks;
-        //         shared_ptr<statement> elseBlock = nullptr;
-
-        //         return make_shared<if_statement>(ifCondition, ifBlock, elifsConditions, elifBlocks, elseBlock);
-        //         break;
-        //     }
-        case Token::Type::LCURL: {
+        case Token::Type::IF: {
                 consume();
+                consume(Token::Type::LPAREN, ", expected a '('");
+                shared_ptr<Expression> ifCondition = parseExpression();
+                consume(Token::Type::RPAREN, ", expected a ')'");
+                shared_ptr<statement> ifBlock = parseStatement();
+                vector<shared_ptr<Expression>> elifConditions;
+                vector<shared_ptr<statement>> elifBlocks;
+                while (lookAhead(0).is(Token::Type::ELIF)) {
+                    consume();
+                    consume(Token::Type::LPAREN, ", expected a '('");
+                    elifConditions.push_back(parseExpression());
+                    consume(Token::Type::RPAREN, ", expected a ')'");
+                    elifBlocks.push_back(parseStatement());
+                }
+                shared_ptr<statement> elseBlock = nullptr;
+                if (lookAhead(0).is(Token::Type::ELSE)) {
+                    elseBlock = parseStatement();
+                }
+
+                stmt = make_shared<if_statement>(ifCondition, ifBlock, elifConditions, elifBlocks, elseBlock);
+                break;
+            }
+        case Token::Type::STMT_END:
+            consume();
+            return nullptr;
+        case Token::Type::LCURL: {
+                consume(Token::Type::LCURL);
                 vector<shared_ptr<statement>> statements;
                 while (!lookAhead(0).isOneOf(Token::Type::RCURL, Token::Type::END)) {
-                    statements.push_back(parseStatement());
+                    shared_ptr<statement> s = parseStatement();
+                    if (s) statements.push_back(s);
                 }
                 consume(Token::Type::RCURL, ", expected a '}'");
-                return make_shared<block_statement>(statements);
+                stmt = make_shared<block_statement>(statements);
                 break;
             }
         case Token::Type::WHILE: {
-            consume();
+            consume(Token::Type::WHILE);
             consume(Token::Type::LPAREN, ", expected a '('");
             shared_ptr<Expression> condition = parseExpression();
             consume(Token::Type::RPAREN, ", expected a ')'");
             shared_ptr<statement> statement = parseStatement();
-            return make_shared<while_statement>(condition, statement);
+            stmt = make_shared<while_statement>(condition, statement);
+            break;
         }
             
         default: {
             shared_ptr<Expression> expression = parseExpression();
-            curToken = consume();
-            if (!curToken.isOneOf(Token::Type::STMT_END, Token::Type::END)
-             && !curToken.is(Token::Type::RCURL)) {
-                throw SyntaxError(curToken.startPos, "Expected end of statement");
-            }
-            return make_shared<simple_statement>(expression);
+            stmt = make_shared<simple_statement>(expression);
+            ENSURE_END
+            break;
         }
             
     }
-    return make_shared<statement>();
+    return stmt;
 }
 
 void Parser::addType(Token::Type type, shared_ptr<PrefixParser> prefix) {

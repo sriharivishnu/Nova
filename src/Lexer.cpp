@@ -20,6 +20,7 @@ bool Lexer::isIdentifier(char c) {
 bool Lexer::isSpace(char c) {
     switch (c) {
         case ' ':
+        case '\n':
         case '\t':
         case '\r':
             return true;
@@ -70,7 +71,7 @@ Token Lexer::advance() {
     switch (peek()) {
         case '\0':
             return Token(Token::Type::END, "EOF", position);
-        case '\n':
+        case ';':
             return Token(Token::Type::STMT_END, getLast(), position);
         case '+': {
                 char next = get();
@@ -119,8 +120,6 @@ Token Lexer::advance() {
             return Token(Token::Type::LPAREN, getLast(), position);
         case ')':
             return Token(Token::Type::RPAREN, getLast(), position);
-        case ';':
-            return Token(Token::Type::STMT_END, getLast(), position);
         case '{':
             return Token(Token::Type::LCURL, getLast(), position);
         case '}':

@@ -25,23 +25,23 @@ class simple_statement : public statement {
         expression_ptr expr;
 };
 
-// class if_statement : public statement {
-//     public:
-//         if_statement(
-//             expression_ptr ifCondition, 
-//             statement_ptr ifBlock, 
-//             std::vector<expression_ptr> elifConditions, 
-//             std::vector<statement_ptr> elifBlocks, 
-//             statement_ptr elseBlock);
+class if_statement : public statement {
+    public:
+        if_statement(
+            expression_ptr ifCondition, 
+            statement_ptr ifBlock, 
+            std::vector<expression_ptr> elifConditions, 
+            std::vector<statement_ptr> elifBlocks, 
+            statement_ptr elseBlock);
 
-//         std::optional<Result> execute(Context& context) override;
-//     private:
-//         expression_ptr if_condition;
-//         statement_ptr if_block;
-//         std::vector<expression_ptr> elif_conditions;
-//         std::vector<statement_ptr> elif_blocks;
-//         statement_ptr else_block;
-// };
+        std::optional<Result> execute(Context& context) override;
+    private:
+        expression_ptr if_condition;
+        statement_ptr if_block;
+        std::vector<expression_ptr> elif_conditions;
+        std::vector<statement_ptr> elif_blocks;
+        statement_ptr else_block;
+};
 
 class while_statement : public statement {
     public:
