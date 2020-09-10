@@ -1,0 +1,8 @@
+a = b = c = 10;
+10==10;
+while (a > 1) a--;
+if (a > 0) {        //And we have comments!
+    99;
+}
+a;
+b;

@@ -40,7 +40,7 @@ Token Lexer::makeIdentifier() {
     else if (value == "while") return Token(Token::Type::WHILE, value, position);
     else if (value == "for") return Token(Token::Type::FOR, value, position);
     else if (value == "var") return Token(Token::Type::VAR, value, position);
-    else if (value == "func") return Token(Token::Type::FUNCTION, value, position);
+    else if (value == "fun") return Token(Token::Type::FUNCTION, value, position);
     else if (value == "true" || value == "false") return Token(Token::Type::BOOL, value, position);
     else if (value == "return") return Token(Token::Type::RETURN, value, position);
     else return Token(Token::Type::IDENTIFIER, value, position);
@@ -95,6 +95,10 @@ Token Lexer::advance() {
                     get();
                     return Token(Token::Type::MINUS_EQUAL, "-=", position);
                 }
+                else if (next == '>') {
+                    get();
+                    return Token(Token::Type::ARROW, "->", position);
+                }
                 return Token(Token::Type::MINUS, '-', position);
             }
         case '*':
@@ -130,6 +134,8 @@ Token Lexer::advance() {
             return Token(Token::Type::LSQUARE, getLast(), position);
         case ']':
             return Token(Token::Type::RSQUARE, getLast(), position);
+        case ',':
+            return Token(Token::Type::COMMA, getLast(), position);
         case '=':
             if (get() == '=') {
                 get();
