@@ -59,5 +59,10 @@ a;
 output: 0
 ```
 
+## Work in Progress
+- For loops
+- Functions
+- Strings
+
 
 
