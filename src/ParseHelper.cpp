@@ -15,9 +15,12 @@ shared_ptr<Expression> NameParser::parse(Parser& parser, Token token) {
         parser.consume();
         vector<shared_ptr<Expression>> params;
         if (!parser.lookAhead(0).is(Token::Type::RPAREN)) {
-            do {
+            params.push_back(parser.parseExpression());
+            while (parser.lookAhead(0).is(Token::Type::COMMA))
+            {   
+                parser.consume();
                 params.push_back(parser.parseExpression());
-            } while (parser.lookAhead(0).is(Token::Type::COMMA));
+            }
         }
         parser.consume(Token::Type::RPAREN, ", expected ')'");
         return make_shared<CallFunctionExpression>(token, params);

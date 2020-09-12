@@ -20,7 +20,7 @@ void SymbolTable::remove(std::string name) {
 
 FunctionTable::FunctionTable(std::shared_ptr<FunctionTable> parent) : parent(parent) {}
 
-function_statement* FunctionTable::get(std::string name) {
+std::shared_ptr<function_statement> FunctionTable::get(std::string name) {
     auto it = funcs.find(name);
     if (it != funcs.end()) return it->second;
     else if (it == funcs.end() && parent) {
@@ -29,7 +29,7 @@ function_statement* FunctionTable::get(std::string name) {
     return nullptr;
 }
 
-void FunctionTable::add(std::string name, function_statement* value) {
+void FunctionTable::add(std::string name, std::shared_ptr<function_statement> value) {
     funcs[name] = value;
 }
 

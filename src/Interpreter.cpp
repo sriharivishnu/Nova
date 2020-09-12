@@ -135,24 +135,16 @@ Result Visitor::visit(Context& context, ConditionalExpression* e) {
 
 Result Visitor::visit(Context& parent, CallFunctionExpression* e) {
     Visitor v;
-    function_statement* decl = parent.functions->get(e->getToken().getValue());
+    std::shared_ptr<function_statement> decl = parent.functions->get(e->getToken().getValue());
     if (!decl) throw UndefinedVariable(e->getToken().getValue(), e->getToken().startPos);
-    printf("%s", decl->name.c_str());
     if (e->params.size() > decl->params.size()) {
-        for (int i = 0; i < decl->params.size(); i++) {
-            printf("%s ", decl->params[i].c_str());
-        }
-        throw Error(e->getToken().startPos, "Too many params", "Too many Params: expected, " + std::to_string(decl->params.size()) + "but got " + std::to_string(e->params.size()));
+        throw Error(e->getToken().startPos, "Function Call Exception", "Too many Params for " + decl->name + ": expected, " + std::to_string(decl->params.size()) + " params but called with " + std::to_string(e->params.size()));
     }
     else if (e->params.size() < decl->params.size()) {
-        for (int i = 0; i < decl->params.size(); i++) {
-            printf("%s ", decl->params[i].c_str());
-        }
-        throw Error(e->getToken().startPos, "Too few params", "Too few Params: expected, " + std::to_string(decl->params.size()) + "but got " + std::to_string(e->params.size()));
+        throw Error(e->getToken().startPos, "Function Call Exception", "Too few Params for " + decl->name + ": expected, " + std::to_string(decl->params.size()) + " params but called with " + std::to_string(e->params.size()));
     }
     std::shared_ptr<SymbolTable> symbols = make_shared<SymbolTable>(parent.symbols);
     for (int i = 0; i < decl->params.size(); i++) {
-        printf("%s ", decl->params[i].c_str());
         symbols->set(decl->params[i], e->params[i]->accept(parent, v));
     }
     Context context(decl->name, std::make_shared<Context>(parent), decl->pos, symbols, parent.functions);
@@ -160,23 +152,3 @@ Result Visitor::visit(Context& parent, CallFunctionExpression* e) {
     if (res) return *res;
     else return Result(0);
 }
-
-// class func {
-//     public:
-//         func(std::string name, vector<std::string> params, std::shared_ptr<statement> stmt, Position pos) 
-//         : name(name), params(params), stmt(stmt), entry(pos) {};
-//         std::optional<Result> call(shared_ptr<Context> parent, vector<shared_ptr<Expression>> args) {
-//             std::shared_ptr<SymbolTable> symbols = make_shared<SymbolTable>(parent->symbols);
-//             for (int i = 0; i < args.size(); i++) {
-//                 symbols->set(params[i], args[i]->accept(*parent, Visitor()));
-//             }
-//             Context context(name, parent, entry, symbols, parent->functions);
-//             return stmt->execute(context);
-//         }
-//     private:
-//         std::string name;
-//         vector<std::string> params;
-//         std::shared_ptr<statement> stmt;
-//         Position entry;
-
-// };

@@ -128,10 +128,13 @@ shared_ptr<statement> Parser::parseStatement() {
             consume(Token::Type::LPAREN);
             vector<std::string> params;
             if (!lookAhead(0).is(Token::Type::RPAREN)) {
-                do {
-                    Token p = consume(Token::Type::IDENTIFIER);
+                Token p = consume(Token::Type::IDENTIFIER);
+                params.push_back(p.getValue());
+                while (lookAhead(0).is(Token::Type::COMMA)) {
+                    consume();
+                    p = consume(Token::Type::IDENTIFIER);
                     params.push_back(p.getValue());
-                } while (lookAhead(0).is(Token::Type::COMMA));
+                }
             }
             consume(Token::Type::RPAREN);
             stmt = make_shared<function_statement>(name.getValue(), params, parseStatement(), name.startPos);

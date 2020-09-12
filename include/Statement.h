@@ -58,7 +58,7 @@ class while_statement : public statement {
         statement_ptr statement; 
 };
 
-class function_statement : public statement {
+class function_statement : public statement, public std::enable_shared_from_this<function_statement> {
     public:
         function_statement(
             std::string name,
@@ -71,7 +71,7 @@ class function_statement : public statement {
         std::vector<std::string> params;
         statement_ptr toRun;
         Position pos;
-        ~function_statement() = default;
+        virtual ~function_statement() = default;
 };
 
 // class for_statement : public statement {

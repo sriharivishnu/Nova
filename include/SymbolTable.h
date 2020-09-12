@@ -25,10 +25,10 @@ class FunctionTable {
         FunctionTable() {}
         FunctionTable(std::shared_ptr<FunctionTable> parent);
         std::shared_ptr<FunctionTable> parent = nullptr;
-        function_statement* get(std::string name);
-        void add(std::string name, function_statement* value);
+        std::shared_ptr<function_statement> get(std::string name);
+        void add(std::string name, std::shared_ptr<function_statement> value);
         void remove(std::string name);
     private:
-        std::unordered_map<std::string, function_statement*> funcs;
+        std::unordered_map<std::string, std::shared_ptr<function_statement>> funcs;
 };
 #endif
