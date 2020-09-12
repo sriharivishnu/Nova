@@ -124,7 +124,7 @@ shared_ptr<statement> Parser::parseStatement() {
         }
         case Token::Type::FUNCTION: {
             consume(Token::Type::FUNCTION);
-            Token name = consume(Token::Type::IDENTIFIER);
+            Token name = consume(Token::Type::IDENTIFIER, ", expected a function identifier");
             consume(Token::Type::LPAREN);
             vector<std::string> params;
             if (!lookAhead(0).is(Token::Type::RPAREN)) {
@@ -136,8 +136,13 @@ shared_ptr<statement> Parser::parseStatement() {
                     params.push_back(p.getValue());
                 }
             }
-            consume(Token::Type::RPAREN);
-            stmt = make_shared<function_statement>(name.getValue(), params, parseStatement(), name.startPos);
+            consume(Token::Type::RPAREN, ", expected ')'");
+            if (lookAhead(0).is(Token::Type::ARROW)) {
+                consume(Token::Type::ARROW);
+                stmt = make_shared<function_statement>(name.getValue(), params, make_shared<simple_statement>(parseExpression()), name.startPos);
+            }else {
+                stmt = make_shared<function_statement>(name.getValue(), params, parseStatement(), name.startPos);
+            }
             break;
         }
             

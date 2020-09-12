@@ -13,6 +13,7 @@ class SymbolTable {
         SymbolTable() {}
         SymbolTable(std::shared_ptr<SymbolTable> parent);
         std::shared_ptr<SymbolTable> parent = nullptr;
+        bool update(std::string name, type value);
         std::optional<type> get(std::string name);
         void set(std::string name, type value);
         void remove(std::string name);

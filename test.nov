@@ -1,9 +1,10 @@
-fun add(a,b) a + b;
+fun add(a,b) -> a + b;
 
-start = 10;
-x = 0;
-y = 1;
-result = 1;
+var start = 10;
+var x = 0;
+var y = 1;
+var result = 1;
+//Fibonacci Sequence
 while ( start-- ) {
     result = add(x,y);
     x = y;

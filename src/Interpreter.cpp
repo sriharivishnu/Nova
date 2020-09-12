@@ -13,7 +13,7 @@ Result Visitor::visit(Context& context, PrefixExpression* e) {
         int val = std::get<int>(*value);
         if (e->getToken().is(Token::Type::INC)) val++;
         else if (e->getToken().is(Token::Type::DEC)) val--;
-        context.symbols->set(name, val);
+        context.symbols->update(name, val);
         return Result(val);
     }
     Result rightSide = e->right->accept(context, *this);
@@ -45,8 +45,10 @@ Result Visitor::visit(Context& context, PostfixExpression* e) {
         std::optional<type> value = context.symbols->get(name);
         if (!value) throw UndefinedVariable(make_shared<Context>(context), e->left->getToken().getValue(), e->left->getToken().startPos);
         int val = std::get<int>(*value);
-        if (e->getToken().is(Token::Type::INC)) context.symbols->set(name, val + 1);
-        else if (e->getToken().is(Token::Type::DEC)) context.symbols->set(name, val - 1);;
+        bool success = false;
+        if (e->getToken().is(Token::Type::INC)) success = context.symbols->update(name, val + 1);
+        else if (e->getToken().is(Token::Type::DEC)) success = context.symbols->update(name, val - 1);
+        if (!success) throw UndefinedVariable(make_shared<Context>(context), e->left->getToken().getValue(), e->left->getToken().startPos);
         return Result(val);
     }
     throw UndefinedOperationException(e->getToken().startPos, "Visited unknown unary operation: " + e->getToken().getValue());
@@ -111,6 +113,11 @@ Result Visitor::visit(Context& context, AssignmentExpression* e) {
     Result res = e->right->accept(context, *this);
     context.symbols->set(e->name, res.getResult());
     return res;
+}
+Result Visitor::visit(Context& context, UpdateExpression* e) {
+    Result res = e->right->accept(context, *this);
+    if (context.symbols->update(e->name, res.getResult())) return res;
+    throw UndefinedVariable(make_shared<Context>(context), e->name, e->getToken().startPos);
 }
 
 Result Visitor::visit(Context& context, NameExpression* e) {

@@ -83,6 +83,15 @@ class AssignmentExpression : public Expression {
         shared_ptr<Expression> right;
 };
 
+class UpdateExpression : public Expression {
+    public:
+        UpdateExpression(std::string name, shared_ptr<Expression> right, Token eq);
+        Result accept(Context& context, Visitor& v) override;
+        std::string toString() override;
+        std::string name;
+        shared_ptr<Expression> right;
+};
+
 class ConditionalExpression : public Expression {
     public:
         ConditionalExpression(

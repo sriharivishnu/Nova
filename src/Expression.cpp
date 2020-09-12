@@ -106,6 +106,15 @@ Result AssignmentExpression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
 }
 
+UpdateExpression::UpdateExpression(std::string name, shared_ptr<Expression> right, Token eq) 
+: name(name), right(right) { tok = eq; }
+std::string UpdateExpression::toString() {
+    return "(" + name + tok.getValue()+ right->toString() + ")";
+}
+Result UpdateExpression::accept(Context& context, Visitor& v) {
+    return v.visit(context, this);
+}
+
 //Conditional
 ConditionalExpression::ConditionalExpression(
             Token tok_, 

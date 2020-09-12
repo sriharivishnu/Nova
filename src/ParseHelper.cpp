@@ -91,7 +91,7 @@ shared_ptr<Expression> UpdateOrAssignParser::parse(Parser& parser, shared_ptr<Ex
         throw SyntaxError(left->getToken().startPos, "Expected an identifier"); 
     }
     shared_ptr<Expression> right = parser.parseExpression(Precedence::ASSIGNMENT - 1);
-    return make_shared<AssignmentExpression>(left->getToken().getValue(), right, tok);
+    return make_shared<UpdateExpression>(left->getToken().getValue(), right, tok);
 }
 int UpdateOrAssignParser::getPrecedence() {
     return Precedence::ASSIGNMENT;

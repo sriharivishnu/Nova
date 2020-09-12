@@ -12,44 +12,31 @@
 - Evaluates an expression, implementing Visitor pattern.
 
 ## Current Syntax
+
 ```
-nova>> 1+5;
-6
-nova>> 1-5;
--4
-nova>> 2*(2+5);
-14
-nova>> 2^(2+5);
-128
-nova>> var a = 10;       //var is optional
+nova>> var a = var b = 10;
 10
-nova>>a=b=c=d = 11;    //This is valid syntax
+nova>> ++a;
 11
-nova>> a * 2;
-22
-nova >> b = 10;
-10
-nova >> a = false;
+nova>> fun inc() -> a++;
+nova>> inc();
+11
+nova>> inc();
+12
+nova>> a;
+13
+nova>> while (a > 0) a--;
+nova>> a;
 0
-nova >> a + 10;
-10
-nova >> 10 >= 0;
-1
-nova >> !a;
-1
-nova>> a = if (a < 0) 12 elif (a == 5) 123 else -1;
-123
-nova>> a = 1;
-1
-nova>>a++;
-1
-nova>>a;
-2
-nova>> while(a > 0) a--;
 ```
 
 ## Mutli-line support
+
 ```
+fun add(a, b) {
+    a + b;
+}
+//While loop
 var a = 10;
 while (a > 0) {
     a--;
@@ -60,9 +47,7 @@ output: 0
 ```
 
 ## Work in Progress
+
 - For loops
 - Functions
 - Strings
-
-
-

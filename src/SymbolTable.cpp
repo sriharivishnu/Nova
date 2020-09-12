@@ -14,6 +14,17 @@ void SymbolTable::set(std::string name, type value) {
     symbols[name] = value;
 }
 
+bool SymbolTable::update(std::string name, type value) {
+    if (symbols.find(name) != symbols.end()) {
+        set(name, value);
+        return true;
+    }
+    else if (parent) {
+        return parent->update(name, value);
+    }
+    return false;
+}
+
 void SymbolTable::remove(std::string name) {
     symbols.erase(name);
 }
