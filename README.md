@@ -28,6 +28,8 @@ nova>> a;
 nova>> while (a > 0) a--;
 nova>> a;
 0
+nova>> var res = if (a < 0) 20 elif (a == 10) 10 else -100;
+-100
 ```
 
 ## Mutli-line support
