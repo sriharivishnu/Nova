@@ -128,3 +128,20 @@ Result ConditionalExpression::accept(Context& context, Visitor& v) {
 std::string ConditionalExpression::toString() {
     return "(if " + condition->toString() + ", then {" + thenBranch->toString() + "} else {" + elseBranch->toString() + "})";
 }
+
+CallFunctionExpression::CallFunctionExpression(
+            Token tok_, 
+            vector<std::shared_ptr<Expression>> params
+        ) : params(params) { tok = tok_;}
+Result CallFunctionExpression::accept(Context& context, Visitor& v) {
+    return v.visit(context, this);
+};
+std::string CallFunctionExpression::toString() {
+    std::string call = tok.getValue() + "(";
+    for (int i = 0; i < params.size(); i++) {
+        call += params[i]->toString();
+        if (i != params.size() - 1) call.append(",");
+    }
+    call.append(")");
+    return call;
+};

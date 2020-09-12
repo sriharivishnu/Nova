@@ -4,12 +4,12 @@
 #include <math.h>
 #include <memory>
 #include <variant>
-#include "Context.h"
 #include "Expression.h"
 #include "Error.h"
 #include "Token.h"
 #include "Result.h"
 using std::string;
+struct Context;
 
 class Expression;
 class PrefixExpression;
@@ -21,6 +21,7 @@ class AssignmentExpression;
 class UpdateExpression;
 class NameExpression;
 class ConditionalExpression;
+class CallFunctionExpression;
 
 class Visitor {
     public:
@@ -34,5 +35,6 @@ class Visitor {
         Result visit(Context& context, UpdateExpression* e);
         Result visit(Context& context, NameExpression* e);
         Result visit(Context& context, ConditionalExpression* e);
+        Result visit(Context& context, CallFunctionExpression* e);
 };
 #endif

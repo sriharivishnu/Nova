@@ -1,8 +1,11 @@
 #include "Statement.h"
 #include "Result.h"
+
 std::optional<Result> simple_statement::execute(Context& context) {
     Visitor v;
-    return expr -> accept(context, v);
+    Result res = expr -> accept(context, v);
+    if (res.isType<int>()) printf("%d", res.getTypeOrThrow<int>(Position(0,0,0)));
+    return res;
 };
 simple_statement::simple_statement(std::shared_ptr<Expression> expr_) : expr(expr_) {}
 
@@ -51,5 +54,18 @@ std::optional<Result> if_statement::execute(Context& context) {
     if (else_block) {
         return else_block->execute(context);
     }
+    return {};
+}
+
+function_statement::function_statement(
+            std::string name,
+            vector<std::string> params,
+            statement_ptr toRun, 
+            Position& pos) : name(name), params(params), toRun(toRun), pos(pos)
+{}
+std::optional<Result> function_statement::execute(Context& context) {
+    // context.functions->
+    printf("GOT NAME: %s\n", name.c_str());
+    context.functions->add(name, this);
     return {};
 }

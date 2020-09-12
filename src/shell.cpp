@@ -9,9 +9,10 @@ int main(int arg_count, char * arg_list[]) {
     std::string toRun;
     std::string command;
     std::shared_ptr<SymbolTable> symbols = std::make_shared<SymbolTable>();
+    std::shared_ptr<FunctionTable> funcs = std::make_shared<FunctionTable>();
     symbols->set("false", 0);
     symbols->set("true", 1);
-    Context global("<main>", symbols);
+    Context global("<main>", symbols, funcs);
     if (arg_count == 1) {
         while (true) {
             std::cout << "nova>> ";

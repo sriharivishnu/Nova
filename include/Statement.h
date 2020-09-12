@@ -3,9 +3,12 @@
 #include "Context.h"
 #include "Expression.h"
 #include "Token.h"
+#include "Result.h"
 #include <vector>
 #include <memory>
 #include <optional>
+class Expression;
+struct Context;
 using expression_ptr = std::shared_ptr<Expression>;
 class statement {
 	public:
@@ -55,6 +58,22 @@ class while_statement : public statement {
         statement_ptr statement; 
 };
 
+class function_statement : public statement {
+    public:
+        function_statement(
+            std::string name,
+            std::vector<std::string> params,
+            statement_ptr toRun,
+            Position& pos
+        );
+        std::optional<Result> execute(Context& context) override;
+        std::string name;
+        std::vector<std::string> params;
+        statement_ptr toRun;
+        Position pos;
+        ~function_statement() = default;
+};
+
 // class for_statement : public statement {
 //     public:
 //         for_statement(
@@ -70,10 +89,10 @@ class while_statement : public statement {
 
 class block_statement : public statement {
     public:
-        block_statement(vector<statement_ptr> statements);
+        block_statement(std::vector<statement_ptr> statements);
         std::optional<Result> execute(Context& context) override;
     private:
-        vector<statement_ptr> statements;
+        std::vector<statement_ptr> statements;
 };
     
 #endif
