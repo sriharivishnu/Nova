@@ -54,8 +54,8 @@ UndefinedOperationException::UndefinedOperationException(Position pos, std::stri
 
 
 
-UndefinedVariable::UndefinedVariable(std::string name, Position pos) 
-: Error(pos, "Undefined Identifier", name + " is not defined") {}
+UndefinedVariable::UndefinedVariable(std::shared_ptr<Context> context, std::string name, Position pos) 
+: RunTimeError(context, pos, "Undefined Identifier", name + " is not defined") {}
 
 /*
 RUNTIME ERRORS 

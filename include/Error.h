@@ -57,9 +57,9 @@ class UndefinedOperationException : public Error {
         UndefinedOperationException(Position pos, std::string op);   
 };
 
-class UndefinedVariable : public Error {
+class UndefinedVariable : public RunTimeError {
     public:
-        UndefinedVariable(std::string name, Position pos);
+        UndefinedVariable(std::shared_ptr<Context> context, std::string name, Position pos);
 };
 /*
 RUNTIME ERRORS 

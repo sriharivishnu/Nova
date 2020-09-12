@@ -9,7 +9,7 @@ Result Visitor::visit(Context& context, PrefixExpression* e) {
     if (e->getToken().isOneOf(Token::Type::INC, Token::Type::DEC)) {
         std::string name = e->right->getToken().getValue();
         std::optional<type> value = context.symbols->get(name);
-        if (!value) throw UndefinedVariable(e->right->getToken().getValue(), e->getToken().startPos);
+        if (!value) throw UndefinedVariable(make_shared<Context>(context), e->right->getToken().getValue(), e->getToken().startPos);
         int val = std::get<int>(*value);
         if (e->getToken().is(Token::Type::INC)) val++;
         else if (e->getToken().is(Token::Type::DEC)) val--;
@@ -43,7 +43,7 @@ Result Visitor::visit(Context& context, PostfixExpression* e) {
     if (e->getToken().isOneOf(Token::Type::INC, Token::Type::DEC)) {
         std::string name = e->left->getToken().getValue();
         std::optional<type> value = context.symbols->get(name);
-        if (!value) throw UndefinedVariable(e->left->getToken().getValue(), e->left->getToken().startPos);
+        if (!value) throw UndefinedVariable(make_shared<Context>(context), e->left->getToken().getValue(), e->left->getToken().startPos);
         int val = std::get<int>(*value);
         if (e->getToken().is(Token::Type::INC)) context.symbols->set(name, val + 1);
         else if (e->getToken().is(Token::Type::DEC)) context.symbols->set(name, val - 1);;
@@ -118,7 +118,7 @@ Result Visitor::visit(Context& context, NameExpression* e) {
     if (value) {
         return Result(*value);
     }
-    throw UndefinedVariable(e->name, e->getToken().startPos);
+    throw UndefinedVariable(make_shared<Context>(context), e->name, e->getToken().startPos);
 }
 
 Result Visitor::visit(Context& context, ConditionalExpression* e) {
@@ -136,7 +136,7 @@ Result Visitor::visit(Context& context, ConditionalExpression* e) {
 Result Visitor::visit(Context& parent, CallFunctionExpression* e) {
     Visitor v;
     std::shared_ptr<function_statement> decl = parent.functions->get(e->getToken().getValue());
-    if (!decl) throw UndefinedVariable(e->getToken().getValue(), e->getToken().startPos);
+    if (!decl) throw UndefinedVariable(make_shared<Context>(parent), e->getToken().getValue(), e->getToken().startPos);
     if (e->params.size() > decl->params.size()) {
         throw Error(e->getToken().startPos, "Function Call Exception", "Too many Params for " + decl->name + ": expected, " + std::to_string(decl->params.size()) + " params but called with " + std::to_string(e->params.size()));
     }

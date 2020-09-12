@@ -1,8 +1,12 @@
-a = b = c = 10;
-10==10;
-while (a > 1) a--;
-if (a > 0) {        //And we have comments!
-    99;
+fun add(a,b) a + b;
+
+start = 10;
+x = 0;
+y = 1;
+result = 1;
+while ( start-- ) {
+    result = add(x,y);
+    x = y;
+    y = result;
 }
-a;
-b;
+result;
