@@ -7,6 +7,7 @@
 #include "Error.h"
 // using std::string;
 class TypeException;
+
 using type = std::variant<std::string, int, double>;
 struct Result {
     public:

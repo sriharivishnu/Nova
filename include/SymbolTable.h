@@ -6,7 +6,6 @@
 #include <memory>
 #include <optional>
 class function_statement;
-
 using type = std::variant<std::string, int, double>;
 class SymbolTable {
     public:

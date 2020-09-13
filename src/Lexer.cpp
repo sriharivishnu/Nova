@@ -60,6 +60,17 @@ Token Lexer::makeNumber() {
     else return Token(Token::Type::INT, start, cur, position);
 }
 
+Token Lexer::makeString() {
+    std::string val;
+    while (peek() != '\"' && peek() != '\0') {
+        val.push_back(peek());
+        get();
+    }
+    if (peek() == '\0') throw ParseException(position, "Unexpected end of file: expected a closing '\"'");
+    get();
+    return Token(Token::Type::STRING, val, position);
+}
+
 void Lexer::skipComment() {
     while (peek() != '\n' && peek() != '\0') {
         get();
@@ -120,6 +131,9 @@ Token Lexer::advance() {
                 }
                 return Token(Token::Type::DIV, '/', position);
             }
+        case '\"':
+            get();
+            return makeString();
         case '(':
             return Token(Token::Type::LPAREN, getLast(), position);
         case ')':

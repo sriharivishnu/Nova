@@ -32,6 +32,10 @@ shared_ptr<Expression> NumberParser::parse(Parser& parser, Token token) {
     return make_shared<NumberExpression>(token);
 }
 
+shared_ptr<Expression> StringParser::parse(Parser& parser, Token token) {
+    return make_shared<StringExpression>(token);
+}
+
 PrefixOperatorParser::PrefixOperatorParser(int precedence) : precedence(precedence) {}
 shared_ptr<Expression> PrefixOperatorParser::parse(Parser& parser, Token token) {
     shared_ptr<Expression> right = parser.parseExpression(precedence);

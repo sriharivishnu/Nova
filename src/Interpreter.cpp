@@ -10,33 +10,55 @@ Result Visitor::visit(Context& context, PrefixExpression* e) {
         std::string name = e->right->getToken().getValue();
         std::optional<type> value = context.symbols->get(name);
         if (!value) throw UndefinedVariable(make_shared<Context>(context), e->right->getToken().getValue(), e->getToken().startPos);
-        int val = std::get<int>(*value);
-        if (e->getToken().is(Token::Type::INC)) val++;
-        else if (e->getToken().is(Token::Type::DEC)) val--;
-        context.symbols->update(name, val);
+        type val = 0;
+        std::visit(overloaded {
+            [&](const int arg) { 
+                if (e->getToken().is(Token::Type::INC)) val = arg + 1;
+                else if (e->getToken().is(Token::Type::DEC)) val = arg - 1;
+                else throw UndefinedOperationException(e->getToken().startPos, "Visited unknown prefix expression: " + e->getToken().getValue());
+            },
+            [&](const double arg) { 
+                if (e->getToken().is(Token::Type::INC)) val = arg + 1;
+                else if (e->getToken().is(Token::Type::DEC)) val = arg - 1;
+                else throw UndefinedOperationException(e->getToken().startPos, "Visited unknown prefix expression: " + e->getToken().getValue());
+            },
+            [&](auto arg) { 
+                throw UndefinedOperationException(e->getToken().startPos, e->getToken().getValue(), Result(*value).getStringType());
+            }
+        }, *value);
+        if (!context.symbols->update(name, val)) throw UndefinedVariable(make_shared<Context>(context), e->right->getToken().getValue(), e->right->getToken().startPos);
         return Result(val);
     }
     Result rightSide = e->right->accept(context, *this);
+    type val = rightSide.getResult();
     switch(e->getToken().type) {
         case Token::Type::PLUS:
             return rightSide;
-        case Token::Type::MINUS:
-            if (rightSide.isType<int>()) {
-                return Result(-1 * rightSide.getValue<int>());
-            }
-            else if (rightSide.isType<double>()) {
-                return Result(-1 * rightSide.getValue<double>());
-            }
-            throw TypeException(e->getToken().startPos, "Expected 'int' or 'double' type");
-        case Token::Type::NOT:
-            if (rightSide.isType<int>()) {
-                return Result(rightSide.getValue<int>() == 0);
-            }
-            throw TypeException(e->getToken().startPos, "Expected 'int' type");
+        case Token::Type::MINUS: {
+            std::visit(overloaded {
+                [&](const int arg) { val = -1 * arg;},
+                [&](const double arg) {val = -1 * arg;},
+                [&](auto arg) {
+                    throw TypeException(e->getToken().startPos, "Expected 'int' or 'double' type");
+                }
+            }, rightSide.getResult());
+            break;
+        }
+        case Token::Type::NOT: {
+            std::visit(overloaded {
+                [&](const int arg) { val = arg == 0;},
+                [&](const double arg) {val = arg == 0;},
+                [&](const std::string arg) {val = arg.size() == 0;},
+                [&](auto arg) {
+                    throw TypeException(e->getToken().startPos, "Expected 'int' or 'double' type");
+                }
+            }, rightSide.getResult());
+            break;
+        }
         default:
             throw UndefinedOperationException(e->getToken().startPos, "Visited unknown unary expression: " + e->getToken().getValue());
     }
-    return rightSide;
+    return Result(val);
 }
 
 Result Visitor::visit(Context& context, PostfixExpression* e) {
@@ -44,16 +66,28 @@ Result Visitor::visit(Context& context, PostfixExpression* e) {
         std::string name = e->left->getToken().getValue();
         std::optional<type> value = context.symbols->get(name);
         if (!value) throw UndefinedVariable(make_shared<Context>(context), e->left->getToken().getValue(), e->left->getToken().startPos);
-        int val = std::get<int>(*value);
-        bool success = false;
-        if (e->getToken().is(Token::Type::INC)) success = context.symbols->update(name, val + 1);
-        else if (e->getToken().is(Token::Type::DEC)) success = context.symbols->update(name, val - 1);
+        type val = 0;
+        std::visit(overloaded {
+            [&](const int arg) { 
+                if (e->getToken().is(Token::Type::INC)) val = arg + 1;
+                else if (e->getToken().is(Token::Type::DEC)) val = arg - 1;
+                else throw UndefinedOperationException(e->getToken().startPos, "Visited unknown prefix expression: " + e->getToken().getValue());
+            },
+            [&](const double arg) { 
+                if (e->getToken().is(Token::Type::INC)) val = arg + 1;
+                else if (e->getToken().is(Token::Type::DEC)) val = arg - 1;
+                else throw UndefinedOperationException(e->getToken().startPos, "Visited unknown prefix expression: " + e->getToken().getValue());
+            },
+            [&](auto arg) { 
+                throw UndefinedOperationException(e->getToken().startPos, e->getToken().getValue(), Result(*value).getStringType());
+            }
+        }, *value);
+        bool success = context.symbols->update(name, val);
         if (!success) throw UndefinedVariable(make_shared<Context>(context), e->left->getToken().getValue(), e->left->getToken().startPos);
-        return Result(val);
+        return Result(*value);
     }
     throw UndefinedOperationException(e->getToken().startPos, "Visited unknown unary operation: " + e->getToken().getValue());
 }
-
 
 Result Visitor::visit(Context& context, BinOpExpression* e) {
     Result leftRes = e->left->accept(context, *this);
@@ -62,7 +96,7 @@ Result Visitor::visit(Context& context, BinOpExpression* e) {
     int second = rightRes.getTypeOrThrow<int>(e->right->getToken().startPos);
     switch(e->getToken().type) {
         case Token::Type::PLUS:
-            return Result(first + second);
+            return Result(std::visit([](auto&& arg) -> type {return arg + arg;}, leftRes.getResult()));
         case Token::Type::MINUS:
             return Result(first - second);
         case Token::Type::MULT:
@@ -107,6 +141,10 @@ Result Visitor::visit(Context& context, NumberExpression* e) {
     if (e->getToken().is(Token::Type::INT)) return Result(e->getInt());
     else if (e->getToken().is(Token::Type::DOUBLE)) return Result(e->getDouble());
     throw Error(e->getToken().startPos, "Unknown Error: Not integer or double type" + e->getToken().getValue());
+}
+
+Result Visitor::visit(Context& context, StringExpression* e) {
+    return Result(e->getValue());
 }
 
 Result Visitor::visit(Context& context, AssignmentExpression* e) {

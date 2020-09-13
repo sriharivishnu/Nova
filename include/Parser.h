@@ -12,6 +12,7 @@
 #include "Statement.h"
 #include "ParseHelper.h"
 #include "Error.h"
+using std::vector;
 class PrefixParser;
 class InfixParser;
 class Parser {

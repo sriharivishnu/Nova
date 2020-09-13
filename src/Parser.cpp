@@ -6,6 +6,7 @@ Parser::Parser(vector<Token> tokens) : tokens(tokens) {
     addType(Token::Type::IDENTIFIER, std::make_shared<NameParser>());
     addType(Token::Type::INT, std::make_shared<NumberParser>());
     addType(Token::Type::DOUBLE, std::make_shared<NumberParser>());
+    addType(Token::Type::STRING, std::make_shared<StringParser>());
     addType(Token::Type::BOOL, std::make_shared<NameParser>());
     addType(Token::Type::LPAREN, std::make_shared<GroupParser>());
 

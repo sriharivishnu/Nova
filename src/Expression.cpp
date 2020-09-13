@@ -74,6 +74,20 @@ Result NumberExpression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
 }
 
+StringExpression::StringExpression(Token t) {
+    tok = t;
+    value = t.getValue();
+}
+std::string StringExpression::toString() {
+    return getValue();
+}
+std::string StringExpression::getValue() {
+    return value;
+}
+Result StringExpression::accept(Context& context, Visitor& v) {
+    return v.visit(context, this);
+}
+
 //Binary Operation
 BinOpExpression::BinOpExpression(shared_ptr<Expression> left, Token op, shared_ptr<Expression> right) 
     : left(left), right(right) { tok = op; }

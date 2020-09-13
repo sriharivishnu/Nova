@@ -40,6 +40,10 @@ class NumberParser : public PrefixParser {
     public:
         shared_ptr<Expression> parse(Parser& parser, Token token) override;
 };
+class StringParser : public PrefixParser {
+    public:
+        shared_ptr<Expression> parse(Parser& parser, Token token) override;
+};
 
 class PrefixOperatorParser : public PrefixParser {
     public:

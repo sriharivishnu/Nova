@@ -9,6 +9,11 @@
 #include "Token.h"
 #include "Result.h"
 using std::string;
+using type = std::variant<std::string, int, double>;
+
+template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
+template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
+
 struct Context;
 
 class Expression;
@@ -17,6 +22,7 @@ class PostfixExpression;
 class BinOpExpression;
 class ComparisonExpression;
 class NumberExpression;
+class StringExpression;
 class AssignmentExpression;
 class UpdateExpression;
 class NameExpression;
@@ -31,6 +37,7 @@ class Visitor {
         Result visit(Context& context, BinOpExpression* e);
         Result visit(Context& context, ComparisonExpression* e);
         Result visit(Context& context, NumberExpression* e);
+        Result visit(Context& context, StringExpression* e);
         Result visit(Context& context, AssignmentExpression* e);
         Result visit(Context& context, UpdateExpression* e);
         Result visit(Context& context, NameExpression* e);

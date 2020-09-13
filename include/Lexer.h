@@ -15,6 +15,7 @@ class Lexer {
         bool isIdentifier(char c);
         bool isSpace(char c);
         Token makeNumber();
+        Token makeString();
         Token makeIdentifier();
         void skipComment();            
         const char* cur = nullptr;

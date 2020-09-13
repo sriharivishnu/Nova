@@ -56,6 +56,16 @@ class NumberExpression : public Expression {
         std::variant<int, double> value;
 };
 
+class StringExpression : public Expression {
+    public:
+        StringExpression(Token t);
+        std::string toString() override;
+        Result accept(Context& context, Visitor& v) override;
+        std::string getValue();
+    private:
+        std::string value;
+};
+
 class BinOpExpression : public Expression {
     public:
         BinOpExpression(shared_ptr<Expression> left, Token op, shared_ptr<Expression> right);

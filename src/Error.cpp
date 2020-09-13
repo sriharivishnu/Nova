@@ -48,6 +48,12 @@ TypeException::TypeException(Position pos, std::string details) : Error(pos, "Ty
 UndefinedOperationException::UndefinedOperationException(std::string t1, std::string t2) : Error("Undefined Operation", "") {
     details = "Between " + t1 + " and " + t2;
 }
+UndefinedOperationException::UndefinedOperationException(Position pos, std::string t1, std::string op, std::string t2) : Error(pos, "Undefined Operation", "") {
+    details = "No operator " + op + " between " + t1 + " and " + t2;
+}
+UndefinedOperationException::UndefinedOperationException(Position pos, std::string op, std::string t1) : Error(pos, "Undefined Operation", "") {
+    details = "No operator " + op + " and " + t1;
+}
 UndefinedOperationException::UndefinedOperationException(Position pos, std::string op) : Error(pos, "Undefined Operation") {
     details = "Unknown Operation Found: " + op;
 }        
