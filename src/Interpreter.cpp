@@ -1,6 +1,7 @@
 #include "Interpreter.h"
 #include "optional"
 #include "Statement.h"
+#include "types.h"
 Result Visitor::visit(Context& context, Expression* e) {
     throw UndefinedOperationException(e->getToken().startPos, "Visited unknown expression");
 }
