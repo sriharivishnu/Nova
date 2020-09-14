@@ -32,6 +32,8 @@ nova>> var res = if (a < 0) 20 elif (a == 10) 10 else -100;
 -100
 nova>> var s = "srihari";
 srihari
+nova>> s * 3;
+sriharisriharisrihari
 ```
 
 ## Mutli-line support
