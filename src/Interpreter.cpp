@@ -91,9 +91,9 @@ shared_obj Visitor::visit(Context& context, ComparisonExpression* e) {
         case Token::Type::LT:
             return left->lt(right);
         case Token::Type::AND:
-            return std::make_shared<integer_type>(left->toBool()->value && left->toBool()->value);
+            return std::make_shared<integer_type>(left->toBool()->value && right->toBool()->value);
         case Token::Type::OR:
-            return std::make_shared<integer_type>(left->toBool()->value || left->toBool()->value);
+            return std::make_shared<integer_type>(left->toBool()->value || right->toBool()->value);
         default:
             throw UndefinedOperationException(e->getToken().startPos, e->getToken().getValue());
     }
