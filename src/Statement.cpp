@@ -1,9 +1,9 @@
 #include "Statement.h"
 #include "Result.h"
 
-std::optional<Result> simple_statement::execute(Context& context) {
+std::optional<shared_obj> simple_statement::execute(Context& context) {
     Visitor v;
-    return expr -> accept(context, v);
+    return expr->accept(context, v);
 };
 simple_statement::simple_statement(std::shared_ptr<Expression> expr_) : expr(expr_) {}
 
@@ -12,7 +12,7 @@ while_statement::while_statement(
             statement_ptr statement_
         ) : condition(condition_), statement(statement_) {}
 
-std::optional<Result> while_statement::execute(Context& context) {
+std::optional<shared_obj> while_statement::execute(Context& context) {
     Visitor v;
     while (condition->accept(context, v)) {
         statement->execute(context);
@@ -21,7 +21,7 @@ std::optional<Result> while_statement::execute(Context& context) {
 };
 
 block_statement::block_statement(vector<statement_ptr> statements) : statements(statements) {}
-std::optional<Result> block_statement::execute(Context& context) {
+std::optional<shared_obj> block_statement::execute(Context& context) {
     for (int i = 0; i < statements.size(); i++) {
         statements[i]->execute(context);
     }
@@ -39,7 +39,7 @@ if_statement::if_statement(
 
 }
 
-std::optional<Result> if_statement::execute(Context& context) {
+std::optional<shared_obj> if_statement::execute(Context& context) {
     Visitor v;
     if (if_condition->accept(context, v)) {
         return if_block->execute(context);
@@ -61,7 +61,7 @@ function_statement::function_statement(
             statement_ptr toRun, 
             Position& pos) : name(name), params(params), toRun(toRun), pos(pos)
 {}
-std::optional<Result> function_statement::execute(Context& context) {
+std::optional<shared_obj> function_statement::execute(Context& context) {
     context.functions->add(name, shared_from_this());
     return {};
 }

@@ -1,7 +1,7 @@
 #include "SymbolTable.h"
 #include "Statement.h"
 SymbolTable::SymbolTable(std::shared_ptr<SymbolTable> parent) : parent(parent) {}
-std::optional<type> SymbolTable::get(std::string name) {
+std::optional<shared_obj> SymbolTable::get(std::string name) {
     auto it = symbols.find(name);
     if (it != symbols.end()) return it->second;
     else if (it == symbols.end() && parent) {
@@ -10,11 +10,15 @@ std::optional<type> SymbolTable::get(std::string name) {
     return {};
 }
 
-void SymbolTable::set(std::string name, type value) {
+void SymbolTable::set(std::string name, shared_obj value) {
     symbols[name] = value;
 }
 
-bool SymbolTable::update(std::string name, type value) {
+void SymbolTable::set(std::string name, type val) {
+    symbols[name] = std::make_shared<object>(Result(val));
+}
+
+bool SymbolTable::update(std::string name, shared_obj value) {
     if (symbols.find(name) != symbols.end()) {
         set(name, value);
         return true;

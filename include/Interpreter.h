@@ -4,16 +4,13 @@
 #include <math.h>
 #include <memory>
 #include <variant>
+#include "helper.h"
 #include "Expression.h"
-#include "Error.h"
-#include "Token.h"
 #include "Result.h"
+#include "types.h"
 using std::string;
-using type = std::variant<std::string, int, double>;
-
-template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
-template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
-
+using shared_obj = std::shared_ptr<object>;
+ 
 struct Context;
 
 class Expression;
@@ -31,17 +28,17 @@ class CallFunctionExpression;
 
 class Visitor {
     public:
-        Result visit(Context& context, Expression* e);
-        Result visit(Context& context, PrefixExpression* e);
-        Result visit(Context& context, PostfixExpression* e);
-        Result visit(Context& context, BinOpExpression* e);
-        Result visit(Context& context, ComparisonExpression* e);
-        Result visit(Context& context, NumberExpression* e);
-        Result visit(Context& context, StringExpression* e);
-        Result visit(Context& context, AssignmentExpression* e);
-        Result visit(Context& context, UpdateExpression* e);
-        Result visit(Context& context, NameExpression* e);
-        Result visit(Context& context, ConditionalExpression* e);
-        Result visit(Context& context, CallFunctionExpression* e);
+        shared_obj visit(Context& context, Expression* e);
+        shared_obj visit(Context& context, PrefixExpression* e);
+        shared_obj visit(Context& context, PostfixExpression* e);
+        shared_obj visit(Context& context, BinOpExpression* e);
+        shared_obj visit(Context& context, ComparisonExpression* e);
+        shared_obj visit(Context& context, NumberExpression* e);
+        shared_obj visit(Context& context, StringExpression* e);
+        shared_obj visit(Context& context, AssignmentExpression* e);
+        shared_obj visit(Context& context, UpdateExpression* e);
+        shared_obj visit(Context& context, NameExpression* e);
+        shared_obj visit(Context& context, ConditionalExpression* e);
+        shared_obj visit(Context& context, CallFunctionExpression* e);
 };
 #endif

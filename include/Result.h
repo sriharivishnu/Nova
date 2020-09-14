@@ -5,9 +5,7 @@
 #include <string>
 #include "Position.h"
 #include "Error.h"
-// using std::string;
 class TypeException;
-
 using type = std::variant<std::string, int, double>;
 struct Result {
     public:
@@ -25,7 +23,8 @@ struct Result {
             if (auto i = std::get_if<T>(&mResult)) return *i;
             else {
                 std::string r = "Expected type: '" + getStringType<T>() + "', but instead got '" + getStringType() + "'";
-                throw TypeException(pos, r);
+                // throw TypeException(pos, r);
+                throw std::runtime_error("TYPE EXCEPTION");
             }
         }
 

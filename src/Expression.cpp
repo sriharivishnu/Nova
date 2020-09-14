@@ -8,7 +8,7 @@ Expression::Expression() {};
 std::string Expression::toString() {
     return "(null)";
 }
-Result Expression::accept(Context& context, Visitor& v) {
+shared_obj Expression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
 }
 Token Expression::getToken() {return tok;}
@@ -19,7 +19,7 @@ Expression::~Expression() = default;
 PostfixExpression::PostfixExpression(shared_ptr<Expression> left, Token tok_) : left(left){
     tok = tok_;
 }
-Result PostfixExpression::accept(Context& context, Visitor& v) {
+shared_obj PostfixExpression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
 }
 std::string PostfixExpression::toString() {
@@ -32,7 +32,7 @@ PrefixExpression::PrefixExpression(Token tok_, shared_ptr<Expression> right) : r
 std::string PrefixExpression::toString() {
     return "(" + tok.getValue() + right->toString() + ")";
 }
-Result PrefixExpression::accept(Context& context, Visitor& v) {
+shared_obj PrefixExpression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
 }
 
@@ -44,7 +44,7 @@ SPECIFICS
 NameExpression::NameExpression(std::string name, Token tok_) : name(name) {
     tok = tok_;
 }
-Result NameExpression::accept(Context& context, Visitor& v) {
+shared_obj NameExpression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
 }
 std::string NameExpression::toString() {
@@ -70,7 +70,7 @@ int NumberExpression::getInt() {
 double NumberExpression::getDouble() {
     return get<double>(value);
 }
-Result NumberExpression::accept(Context& context, Visitor& v) {
+shared_obj NumberExpression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
 }
 
@@ -84,7 +84,7 @@ std::string StringExpression::toString() {
 std::string StringExpression::getValue() {
     return value;
 }
-Result StringExpression::accept(Context& context, Visitor& v) {
+shared_obj StringExpression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
 }
 
@@ -94,7 +94,7 @@ BinOpExpression::BinOpExpression(shared_ptr<Expression> left, Token op, shared_p
 std::string BinOpExpression::toString() {
     return "(" + left->toString() + tok.getValue()+ right->toString() + ")";
 }
-Result BinOpExpression::accept(Context& context, Visitor& v) {
+shared_obj BinOpExpression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
 }
 
@@ -106,7 +106,7 @@ std::string ComparisonExpression::toString() {
     return "(" + left->toString() + tok.getValue() + right->toString() + ")";
 }
 
-Result ComparisonExpression::accept(Context& context, Visitor& v) {
+shared_obj ComparisonExpression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
 }
 
@@ -116,7 +116,7 @@ AssignmentExpression::AssignmentExpression(std::string name, shared_ptr<Expressi
 std::string AssignmentExpression::toString() {
     return "(" + name + tok.getValue()+ right->toString() + ")";
 }
-Result AssignmentExpression::accept(Context& context, Visitor& v) {
+shared_obj AssignmentExpression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
 }
 
@@ -125,7 +125,7 @@ UpdateExpression::UpdateExpression(std::string name, shared_ptr<Expression> righ
 std::string UpdateExpression::toString() {
     return "(" + name + tok.getValue()+ right->toString() + ")";
 }
-Result UpdateExpression::accept(Context& context, Visitor& v) {
+shared_obj UpdateExpression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
 }
 
@@ -145,7 +145,7 @@ ConditionalExpression::ConditionalExpression(
 {
     tok = tok_;
 }
-Result ConditionalExpression::accept(Context& context, Visitor& v) {
+shared_obj ConditionalExpression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
 }
 std::string ConditionalExpression::toString() {
@@ -156,7 +156,7 @@ CallFunctionExpression::CallFunctionExpression(
             Token tok_, 
             vector<std::shared_ptr<Expression>> params
         ) : params(params) { tok = tok_;}
-Result CallFunctionExpression::accept(Context& context, Visitor& v) {
+shared_obj CallFunctionExpression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
 };
 std::string CallFunctionExpression::toString() {

@@ -33,16 +33,8 @@ namespace nova {
             }
             if (!stmt) continue;
             try {
-                std::optional<Result> res = stmt->execute(context);
-                if (res) {
-                    if (res->isType<int>()) {
-                        std::cout << res->getValue<int>() << std::endl;
-                    } else if (res->isType<double>()) {
-                        std::cout << res->getValue<double>() << std::endl;
-                    } else if (res->isType<std::string>()) {
-                        std::cout << res->getValue<std::string>() << std::endl;
-                    }
-                }
+                std::optional<shared_obj> res = stmt->execute(context);
+                std::cout << res->get()->toString() << std::endl;
             } catch (std::exception& e) {
                 std::cout << e.what() << std::endl;
                 return 1;

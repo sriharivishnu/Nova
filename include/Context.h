@@ -4,7 +4,8 @@
 #include <memory>
 #include "Position.h"
 #include "SymbolTable.h"
-struct Context;
+class SymbolTable;
+class FunctionTable;
 using symbol_table = std::shared_ptr<SymbolTable>;
 using func_table = std::shared_ptr<FunctionTable>;
 struct Context {

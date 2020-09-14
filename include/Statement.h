@@ -4,6 +4,7 @@
 #include "Expression.h"
 #include "Token.h"
 #include "Result.h"
+#include "types.h"
 #include <vector>
 #include <memory>
 #include <optional>
@@ -13,7 +14,7 @@ using expression_ptr = std::shared_ptr<Expression>;
 class statement {
 	public:
 		statement() = default;
-		virtual std::optional<Result> execute(Context& context) {
+		virtual std::optional<shared_obj> execute(Context& context) {
             return {};
         };
 		virtual ~statement() = default;
@@ -22,7 +23,7 @@ using statement_ptr = std::shared_ptr<statement>;
 
 class simple_statement : public statement {
     public:
-        std::optional<Result> execute(Context& context) override;
+        std::optional<shared_obj> execute(Context& context) override;
         simple_statement(expression_ptr expr);
     private:
         expression_ptr expr;
@@ -37,7 +38,7 @@ class if_statement : public statement {
             std::vector<statement_ptr> elifBlocks, 
             statement_ptr elseBlock);
 
-        std::optional<Result> execute(Context& context) override;
+        std::optional<shared_obj> execute(Context& context) override;
     private:
         expression_ptr if_condition;
         statement_ptr if_block;
@@ -52,7 +53,7 @@ class while_statement : public statement {
             expression_ptr condition_,
             statement_ptr statement_
         );
-        std::optional<Result> execute(Context& context) override;
+        std::optional<shared_obj> execute(Context& context) override;
     private:
         expression_ptr condition;
         statement_ptr statement; 
@@ -66,7 +67,7 @@ class function_statement : public statement, public std::enable_shared_from_this
             statement_ptr toRun,
             Position& pos
         );
-        std::optional<Result> execute(Context& context) override;
+        std::optional<shared_obj> execute(Context& context) override;
         std::string name;
         std::vector<std::string> params;
         statement_ptr toRun;
@@ -90,7 +91,7 @@ class function_statement : public statement, public std::enable_shared_from_this
 class block_statement : public statement {
     public:
         block_statement(std::vector<statement_ptr> statements);
-        std::optional<Result> execute(Context& context) override;
+        std::optional<shared_obj> execute(Context& context) override;
     private:
         std::vector<statement_ptr> statements;
 };

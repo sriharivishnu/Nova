@@ -1,185 +1,136 @@
 #include "Interpreter.h"
 #include "optional"
 #include "Statement.h"
-#include "types.h"
-Result Visitor::visit(Context& context, Expression* e) {
+#include "Error.h"
+#include "Token.h"
+shared_obj Visitor::visit(Context& context, Expression* e) {
     throw UndefinedOperationException(e->getToken().startPos, "Visited unknown expression");
 }
 
-Result Visitor::visit(Context& context, PrefixExpression* e) {
+shared_obj Visitor::visit(Context& context, PrefixExpression* e) {
     if (e->getToken().isOneOf(Token::Type::INC, Token::Type::DEC)) {
         std::string name = e->right->getToken().getValue();
-        std::optional<type> value = context.symbols->get(name);
+        std::optional<shared_obj> value = context.symbols->get(name);
         if (!value) throw UndefinedVariable(make_shared<Context>(context), e->right->getToken().getValue(), e->getToken().startPos);
-        type val = 0;
-        std::visit(overloaded {
-            [&](const int arg) { 
-                if (e->getToken().is(Token::Type::INC)) val = arg + 1;
-                else if (e->getToken().is(Token::Type::DEC)) val = arg - 1;
-                else throw UndefinedOperationException(e->getToken().startPos, "Visited unknown prefix expression: " + e->getToken().getValue());
-            },
-            [&](const double arg) { 
-                if (e->getToken().is(Token::Type::INC)) val = arg + 1;
-                else if (e->getToken().is(Token::Type::DEC)) val = arg - 1;
-                else throw UndefinedOperationException(e->getToken().startPos, "Visited unknown prefix expression: " + e->getToken().getValue());
-            },
-            [&](auto arg) { 
-                throw UndefinedOperationException(e->getToken().startPos, e->getToken().getValue(), Result(*value).getStringType());
-            }
-        }, *value);
+        shared_obj val = value->get()->inc();
         if (!context.symbols->update(name, val)) throw UndefinedVariable(make_shared<Context>(context), e->right->getToken().getValue(), e->right->getToken().startPos);
-        return Result(val);
+        return val;
     }
-    Result rightSide = e->right->accept(context, *this);
-    type val = rightSide.getResult();
+    shared_obj rightSide = e->right->accept(context, *this);
     switch(e->getToken().type) {
         case Token::Type::PLUS:
-            return rightSide;
+            return rightSide->prePlus();
         case Token::Type::MINUS: {
-            std::visit(overloaded {
-                [&](const int arg) { val = -1 * arg;},
-                [&](const double arg) {val = -1 * arg;},
-                [&](auto arg) {
-                    throw TypeException(e->getToken().startPos, "Expected 'int' or 'double' type");
-                }
-            }, rightSide.getResult());
-            break;
+            return rightSide->preMinus();
         }
         case Token::Type::NOT: {
-            std::visit(overloaded {
-                [&](const int arg) { val = arg == 0;},
-                [&](const double arg) {val = arg == 0;},
-                [&](const std::string arg) {val = arg.size() == 0;},
-                [&](auto arg) {
-                    throw TypeException(e->getToken().startPos, "Expected 'int' or 'double' type");
-                }
-            }, rightSide.getResult());
-            break;
+            return rightSide->toBool();
         }
         default:
             throw UndefinedOperationException(e->getToken().startPos, "Visited unknown unary expression: " + e->getToken().getValue());
     }
-    return Result(val);
+    return rightSide;
 }
 
-Result Visitor::visit(Context& context, PostfixExpression* e) {
+shared_obj Visitor::visit(Context& context, PostfixExpression* e) {
     if (e->getToken().isOneOf(Token::Type::INC, Token::Type::DEC)) {
         std::string name = e->left->getToken().getValue();
-        std::optional<type> value = context.symbols->get(name);
+        std::optional<shared_obj> value = context.symbols->get(name);
         if (!value) throw UndefinedVariable(make_shared<Context>(context), e->left->getToken().getValue(), e->left->getToken().startPos);
-        type val = 0;
-        std::visit(overloaded {
-            [&](const int arg) { 
-                if (e->getToken().is(Token::Type::INC)) val = arg + 1;
-                else if (e->getToken().is(Token::Type::DEC)) val = arg - 1;
-                else throw UndefinedOperationException(e->getToken().startPos, "Visited unknown prefix expression: " + e->getToken().getValue());
-            },
-            [&](const double arg) { 
-                if (e->getToken().is(Token::Type::INC)) val = arg + 1;
-                else if (e->getToken().is(Token::Type::DEC)) val = arg - 1;
-                else throw UndefinedOperationException(e->getToken().startPos, "Visited unknown prefix expression: " + e->getToken().getValue());
-            },
-            [&](auto arg) { 
-                throw UndefinedOperationException(e->getToken().startPos, e->getToken().getValue(), Result(*value).getStringType());
-            }
-        }, *value);
+        shared_obj val = 0;
+        if (e->getToken().is(Token::Type::INC)) val = value->get()->inc();
+        else if (e->getToken().is(Token::Type::DEC)) val = value->get()->dec();
+        else throw UndefinedOperationException(e->getToken().startPos, e->getToken().getValue(), value->get()->value.getStringType());
+
         bool success = context.symbols->update(name, val);
         if (!success) throw UndefinedVariable(make_shared<Context>(context), e->left->getToken().getValue(), e->left->getToken().startPos);
-        return Result(*value);
+        return *value;
     }
     throw UndefinedOperationException(e->getToken().startPos, "Visited unknown unary operation: " + e->getToken().getValue());
 }
 
-Result Visitor::visit(Context& context, BinOpExpression* e) {
-    Result leftRes = e->left->accept(context, *this);
-    Result rightRes = e->right->accept(context, *this); 
-    int first = leftRes.getTypeOrThrow<int>(e->left->getToken().startPos);
-    int second = rightRes.getTypeOrThrow<int>(e->right->getToken().startPos);
+shared_obj Visitor::visit(Context& context, BinOpExpression* e) {
+    shared_obj left = e->left->accept(context, *this);
+    shared_obj right = e->right->accept(context, *this);
     switch(e->getToken().type) {
         case Token::Type::PLUS:
-            return Result(std::visit([](auto&& arg) -> type {return arg + arg;}, leftRes.getResult()));
+            return left->addBy(right);
         case Token::Type::MINUS:
-            return Result(first - second);
+            return left->subBy(right);
         case Token::Type::MULT:
-            return Result(first * second);
+            return left->multBy(right);
         case Token::Type::DIV:
-            if (second == 0) {
-                throw DivisionByZero(make_shared<Context>(context), e->right->getToken().startPos);
-            }
-            return Result(first / second);
+            return left->divBy(right);
         case Token::Type::CAROT:
-            return Result((int) pow(first, second));
+            return left->powBy(right);
         default:
             throw UndefinedOperationException(e->getToken().startPos, e->getToken().getValue());
     }
-    return Result(-1);
 }
 
-Result Visitor::visit(Context& context, ComparisonExpression* e) {
-    Result leftRes = e->left->accept(context, *this);
-    Result rightRes = e->right->accept(context, *this);
-    int first = leftRes.getTypeOrThrow<int>(e->left->getToken().startPos);
-    int second = rightRes.getTypeOrThrow<int>(e->right->getToken().startPos);
+shared_obj Visitor::visit(Context& context, ComparisonExpression* e) {
+    shared_obj left = e->left->accept(context, *this);
+    shared_obj right = e->right->accept(context, *this);
     switch(e->getToken().type) {
         case Token::Type::NE:
-            return Result(first != second);
+            return left->ne(right);
         case Token::Type::EE:
-            return Result(first == second);
+            return left->ee(right);
         case Token::Type::GE:
-            return Result(first >= second);
+            return left->gte(right);
         case Token::Type::LE:
-            return Result(first <= second);
+            return left->lte(right);
         case Token::Type::GT:
-            return Result(first > second);
+            return left->gt(right);
         case Token::Type::LT:
-            return Result(first < second);
+            return left->lt(right);
         default:
             throw UndefinedOperationException(e->getToken().startPos, e->getToken().getValue());
     }
 }
 
-Result Visitor::visit(Context& context, NumberExpression* e) {
-    if (e->getToken().is(Token::Type::INT)) return Result(e->getInt());
-    else if (e->getToken().is(Token::Type::DOUBLE)) return Result(e->getDouble());
+shared_obj Visitor::visit(Context& context, NumberExpression* e) {
+    if (e->getToken().is(Token::Type::INT)) return std::make_shared<integer_type>(e->getInt());
+    else if (e->getToken().is(Token::Type::DOUBLE)) return std::make_shared<double_type>(e->getDouble());
     throw Error(e->getToken().startPos, "Unknown Error: Not integer or double type" + e->getToken().getValue());
 }
 
-Result Visitor::visit(Context& context, StringExpression* e) {
-    return Result(e->getValue());
+shared_obj Visitor::visit(Context& context, StringExpression* e) {
+    return std::make_shared<string_type>(e->getValue());
 }
 
-Result Visitor::visit(Context& context, AssignmentExpression* e) {
-    Result res = e->right->accept(context, *this);
-    context.symbols->set(e->name, res.getResult());
+shared_obj Visitor::visit(Context& context, AssignmentExpression* e) {
+    shared_obj res = e->right->accept(context, *this);
+    context.symbols->set(e->name, res);
     return res;
 }
-Result Visitor::visit(Context& context, UpdateExpression* e) {
-    Result res = e->right->accept(context, *this);
-    if (context.symbols->update(e->name, res.getResult())) return res;
+shared_obj Visitor::visit(Context& context, UpdateExpression* e) {
+    shared_obj res = e->right->accept(context, *this);
+    if (context.symbols->update(e->name, res)) return res;
     throw UndefinedVariable(make_shared<Context>(context), e->name, e->getToken().startPos);
 }
 
-Result Visitor::visit(Context& context, NameExpression* e) {
-    std::optional<type> value = context.symbols->get(e->name);
+shared_obj Visitor::visit(Context& context, NameExpression* e) {
+    std::optional<shared_obj> value = context.symbols->get(e->name);
     if (value) {
-        return Result(*value);
+        return *value;
     }
     throw UndefinedVariable(make_shared<Context>(context), e->name, e->getToken().startPos);
 }
 
-Result Visitor::visit(Context& context, ConditionalExpression* e) {
-    if (e->condition->accept(context, *this)) {
+shared_obj Visitor::visit(Context& context, ConditionalExpression* e) {
+    if (e->condition->accept(context, *this)->value) {
         return e->thenBranch->accept(context, *this);
     } 
     for (int i = 0; i< e->elif_conditions.size(); i++) {
-        if (e->elif_conditions[i]->accept(context, *this)) {
+        if (e->elif_conditions[i]->accept(context, *this)->value) {
             return e->elif_thens[i]->accept(context, *this);
         }
     }
     return e->elseBranch->accept(context, *this);
 }
 
-Result Visitor::visit(Context& parent, CallFunctionExpression* e) {
+shared_obj Visitor::visit(Context& parent, CallFunctionExpression* e) {
     Visitor v;
     std::shared_ptr<function_statement> decl = parent.functions->get(e->getToken().getValue());
     if (!decl) throw UndefinedVariable(make_shared<Context>(parent), e->getToken().getValue(), e->getToken().startPos);
@@ -194,7 +145,7 @@ Result Visitor::visit(Context& parent, CallFunctionExpression* e) {
         symbols->set(decl->params[i], e->params[i]->accept(parent, v));
     }
     Context context(decl->name, std::make_shared<Context>(parent), decl->pos, symbols, parent.functions);
-    std::optional res = decl->toRun->execute(context);
+    std::optional<shared_obj> res = decl->toRun->execute(context);
     if (res) return *res;
-    else return Result(0);
+    else return std::make_shared<object>(Result(0));
 }
