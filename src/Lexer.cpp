@@ -143,7 +143,11 @@ Token Lexer::advance() {
         case '}':
             return Token(Token::Type::RCURL, getLast(), position);
         case '^':
-            return Token(Token::Type::CAROT, getLast(), position);
+            if (get() == '^') {
+                get();
+                return Token(Token::Type::POWER, "^^", position);
+            }
+            return Token(Token::Type::XOR, '^', position);
         case '[':
             return Token(Token::Type::LSQUARE, getLast(), position);
         case ']':
@@ -174,6 +178,20 @@ Token Lexer::advance() {
                 return Token(Token::Type::LE, "<=", position);
             }
             return Token(Token::Type::LT, '<', position);
+        case '&':
+            if (get() == '&') {
+                get();
+                return Token(Token::Type::AND, "&&", position);
+            }
+            return Token(Token::Type::BAND, '&', position);
+        case '|':
+            if (get() == '|') {
+                get();
+                return Token(Token::Type::OR, "||", position);
+            }
+            return Token(Token::Type::BOR, '|', position);
+        case '~':
+            return Token(Token::Type::BNOT, getLast(), position);
         case ':':
             return Token(Token::Type::COLON, getLast(), position);
         case 'a' ... 'z':

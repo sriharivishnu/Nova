@@ -22,8 +22,9 @@ struct object {
     virtual shared_obj lte(shared_obj obj);
     virtual shared_obj ee(shared_obj obj);
     virtual shared_obj ne(shared_obj obj);
-    virtual shared_obj band();
-    virtual shared_obj bxor();
+    virtual shared_obj band(shared_obj obj);
+    virtual shared_obj bor(shared_obj obj);
+    virtual shared_obj bxor(shared_obj obj);
     virtual shared_obj inc();
     virtual shared_obj dec();
     virtual shared_obj prePlus();
@@ -53,6 +54,9 @@ struct integer_type : object {
     shared_obj lt(shared_obj obj) override;
     shared_obj gte(shared_obj obj) override;
     shared_obj lte(shared_obj obj) override;
+    shared_obj band(shared_obj obj) override;
+    shared_obj bor(shared_obj obj) override;
+    shared_obj bxor(shared_obj obj) override;
     shared_obj inc() override;
     shared_obj dec() override;
     shared_obj prePlus() override;

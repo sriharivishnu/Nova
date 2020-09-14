@@ -13,6 +13,8 @@ Parser::Parser(vector<Token> tokens) : tokens(tokens) {
     addType(Token::Type::PLUS, std::make_shared<PrefixOperatorParser>(Precedence::PREFIX));
     addType(Token::Type::MINUS, std::make_shared<PrefixOperatorParser>(Precedence::PREFIX));
     addType(Token::Type::NOT, std::make_shared<PrefixOperatorParser>(Precedence::PREFIX));
+    addType(Token::Type::BNOT, std::make_shared<PrefixOperatorParser>(Precedence::PREFIX));
+
     addType(Token::Type::INC, std::make_shared<PrefixOperatorParser>(Precedence::PREFIX));
     addType(Token::Type::DEC, std::make_shared<PrefixOperatorParser>(Precedence::PREFIX));
 
@@ -20,7 +22,10 @@ Parser::Parser(vector<Token> tokens) : tokens(tokens) {
     addType(Token::Type::MINUS, std::make_shared<BinaryOperatorParser>(Precedence::SUM, false));            
     addType(Token::Type::MULT, std::make_shared<BinaryOperatorParser>(Precedence::PRODUCT, false));            
     addType(Token::Type::DIV, std::make_shared<BinaryOperatorParser>(Precedence::PRODUCT, false));    
-    addType(Token::Type::CAROT, std::make_shared<BinaryOperatorParser>(Precedence::EXPONENT, true));
+    addType(Token::Type::POWER, std::make_shared<BinaryOperatorParser>(Precedence::EXPONENT, true));
+    addType(Token::Type::BAND, std::make_shared<BinaryOperatorParser>(Precedence::SUM, true));
+    addType(Token::Type::XOR, std::make_shared<BinaryOperatorParser>(Precedence::SUM, true));
+    addType(Token::Type::BOR, std::make_shared<BinaryOperatorParser>(Precedence::SUM, true));
 
     addType(Token::Type::VAR, std::make_shared<AssignmentParser>());
     addType(Token::Type::EQUALS, std::make_shared<UpdateOrAssignParser>());
@@ -33,6 +38,8 @@ Parser::Parser(vector<Token> tokens) : tokens(tokens) {
     addType(Token::Type::LE, std::make_shared<ComparisonParser>());
     addType(Token::Type::GT, std::make_shared<ComparisonParser>());
     addType(Token::Type::LT, std::make_shared<ComparisonParser>());
+    addType(Token::Type::AND, std::make_shared<ComparisonParser>());
+    addType(Token::Type::OR, std::make_shared<ComparisonParser>());
 
     addType(Token::Type::IF, std::make_shared<ConditionalParser>());
 };
@@ -94,6 +101,7 @@ shared_ptr<statement> Parser::parseStatement() {
                 }
                 shared_ptr<statement> elseBlock = nullptr;
                 if (lookAhead(0).is(Token::Type::ELSE)) {
+                    consume();
                     elseBlock = parseStatement();
                 }
 

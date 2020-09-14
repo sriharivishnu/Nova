@@ -41,11 +41,11 @@ if_statement::if_statement(
 
 std::optional<shared_obj> if_statement::execute(Context& context) {
     Visitor v;
-    if (if_condition->accept(context, v)) {
+    if (if_condition->accept(context, v)->value) {
         return if_block->execute(context);
     }
     for (int i = 0; i < elif_conditions.size(); i++) {
-        if (elif_conditions[i]->accept(context, v)) {
+        if (elif_conditions[i]->accept(context, v)->value) {
             return elif_blocks[i]->execute(context);
         }
     }

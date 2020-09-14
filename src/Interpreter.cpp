@@ -61,8 +61,14 @@ shared_obj Visitor::visit(Context& context, BinOpExpression* e) {
             return left->multBy(right);
         case Token::Type::DIV:
             return left->divBy(right);
-        case Token::Type::CAROT:
+        case Token::Type::POWER:
             return left->powBy(right);
+        case Token::Type::BAND:
+            return left->band(right);
+        case Token::Type::BOR:
+            return left->bor(right);
+        case Token::Type::XOR:
+            return left->bxor(right);
         default:
             throw UndefinedOperationException(e->getToken().startPos, e->getToken().getValue());
     }
@@ -84,6 +90,10 @@ shared_obj Visitor::visit(Context& context, ComparisonExpression* e) {
             return left->gt(right);
         case Token::Type::LT:
             return left->lt(right);
+        case Token::Type::AND:
+            return std::make_shared<integer_type>(left->toBool()->value && left->toBool()->value);
+        case Token::Type::OR:
+            return std::make_shared<integer_type>(left->toBool()->value || left->toBool()->value);
         default:
             throw UndefinedOperationException(e->getToken().startPos, e->getToken().getValue());
     }

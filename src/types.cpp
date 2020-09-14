@@ -50,11 +50,14 @@ shared_obj object::ee(shared_obj obj) {
 shared_obj object::ne(shared_obj obj) {
     UNDEFINED_OP
 }
-shared_obj object::band() {
-    UNDEFINED_UNARY("&")
+shared_obj object::band(shared_obj obj) {
+    UNDEFINED_OP
 }
-shared_obj object::bxor() {
-    UNDEFINED_UNARY("xor")
+shared_obj object::bor(shared_obj obj) {
+    UNDEFINED_OP
+}
+shared_obj object::bxor(shared_obj obj) {
+    UNDEFINED_OP
 }
 shared_obj object::inc() {
     UNDEFINED_UNARY("++")
@@ -85,7 +88,7 @@ integer_type::integer_type(int val) : object(Result(val)) {}
 shared_obj integer_type::addBy(shared_obj obj) {
     shared_obj ans = nullptr;
     std::visit(overloaded{
-        [&](std::string& arg) {ans = MAKE_OBJ(std::to_string(getValue<int>()).append(arg), string_type);},
+        [&](std::string arg) {ans = MAKE_OBJ(std::to_string(getValue<int>()).append(arg), string_type);},
         [&](int arg) {ans = MAKE_OBJ(getValue<int>() + arg, integer_type);},
         [&](double arg) {ans = MAKE_OBJ(((double) getValue<int>()) + arg, double_type);},
         [&](auto arg) {UNDEFINED_OP}
@@ -107,7 +110,7 @@ shared_obj integer_type::subBy(shared_obj obj) {
 shared_obj integer_type::multBy(shared_obj obj) {
     shared_obj ans = nullptr;
     std::visit(overloaded{
-        [&](std::string& arg) {
+        [&](std::string arg) {
                 std::string finalString = arg;
                 for (int i = 0; i < getValue<int>(); i++) {
                     finalString += arg;
@@ -179,6 +182,23 @@ shared_obj integer_type::lte(shared_obj obj) {
     if (ans) return ans;
     UNDEFINED_OP
 }
+#define BINARY_OP_INT(op) shared_obj ans = nullptr;\
+    if (obj->value.isType<int>()) {\
+        ans = MAKE_OBJ(getValue<int>() op obj->getValue<int>(), integer_type);\
+    }\
+    if (ans) return ans;\
+    UNDEFINED_OP
+
+shared_obj integer_type::band(shared_obj obj) {
+    BINARY_OP_INT(&)
+}
+shared_obj integer_type::bor(shared_obj obj) {
+    BINARY_OP_INT(|)
+}
+shared_obj integer_type::bxor(shared_obj obj) {
+    BINARY_OP_INT(^)
+}
+#undef BINARY_OP_INT
 
 shared_obj integer_type::inc() {
     return MAKE_OBJ(getValue<int>() + 1, integer_type);

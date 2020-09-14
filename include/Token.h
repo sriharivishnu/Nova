@@ -28,7 +28,7 @@ class Token {
             RPAREN,
             LCURL,
             RCURL,
-            CAROT,
+            POWER,
             QUESTION,
             LSQUARE,
             RSQUARE,
@@ -52,6 +52,12 @@ class Token {
             GE, //>=
             GT, //>
             LT, //<
+            AND, 
+            BAND,
+            OR,
+            BOR,
+            XOR,
+            BNOT,
             END
         };
         Token() {};
