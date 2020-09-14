@@ -24,7 +24,7 @@ shared_obj Visitor::visit(Context& context, PrefixExpression* e) {
             return rightSide->preMinus();
         }
         case Token::Type::NOT: {
-            return rightSide->toBool();
+            return rightSide->preNot();
         }
         default:
             throw UndefinedOperationException(e->getToken().startPos, "Visited unknown unary expression: " + e->getToken().getValue());

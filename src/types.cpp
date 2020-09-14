@@ -25,7 +25,12 @@ shared_obj object::powBy(shared_obj obj) {
     UNDEFINED_OP
 }
 shared_obj object::toBool() {
-    UNDEFINED_UNARY("Conversion to boolean")
+    if (value) {
+        return MAKE_OBJ(1, integer_type);
+    }
+    else {
+        return MAKE_OBJ(0, integer_type);
+    }
 }
 shared_obj object::gt(shared_obj obj) {
     UNDEFINED_OP
@@ -62,6 +67,9 @@ shared_obj object::prePlus() {
 }
 shared_obj object::preMinus() {
     UNDEFINED_UNARY("-")
+}
+shared_obj object::preNot() {
+    return MAKE_OBJ(!toBool()->value, integer_type);
 }
 std::string object::toString() {
     return "<object>";

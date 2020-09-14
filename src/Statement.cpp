@@ -14,7 +14,7 @@ while_statement::while_statement(
 
 std::optional<shared_obj> while_statement::execute(Context& context) {
     Visitor v;
-    while (condition->accept(context, v)) {
+    while (condition->accept(context, v)->value) {
         statement->execute(context);
     }
     return {};

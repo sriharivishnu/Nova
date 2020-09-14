@@ -28,6 +28,7 @@ struct object {
     virtual shared_obj dec();
     virtual shared_obj prePlus();
     virtual shared_obj preMinus();
+    virtual shared_obj preNot();
 
     virtual std::string toString();
 
