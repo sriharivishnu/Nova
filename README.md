@@ -39,6 +39,10 @@ nova>> var s = "srihari";
 srihari
 nova>> s * 3;
 sriharisriharisrihari
+nova>> var b = [1,"srihari", 2.0]
+[1, srihari, 2.0]
+nova>> [1,2] + [2,3]
+[1,2,2,3]
 ```
 
 ### Mutli-line support
