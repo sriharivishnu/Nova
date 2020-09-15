@@ -6,8 +6,8 @@ Welcome to Nova! :)
 ## Getting Started
 ### Linux/MacOS
 1. Clone this repository over https or SSH : `git clone https://github.com/sriharivishnu/Nova.git` or `git clone git@github.com:sriharivishnu/Nova.git`
-2. Navigate to the directory that was created, and run `make`. This should generate a build folder, and also a binary called nova.
-3. Run the executable with `./nova`.
+2. Navigate to the directory that was created, and run `make` in the command line. This should generate a build folder, and also a binary called nova.
+3. Run the executable from the command line with `./nova` to start the shell, or type in `./nova <filename>.nov` to run a file.
 4. Type in `1+1` and it should output `2`
 
 ### Windows
