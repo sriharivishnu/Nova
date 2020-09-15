@@ -15,6 +15,48 @@ Welcome to Nova! :)
 - **Option 1** Use GNUWin32 to use make
 - **Option 2** Manually build all the source files by installing g++, and compiling all src files.
 
+## Examples
+### Current Syntax
+
+```
+nova>> var a = var b = 10;
+10
+nova>> ++a;
+11
+nova>> fun inc() -> a++;
+nova>> inc();
+11
+nova>> inc();
+12
+nova>> a;
+13
+nova>> while (a > 0) a--;
+nova>> a;
+0
+nova>> var res = if (a < 0) 20 elif (a == 10) 10 else -100;
+-100
+nova>> var s = "srihari";
+srihari
+nova>> s * 3;
+sriharisriharisrihari
+```
+
+### Mutli-line support
+
+```
+fun add(a, b) {
+    a + b;
+}
+//While loop
+var a = 10;
+while (a > 0) {
+    a--;
+}
+a;
+-----------------
+output: 0
+```
+
 ## Description
 Input Text -> Lexer -> Parser -> Interpreter -> Output
 
@@ -81,50 +123,7 @@ All expressions are implemented with the visitor pattern, implementing an accept
 
 The interpreter goes through all statements, and executes them. Each statement implements an execute() method, which invokes its function. 
 
-
-## Examples
-### Current Syntax
-
-```
-nova>> var a = var b = 10;
-10
-nova>> ++a;
-11
-nova>> fun inc() -> a++;
-nova>> inc();
-11
-nova>> inc();
-12
-nova>> a;
-13
-nova>> while (a > 0) a--;
-nova>> a;
-0
-nova>> var res = if (a < 0) 20 elif (a == 10) 10 else -100;
--100
-nova>> var s = "srihari";
-srihari
-nova>> s * 3;
-sriharisriharisrihari
-```
-
-### Mutli-line support
-
-```
-fun add(a, b) {
-    a + b;
-}
-//While loop
-var a = 10;
-while (a > 0) {
-    a--;
-}
-a;
------------------
-output: 0
-```
-
-### Work in Progress
+## Work in Progress
 
 - For loops
 - Functions
