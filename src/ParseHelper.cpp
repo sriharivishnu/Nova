@@ -24,6 +24,11 @@ shared_ptr<Expression> NameParser::parse(Parser& parser, Token token) {
         }
         parser.consume(Token::Type::RPAREN, ", expected ')'");
         return make_shared<CallFunctionExpression>(token, params);
+    } else if (parser.lookAhead(0).is(Token::Type::LSQUARE)) {
+        parser.consume();
+        shared_ptr<Expression> index = parser.parseExpression();
+        parser.consume(Token::Type::RSQUARE, ", expected ']'");
+        return make_shared<IndexExpression>(token, index);
     }
     return make_shared<NameExpression>(token.getValue(), token);
 }
@@ -34,6 +39,20 @@ shared_ptr<Expression> NumberParser::parse(Parser& parser, Token token) {
 
 shared_ptr<Expression> StringParser::parse(Parser& parser, Token token) {
     return make_shared<StringExpression>(token);
+}
+
+shared_ptr<Expression> ListParser::parse(Parser& parser, Token token) {
+    vector<shared_ptr<Expression>> items;
+    if (!parser.lookAhead(0).is(Token::Type::RSQUARE)) {
+        shared_ptr<Expression> item = parser.parseExpression();
+        items.push_back(item);
+        while (parser.lookAhead(0).is(Token::Type::COMMA)) {
+            parser.consume(Token::Type::COMMA);
+            items.push_back(parser.parseExpression());
+        }
+    }
+    parser.consume(Token::Type::RSQUARE, "expected ']'");
+    return make_shared<ListExpression>(token, items);
 }
 
 PrefixOperatorParser::PrefixOperatorParser(int precedence) : precedence(precedence) {}

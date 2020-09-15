@@ -88,6 +88,23 @@ shared_obj StringExpression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
 }
 
+ListExpression::ListExpression(Token t, std::vector<shared_ptr<Expression>> values) : value(values) {
+    tok = t;
+}
+std::string ListExpression::toString() {
+    std::string str("[");
+    for (int i = 0 ; i < value.size(); i++) {
+        str += value[i]->toString();
+        if (i != value.size() - 1) str += ", ";
+    }
+    str.push_back(']');
+    return str;
+}
+shared_obj ListExpression::accept(Context& context, Visitor& v) {
+    return v.visit(context, this);
+}
+vector<shared_ptr<Expression>> ListExpression::getValue() { return value;}
+
 //Binary Operation
 BinOpExpression::BinOpExpression(shared_ptr<Expression> left, Token op, shared_ptr<Expression> right) 
     : left(left), right(right) { tok = op; }
@@ -168,3 +185,14 @@ std::string CallFunctionExpression::toString() {
     call.append(")");
     return call;
 };
+
+IndexExpression::IndexExpression(
+            Token tok_, 
+            shared_ptr<Expression> index
+        ) : index(index) { tok = tok_; }
+shared_obj IndexExpression::accept(Context& context, Visitor& v) {
+    return v.visit(context, this);
+}
+std::string IndexExpression::toString() {
+    return getToken().getValue() + "[" + index->toString() + "]";
+}

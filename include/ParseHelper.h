@@ -45,6 +45,11 @@ class StringParser : public PrefixParser {
         shared_ptr<Expression> parse(Parser& parser, Token token) override;
 };
 
+class ListParser : public PrefixParser {
+    public:
+        shared_ptr<Expression> parse(Parser& parser, Token token) override;
+};
+
 class PrefixOperatorParser : public PrefixParser {
     public:
         PrefixOperatorParser(int precedence);

@@ -131,4 +131,25 @@ class CallFunctionExpression : public Expression {
         std::string toString() override;
         vector<shared_ptr<Expression>> params;
 };
+
+class IndexExpression : public Expression {
+    public:
+        IndexExpression(
+            Token tok_, 
+            shared_ptr<Expression> index
+        );
+        shared_obj accept(Context& context, Visitor& v) override;
+        std::string toString() override;
+        shared_ptr<Expression> index;
+};
+
+class ListExpression : public Expression {
+    public:
+        ListExpression(Token t, vector<shared_ptr<Expression>> values);
+        std::string toString() override;
+        shared_obj accept(Context& context, Visitor& v) override;
+        vector<shared_ptr<Expression>> getValue();
+    private:
+        vector<shared_ptr<Expression>> value;
+};
 #endif

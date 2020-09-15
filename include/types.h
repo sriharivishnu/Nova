@@ -25,6 +25,7 @@ struct object {
     virtual shared_obj band(shared_obj obj);
     virtual shared_obj bor(shared_obj obj);
     virtual shared_obj bxor(shared_obj obj);
+    virtual shared_obj index(shared_obj obj);
     virtual shared_obj inc();
     virtual shared_obj dec();
     virtual shared_obj prePlus();
@@ -96,11 +97,12 @@ struct string_type : object {
 
 };
 
-// struct list_type : object {
-//     list_type(std::vector<type> val);
-//     shared_obj addBy(shared_obj obj) override;
-//     shared_obj multBy(shared_obj obj) override;
-//     shared_obj toBool() override;
-//     std::string toString() override;
-// };
+struct list_type : object {
+    list_type(std::vector<shared_obj> val);
+    shared_obj addBy(shared_obj obj) override;
+    shared_obj multBy(shared_obj obj) override;
+    shared_obj toBool() override;
+    shared_obj index(shared_obj obj) override;
+    std::string toString() override;
+};
 #endif

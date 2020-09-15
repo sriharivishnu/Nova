@@ -3,10 +3,13 @@
 #include <memory>
 #include <variant>
 #include <string>
+#include <vector>
 #include "Position.h"
 #include "Error.h"
+#include "types.h"
 class TypeException;
-using type = std::variant<std::string, int, double>;
+struct object;
+using type = std::variant<std::string, int, double, std::vector<std::shared_ptr<object>>>;
 struct Result {
     public:
         Result(type a) : mResult(a) {};
@@ -62,6 +65,7 @@ struct Result {
             if constexpr(std::is_same_v<T, std::string>) return "string";
             else if constexpr(std::is_same_v<T, int>) return "integer";
             else if constexpr(std::is_same_v<T, double>) return "double";
+            else if constexpr(std::is_same_v<T,std::vector<std::shared_ptr<object>>>) return "list";
             else return "null";
         }
 };

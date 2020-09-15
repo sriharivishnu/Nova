@@ -59,6 +59,9 @@ shared_obj object::bor(shared_obj obj) {
 shared_obj object::bxor(shared_obj obj) {
     UNDEFINED_OP
 }
+shared_obj object::index(shared_obj obj) {
+    UNDEFINED_OP
+}
 shared_obj object::inc() {
     UNDEFINED_UNARY("++")
 }
@@ -360,4 +363,47 @@ shared_obj string_type::toBool() {
 
 std::string string_type::toString() {
     return getValue<std::string>();
+}
+
+list_type::list_type(std::vector<shared_obj> val) : object(Result(val)) {}
+
+shared_obj list_type::addBy(shared_obj obj) {
+    // shared_obj ans = nullptr;
+    // std::visit(overloaded{
+    //     [&](std::vector<shared_obj> arg) {
+    //         std::vector<shared_obj> finalArray;
+    //         finalArray.reserve(getValue<std::vector<shared_obj>>().size() + arg.size());
+    //         finalArray.insert(finalArray.end(), getValue<std::vector<shared_obj>>().begin(), getValue<std::vector<shared_obj>>().end());
+    //         finalArray.insert(finalArray.end(), arg.begin(), arg.end());
+    //         ans = MAKE_OBJ(finalArray, list_type);
+    //         },
+    //     [&](auto arg) {UNDEFINED_OP}
+    // }, obj->value.getResult());
+    // if (ans) return ans;
+    UNDEFINED_OP
+}
+shared_obj list_type::multBy(shared_obj obj) {
+    UNDEFINED_OP
+}
+shared_obj list_type::toBool() {
+    return MAKE_OBJ(getValue<std::vector<shared_obj>>().empty(), integer_type);
+}
+shared_obj list_type::index(shared_obj obj) {
+    if (!obj->value.isType<int>()) UNDEFINED_OP;
+    int toAccess = obj->getValue<int>();
+    int size = getValue<std::vector<shared_obj>>().size();
+    if (toAccess >=  size || toAccess < 0) {
+        throw Error("Index Out of Bounds", "Attempted to access index: " + std::to_string(toAccess) + ", with list size: " + std::to_string(size));
+    }
+    return getValue<std::vector<shared_obj>>()[toAccess];
+}
+std::string list_type::toString() {
+    std::vector<shared_obj> values = getValue<std::vector<shared_obj>>();
+    std::string str("[");
+    for (int i = 0 ; i < values.size(); i++) {
+        str += values[i]->toString();
+        if (i != values.size() - 1) str += ", ";
+    }
+    str.push_back(']');
+    return str;
 }

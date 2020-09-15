@@ -9,7 +9,7 @@
 class function_statement;
 struct object;
 using shared_obj = std::shared_ptr<object>;
-using type = std::variant<std::string, int, double>;
+using type = std::variant<std::string, int, double, std::vector<std::shared_ptr<object>>>;
 class SymbolTable {
     public:
         SymbolTable() {}

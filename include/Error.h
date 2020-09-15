@@ -71,4 +71,9 @@ class DivisionByZero : public RunTimeError {
     public:
         DivisionByZero(std::shared_ptr<Context> context, Position pos);
 };
+
+class IndexOutOfBounds : public RunTimeError {
+    public:
+        IndexOutOfBounds(std::shared_ptr<Context> context, Position pos, std::string details);
+};
 #endif

@@ -70,3 +70,6 @@ RUNTIME ERRORS
 
 DivisionByZero::DivisionByZero(std::shared_ptr<Context> context, Position pos) 
 : RunTimeError(context, pos, "Division By Zero", "Attempted division by zero") {}
+
+IndexOutOfBounds::IndexOutOfBounds(std::shared_ptr<Context> context, Position pos, std::string details)
+: RunTimeError(context, pos, "IndexOutOfBounds", details) {}

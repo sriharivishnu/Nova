@@ -9,6 +9,7 @@ Parser::Parser(vector<Token> tokens) : tokens(tokens) {
     addType(Token::Type::STRING, std::make_shared<StringParser>());
     addType(Token::Type::BOOL, std::make_shared<NameParser>());
     addType(Token::Type::LPAREN, std::make_shared<GroupParser>());
+    addType(Token::Type::LSQUARE, std::make_shared<ListParser>());
 
     addType(Token::Type::PLUS, std::make_shared<PrefixOperatorParser>(Precedence::PREFIX));
     addType(Token::Type::MINUS, std::make_shared<PrefixOperatorParser>(Precedence::PREFIX));

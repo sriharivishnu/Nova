@@ -108,6 +108,13 @@ shared_obj Visitor::visit(Context& context, NumberExpression* e) {
 shared_obj Visitor::visit(Context& context, StringExpression* e) {
     return std::make_shared<string_type>(e->getValue());
 }
+shared_obj Visitor::visit(Context& context, ListExpression* e) {
+    vector<shared_obj> items;
+    for (int i = 0; i < e->getValue().size(); i++) {
+        items.push_back(e->getValue()[i]->accept(context, *this));
+    }
+    return std::make_shared<list_type>(items);
+}
 
 shared_obj Visitor::visit(Context& context, AssignmentExpression* e) {
     shared_obj res = e->right->accept(context, *this);
@@ -158,4 +165,12 @@ shared_obj Visitor::visit(Context& parent, CallFunctionExpression* e) {
     std::optional<shared_obj> res = decl->toRun->execute(context);
     if (res) return *res;
     else return std::make_shared<object>(Result(0));
+}
+
+shared_obj Visitor::visit(Context& context, IndexExpression* e) {
+    std::optional<shared_obj> value = context.symbols->get(e->getToken().getValue());
+    if (!value) {
+        throw UndefinedVariable(make_shared<Context>(context), e->getToken().getValue(), e->getToken().startPos);
+    }
+    return value->get()->index(e->index->accept(context, *this));
 }
