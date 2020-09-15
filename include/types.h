@@ -95,4 +95,12 @@ struct string_type : object {
     std::string toString() override;
 
 };
+
+// struct list_type : object {
+//     list_type(std::vector<type> val);
+//     shared_obj addBy(shared_obj obj) override;
+//     shared_obj multBy(shared_obj obj) override;
+//     shared_obj toBool() override;
+//     std::string toString() override;
+// };
 #endif

@@ -112,7 +112,7 @@ shared_obj integer_type::multBy(shared_obj obj) {
     std::visit(overloaded{
         [&](std::string arg) {
                 std::string finalString = arg;
-                for (int i = 0; i < getValue<int>(); i++) {
+                for (int i = 1; i < getValue<int>(); i++) {
                     finalString += arg;
                 }
                 ans = MAKE_OBJ(finalString, string_type);
