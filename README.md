@@ -12,9 +12,8 @@ Welcome to Nova! :)
 
 ### Windows
 
-**Option 1** Use GNUWin32 to use make
-
-**Option 2** Manually build all the source files by installing g++, and compiling all src files.
+- **Option 1** Use GNUWin32 to use make
+- **Option 2** Manually build all the source files by installing g++, and compiling all src files.
 
 ## Description
 Input Text -> Lexer -> Parser -> Interpreter -> Output
