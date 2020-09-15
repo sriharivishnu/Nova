@@ -94,7 +94,8 @@ ListExpression::ListExpression(Token t, std::vector<shared_ptr<Expression>> valu
 std::string ListExpression::toString() {
     std::string str("[");
     for (int i = 0 ; i < value.size(); i++) {
-        str += value[i]->toString();
+        if (value[i]) str += value[i]->toString();
+        else str += "null";
         if (i != value.size() - 1) str += ", ";
     }
     str.push_back(']');
