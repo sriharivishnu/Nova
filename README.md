@@ -61,6 +61,8 @@ a;
 output: 0
 ```
 
+---
+
 ## Description
 Input Text -> Lexer -> Parser -> Interpreter -> Output
 
@@ -68,7 +70,7 @@ Input Text -> Lexer -> Parser -> Interpreter -> Output
 A standard lexer to parse the string into a stream of tokens such as `plus`, `minus`, `while` etc. Relevant methods, other than the single character tokens, are `makeNumber()`, `makeString()`, `makeIdentifier()` which makes a number, string, and identifier tokens respectively.
 
 ### Parser
-The function of the parser is more interesting than that of the Lexer. The Parser's task is to turn the stream of tokens outputted by the Lexer into a data structure called an AST (Abstract Syntax Tree), a format that allows the interpretor to execute the code. 
+The function of the parser is more interesting than that of the Lexer. The Parser's task is to turn the stream of tokens outputted by the Lexer into a data structure called an AST (Abstract Syntax Tree), a format that allows the interpreter to execute the code. 
 
 The two main components of the parser are the `parseStatement()` and `parseExpression()` methods. The difference between a statement and an expression is that a Statement does not return a value, while an expression does.
 
