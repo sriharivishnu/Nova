@@ -11,9 +11,13 @@ Welcome to Nova! :)
 4. Type in `1+1` and it should output `2`
 
 ### Windows
+Compiling/Building:
+- **Option 1**: Use GNUWin32 to use make
+- **Option 2**: Install make.exe from the GNU website
+- **Option 3**: Install `chocolatey` and the run `choco install make`
+- **Option 4**: Manually build all the source files by installing g++, and compiling all src files.
 
-- **Option 1** Use GNUWin32 to use make
-- **Option 2** Manually build all the source files by installing g++, and compiling all src files.
+The steps in the Linux/MacOS section can now be followed
 
 ## Examples
 ### Current Syntax
