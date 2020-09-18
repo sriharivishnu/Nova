@@ -138,3 +138,4 @@ The interpreter goes through all statements, and executes them. Each statement i
 - For loops
 - Functions
 - Strings
+- Add built-in functions for common data types
