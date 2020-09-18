@@ -140,6 +140,6 @@ The interpreter goes through all statements, and executes them. Each statement i
 - Strings
 - Add built-in functions for common data types
 
-# Potential Cool Unique Features to Add:
+## Potential Cool Unique Features to Add:
 - User-defined operations
 
