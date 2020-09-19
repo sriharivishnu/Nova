@@ -417,7 +417,7 @@ std::string list_type::toString() {
 }
 
 func_type::func_type (std::string name, std::vector<std::string> params, std::shared_ptr<statement> toRun) 
-: name(name), params(params), toRun(toRun) {}
+: object(Result(identifier())), name(name), params(params), toRun(toRun) {}
 shared_obj func_type::call(Context& parent, vector<shared_obj> args) {
     if (args.size() < params.size()) {
         throw Error("Function Call Exception", "Too few Params for " + name + ": expected, " + std::to_string(params.size()) + " params but called with " + std::to_string(args.size()));
