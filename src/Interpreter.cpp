@@ -148,23 +148,15 @@ shared_obj Visitor::visit(Context& context, ConditionalExpression* e) {
 }
 
 shared_obj Visitor::visit(Context& parent, CallFunctionExpression* e) {
+
     Visitor v;
-    std::shared_ptr<function_statement> decl = parent.functions->get(e->getToken().getValue());
+    std::optional<shared_obj> decl = parent.symbols->get(e->getToken().getValue());
     if (!decl) throw UndefinedVariable(make_shared<Context>(parent), e->getToken().getValue(), e->getToken().startPos);
-    if (e->params.size() > decl->params.size()) {
-        throw Error(e->getToken().startPos, "Function Call Exception", "Too many Params for " + decl->name + ": expected, " + std::to_string(decl->params.size()) + " params but called with " + std::to_string(e->params.size()));
+    vector<shared_obj> args;
+    for (int i = 0; i < e->params.size(); i++) {
+        args.push_back(e->params[i]->accept(parent, v));
     }
-    else if (e->params.size() < decl->params.size()) {
-        throw Error(e->getToken().startPos, "Function Call Exception", "Too few Params for " + decl->name + ": expected, " + std::to_string(decl->params.size()) + " params but called with " + std::to_string(e->params.size()));
-    }
-    std::shared_ptr<SymbolTable> symbols = make_shared<SymbolTable>(parent.symbols);
-    for (int i = 0; i < decl->params.size(); i++) {
-        symbols->set(decl->params[i], e->params[i]->accept(parent, v));
-    }
-    Context context(decl->name, std::make_shared<Context>(parent), decl->pos, symbols, parent.functions);
-    std::optional<shared_obj> res = decl->toRun->execute(context);
-    if (res) return *res;
-    else return std::make_shared<object>(Result(0));
+    return decl->get()->call(parent, args);
 }
 
 shared_obj Visitor::visit(Context& context, IndexExpression* e) {
@@ -173,4 +165,9 @@ shared_obj Visitor::visit(Context& context, IndexExpression* e) {
         throw UndefinedVariable(make_shared<Context>(context), e->getToken().getValue(), e->getToken().startPos);
     }
     return value->get()->index(e->index->accept(context, *this));
+}
+shared_obj Visitor::visit(Context& context, FuncDefExpression* e) {
+    shared_ptr<func_type> fun = make_shared<func_type>(e->name, e->params, e->body); 
+    if (!e->lambda) context.symbols->set(e->name, fun);
+    return fun;
 }

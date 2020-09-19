@@ -1,4 +1,5 @@
 #include "ParseHelper.h"
+#include "Statement.h"
 #include <iostream>
 shared_ptr<Expression> PrefixParser::parse(Parser& parser, Token token) {
     return make_shared<Expression>();
@@ -151,3 +152,35 @@ shared_ptr<Expression> GroupParser::parse(Parser& parser, Token token) {
     parser.consume(Token::Type::RPAREN, ", expected '}'");
     return expression;
 }
+
+shared_ptr<Expression> FuncDefParser::parse(Parser& parser, Token token) {
+    std::string name;
+    bool anonymous = false;
+    if (parser.lookAhead(0).is(Token::Type::IDENTIFIER)) name = parser.consume(Token::Type::IDENTIFIER).getValue();
+    else {
+        name = "anonymous";
+        anonymous = true;
+    }
+
+    parser.consume(Token::Type::LPAREN, "expected '(' for function definition of " + name);
+    vector<std::string> params;
+    if (!parser.lookAhead(0).is(Token::Type::RPAREN)) {
+        Token p = parser.consume(Token::Type::IDENTIFIER);
+        params.push_back(p.getValue());
+        while (parser.lookAhead(0).is(Token::Type::COMMA)) {
+            parser.consume();
+            p = parser.consume(Token::Type::IDENTIFIER);
+            params.push_back(p.getValue());
+        }
+    }
+    parser.consume(Token::Type::RPAREN, ", expected ')'");
+    shared_ptr<statement> toRun;
+    if (parser.lookAhead(0).is(Token::Type::ARROW)) {
+        parser.consume(Token::Type::ARROW);
+        toRun = make_shared<simple_statement>(parser.parseExpression());
+    } else {
+        toRun = parser.parseStatement();
+    }
+    return make_shared<FuncDefExpression>(token, name, params, toRun, anonymous);
+}
+

@@ -11,6 +11,7 @@
 class Expression;
 struct Context;
 using expression_ptr = std::shared_ptr<Expression>;
+using shared_obj = std::shared_ptr<object>;
 class statement {
 	public:
 		statement() = default;
@@ -57,22 +58,6 @@ class while_statement : public statement {
     private:
         expression_ptr condition;
         statement_ptr statement; 
-};
-
-class function_statement : public statement, public std::enable_shared_from_this<function_statement> {
-    public:
-        function_statement(
-            std::string name,
-            std::vector<std::string> params,
-            statement_ptr toRun,
-            Position& pos
-        );
-        std::optional<shared_obj> execute(Context& context) override;
-        std::string name;
-        std::vector<std::string> params;
-        statement_ptr toRun;
-        Position pos;
-        virtual ~function_statement() = default;
 };
 
 // class for_statement : public statement {

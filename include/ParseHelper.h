@@ -109,4 +109,9 @@ class GroupParser : public PrefixParser {
         shared_ptr<Expression> parse(Parser& parser, Token token) override;
 };
 
+class FuncDefParser : public PrefixParser {
+    public:
+        shared_ptr<Expression> parse(Parser& parser, Token token) override;
+};
+
 #endif

@@ -65,6 +65,7 @@ struct Result {
             if constexpr(std::is_same_v<T, std::string>) return "string";
             else if constexpr(std::is_same_v<T, int>) return "integer";
             else if constexpr(std::is_same_v<T, double>) return "double";
+            else if constexpr(std::is_same_v<T, std::shared_ptr<object>>) return "object";
             else if constexpr(std::is_same_v<T,std::vector<std::shared_ptr<object>>>) return "list";
             else return "null";
         }

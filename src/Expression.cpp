@@ -172,7 +172,7 @@ std::string ConditionalExpression::toString() {
 
 CallFunctionExpression::CallFunctionExpression(
             Token tok_, 
-            vector<std::shared_ptr<Expression>> params
+            vector<shared_ptr<Expression>> params
         ) : params(params) { tok = tok_;}
 shared_obj CallFunctionExpression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
@@ -196,4 +196,21 @@ shared_obj IndexExpression::accept(Context& context, Visitor& v) {
 }
 std::string IndexExpression::toString() {
     return getToken().getValue() + "[" + index->toString() + "]";
+}
+
+FuncDefExpression::FuncDefExpression(
+    Token tok_, 
+    std::string name, 
+    vector<std::string> params, 
+    shared_ptr<statement> toRun,
+    bool anonymous) 
+: params(params), name(name), body(toRun), lambda(anonymous) { tok = tok_; }
+std::string FuncDefExpression::toString() {
+    std::string ans = name + "(";
+    for (int i = 0; i < params.size() -1; i++) ans += params[i] + ",";
+    if (params.size() > 0) ans += params[params.size() - 1];
+    return ans;
+}
+shared_obj FuncDefExpression::accept(Context& context, Visitor& v) {
+    return v.visit(context, this);
 }

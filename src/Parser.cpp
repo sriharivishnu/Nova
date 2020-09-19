@@ -43,6 +43,8 @@ Parser::Parser(vector<Token> tokens) : tokens(tokens) {
     addType(Token::Type::OR, std::make_shared<ComparisonParser>());
 
     addType(Token::Type::IF, std::make_shared<ConditionalParser>());
+
+    addType(Token::Type::FUNCTION, std::make_shared<FuncDefParser>());
 };
 
 shared_ptr<statement> Parser::parse() {
@@ -130,29 +132,6 @@ shared_ptr<statement> Parser::parseStatement() {
             consume(Token::Type::RPAREN, ", expected a ')'");
             shared_ptr<statement> statement = parseStatement();
             stmt = make_shared<while_statement>(condition, statement);
-            break;
-        }
-        case Token::Type::FUNCTION: {
-            consume(Token::Type::FUNCTION);
-            Token name = consume(Token::Type::IDENTIFIER, ", expected a function identifier");
-            consume(Token::Type::LPAREN);
-            vector<std::string> params;
-            if (!lookAhead(0).is(Token::Type::RPAREN)) {
-                Token p = consume(Token::Type::IDENTIFIER);
-                params.push_back(p.getValue());
-                while (lookAhead(0).is(Token::Type::COMMA)) {
-                    consume();
-                    p = consume(Token::Type::IDENTIFIER);
-                    params.push_back(p.getValue());
-                }
-            }
-            consume(Token::Type::RPAREN, ", expected ')'");
-            if (lookAhead(0).is(Token::Type::ARROW)) {
-                consume(Token::Type::ARROW);
-                stmt = make_shared<function_statement>(name.getValue(), params, make_shared<simple_statement>(parseExpression()), name.startPos);
-            }else {
-                stmt = make_shared<function_statement>(name.getValue(), params, parseStatement(), name.startPos);
-            }
             break;
         }
             

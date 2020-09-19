@@ -8,6 +8,7 @@ using std::visit;
 #define UNDEFINED_UNARY(NAME) throw UndefinedOperationException(NAME, value.getStringType());
 #define MAKE_OBJ(ARG, ret) std::make_shared<ret>(ARG)
 
+object::object() : value(0) {}
 object::object(Result res) : value(res) {}
 shared_obj object::addBy(shared_obj obj) {
     UNDEFINED_OP
@@ -76,6 +77,9 @@ shared_obj object::preMinus() {
 }
 shared_obj object::preNot() {
     return MAKE_OBJ(!toBool()->value, integer_type);
+}
+shared_obj object::call(Context& context, std::vector<shared_obj> args){
+    throw UndefinedOperationException(value.getStringType(), "()");
 }
 std::string object::toString() {
     return "<object>";
@@ -411,3 +415,27 @@ std::string list_type::toString() {
     str.push_back(']');
     return str;
 }
+
+func_type::func_type (std::string name, std::vector<std::string> params, std::shared_ptr<statement> toRun) 
+: name(name), params(params), toRun(toRun) {}
+shared_obj func_type::call(Context& parent, vector<shared_obj> args) {
+    if (args.size() < params.size()) {
+        throw Error("Function Call Exception", "Too few Params for " + name + ": expected, " + std::to_string(params.size()) + " params but called with " + std::to_string(args.size()));
+    }
+    if (args.size() > params.size()) {
+        throw Error("Function Call Exception", "Too many Params for " + name + ": expected, " + std::to_string(params.size()) + " params but called with " + std::to_string(args.size()));
+    }
+    std::shared_ptr<SymbolTable> symbols = make_shared<SymbolTable>(parent.symbols);
+    for (int i = 0; i < params.size(); i++) {
+        symbols->set(params[i], args[i]);
+    }
+    Context child(name, symbols);
+    std::optional<shared_obj> temp = toRun->execute(child);
+    if (temp) return *temp;
+    else return {};
+}
+std::string func_type::toString() {
+    return "function <" + name + ">";
+}
+
+#undef MAKE_OBJ

@@ -27,6 +27,7 @@ class NameExpression;
 class ConditionalExpression;
 class CallFunctionExpression;
 class IndexExpression;
+class FuncDefExpression;
 
 class Visitor {
     public:
@@ -44,5 +45,6 @@ class Visitor {
         shared_obj visit(Context& context, ConditionalExpression* e);
         shared_obj visit(Context& context, CallFunctionExpression* e);
         shared_obj visit(Context& context, IndexExpression* e);
+        shared_obj visit(Context& context, FuncDefExpression* e);
 };
 #endif

@@ -3,12 +3,16 @@
 #include <variant>
 #include <optional>
 #include <memory>
+#include "Statement.h"
 #include "Result.h"
-
+#include "Context.h"
+// class function_statement;
 struct object;
+class statement;
 using shared_obj = std::shared_ptr<object>;
 
 struct object {
+    object();
     object(Result res);
     virtual shared_obj addBy(shared_obj obj);
     virtual shared_obj subBy(shared_obj obj);
@@ -32,6 +36,7 @@ struct object {
     virtual shared_obj preMinus();
     virtual shared_obj preNot();
 
+    virtual shared_obj call(Context& context, std::vector<shared_obj> args);
     virtual std::string toString();
 
     template <typename T>
@@ -104,5 +109,15 @@ struct list_type : object {
     shared_obj toBool() override;
     shared_obj index(shared_obj obj) override;
     std::string toString() override;
+};
+
+struct func_type : object {
+    func_type (std::string name, std::vector<std::string> params, std::shared_ptr<statement> toRun);
+    shared_obj call(Context& context, std::vector<shared_obj> args) override;
+    std::string toString() override;
+    std::string name;
+    std::vector<std::string> params; 
+    std::shared_ptr<statement> toRun;
+    bool anonymous = false;
 };
 #endif

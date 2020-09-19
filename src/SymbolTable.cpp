@@ -14,8 +14,8 @@ void SymbolTable::set(std::string name, shared_obj value) {
     symbols[name] = value;
 }
 
-void SymbolTable::set(std::string name, type val) {
-    symbols[name] = std::make_shared<object>(Result(val));
+void SymbolTable::set(std::string name, Result val) {
+    symbols[name] = std::make_shared<object>(val);
 }
 
 bool SymbolTable::update(std::string name, shared_obj value) {
@@ -33,21 +33,21 @@ void SymbolTable::remove(std::string name) {
     symbols.erase(name);
 }
 
-FunctionTable::FunctionTable(std::shared_ptr<FunctionTable> parent) : parent(parent) {}
+// FunctionTable::FunctionTable(std::shared_ptr<FunctionTable> parent) : parent(parent) {}
 
-std::shared_ptr<function_statement> FunctionTable::get(std::string name) {
-    auto it = funcs.find(name);
-    if (it != funcs.end()) return it->second;
-    else if (it == funcs.end() && parent) {
-        return parent->get(name);
-    }
-    return nullptr;
-}
+// std::shared_ptr<function_statement> FunctionTable::get(std::string name) {
+//     auto it = funcs.find(name);
+//     if (it != funcs.end()) return it->second;
+//     else if (it == funcs.end() && parent) {
+//         return parent->get(name);
+//     }
+//     return nullptr;
+// }
 
-void FunctionTable::add(std::string name, std::shared_ptr<function_statement> value) {
-    funcs[name] = value;
-}
+// void FunctionTable::add(std::string name, std::shared_ptr<function_statement> value) {
+//     funcs[name] = value;
+// }
 
-void FunctionTable::remove(std::string name) {
-    funcs.erase(name);
-}
+// void FunctionTable::remove(std::string name) {
+//     funcs.erase(name);
+// }

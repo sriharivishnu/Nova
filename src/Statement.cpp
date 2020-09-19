@@ -54,14 +54,3 @@ std::optional<shared_obj> if_statement::execute(Context& context) {
     }
     return {};
 }
-
-function_statement::function_statement(
-            std::string name,
-            vector<std::string> params,
-            statement_ptr toRun, 
-            Position& pos) : name(name), params(params), toRun(toRun), pos(pos)
-{}
-std::optional<shared_obj> function_statement::execute(Context& context) {
-    context.functions->add(name, shared_from_this());
-    return {};
-}

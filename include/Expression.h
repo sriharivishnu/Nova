@@ -5,6 +5,7 @@
 #include <variant>
 #include <vector>
 #include "Context.h"
+#include "Statement.h"
 #include "Interpreter.h"
 #include "Token.h"
 #include "types.h"
@@ -12,6 +13,7 @@ using namespace std;
 class Visitor;
 struct Result;
 struct Context;
+class statement;
 class Expression {
     public:
         Expression();
@@ -151,5 +153,16 @@ class ListExpression : public Expression {
         vector<shared_ptr<Expression>> getValue();
     private:
         vector<shared_ptr<Expression>> value;
+};
+
+class FuncDefExpression : public Expression {
+    public:
+        FuncDefExpression(Token t, std::string name, vector<std::string> params, shared_ptr<statement> toRun, bool anonymous);
+        std::string toString() override;
+        shared_obj accept(Context& context, Visitor& v) override;
+        vector<std::string> params;
+        std::string name;
+        shared_ptr<statement> body;
+        bool lambda = false;
 };
 #endif
