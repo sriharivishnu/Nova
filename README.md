@@ -143,3 +143,6 @@ The interpreter goes through all statements, and executes them. Each statement i
 ## Potential Cool Unique Features to Add:
 - User-defined operations
 
+### Credits
+- [http://journal.stuffwithstuff.com/2011/03/19/pratt-parsers-expression-parsing-made-easy/](http://journal.stuffwithstuff.com/2011/03/19/pratt-parsers-expression-parsing-made-easy)
+
