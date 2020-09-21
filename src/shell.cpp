@@ -16,6 +16,7 @@ int main(int arg_count, char * arg_list[]) {
         while (true) {
             std::cout << "nova>> ";
             std::getline(std::cin, command);
+            if (command == "exit") break;
             nova::run(command, global);
         }
     }
