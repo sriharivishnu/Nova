@@ -9,9 +9,9 @@ const char* Error::what() const noexcept {
     return msg.c_str();
 }
 
-Error::Error() {};
+Error::Error() = default;;
 Error::Error (std::string cause, std::string details) : cause(std::move(cause)), details(std::move(details)), pos(Position(0,0,0)) {};
-Error::Error (Position pos, std::string cause) : cause(std::move(cause)), details(""), pos(std::move(pos)) {};
+Error::Error (Position pos, std::string cause) : cause(std::move(cause)), pos(std::move(pos)) {};
 Error::Error (Position pos, std::string cause, std::string details) : cause(std::move(cause)), details(std::move(details)), pos(std::move(pos)) {};
 
 const char* RunTimeError::what() const noexcept {
@@ -39,7 +39,7 @@ IllegalCharException::IllegalCharException(Position pos, std::string details) : 
 ParseException::ParseException(Position pos, std::string details) : Error(std::move(pos), "ParseException", std::move(details)) {}
 
 
-SyntaxError::SyntaxError(std::string details) : Error("SyntaxError", details) {};
+SyntaxError::SyntaxError(std::string details) : Error("SyntaxError", std::move(details)) {};
 SyntaxError::SyntaxError(Position pos, std::string details) : Error(std::move(pos), "SyntaxError", std::move(details)) {};
 
 
@@ -53,10 +53,10 @@ UndefinedOperationException::UndefinedOperationException(const std::string& t1, 
 UndefinedOperationException::UndefinedOperationException(Position pos, const std::string& t1, const std::string& op, const std::string& t2) : Error(std::move(pos), "Undefined Operation", "") {
     details = "No operator " + op + " between " + t1 + " and " + t2;
 }
-UndefinedOperationException::UndefinedOperationException(Position pos, std::string op, const std::string& t1) : Error(std::move(pos), "Undefined Operation", "") {
+UndefinedOperationException::UndefinedOperationException(Position pos, const std::string& op, const std::string& t1) : Error(std::move(pos), "Undefined Operation", "") {
     details = "No operator " + op + " and " + t1;
 }
-UndefinedOperationException::UndefinedOperationException(Position pos, std::string op) : Error(std::move(pos), "Undefined Operation") {
+UndefinedOperationException::UndefinedOperationException(Position pos, const std::string& op) : Error(std::move(pos), "Undefined Operation") {
     details = "Unknown Operation Found: " + op;
 }        
 

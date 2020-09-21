@@ -54,8 +54,8 @@ class TypeException: public Error {
 class UndefinedOperationException : public Error {
     public:
         UndefinedOperationException(const std::string& t1, const std::string& t2);
-        UndefinedOperationException(Position pos, std::string op);
-        UndefinedOperationException(Position pos, std::string t1, const std::string& op);
+        UndefinedOperationException(Position pos, const std::string& op);
+        UndefinedOperationException(Position pos, const std::string& t1, const std::string& op);
         UndefinedOperationException(Position pos, const std::string& t1, const std::string& op, const std::string& t2);
 };
 
