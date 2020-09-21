@@ -15,11 +15,11 @@ class SymbolTable {
         SymbolTable() {}
         SymbolTable(std::shared_ptr<SymbolTable> parent);
         std::shared_ptr<SymbolTable> parent = nullptr;
-        bool update(std::string name, shared_obj value);
-        std::optional<shared_obj> get(std::string name);
-        void set(std::string name, shared_obj value);
-        void set(std::string name, Result val);
-        void remove(std::string name);
+        bool update(const std::string& name, const shared_obj& value);
+        std::optional<shared_obj> get(const std::string& name);
+        void set(const std::string& name, shared_obj value);
+        void set(const std::string& name, Result val);
+        void remove(const std::string& name);
     private:
         std::unordered_map<std::string, shared_obj> symbols;
 };

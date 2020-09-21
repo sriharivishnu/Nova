@@ -43,6 +43,7 @@ Token Lexer::makeIdentifier() {
     else if (value == "fun") return Token(Token::Type::FUNCTION, value, position);
     else if (value == "true" || value == "false") return Token(Token::Type::BOOL, value, position);
     else if (value == "return") return Token(Token::Type::RETURN, value, position);
+    else if (value == "exit") return Token(Token::Type::EXIT, value, position);
     else return Token(Token::Type::IDENTIFIER, value, position);
 }
 

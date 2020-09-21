@@ -37,7 +37,7 @@ shared_obj Visitor::visit(Context& context, PostfixExpression* e) {
         std::string name = e->left->getToken().getValue();
         std::optional<shared_obj> value = context.symbols->get(name);
         if (!value) throw UndefinedVariable(make_shared<Context>(context), e->left->getToken().getValue(), e->left->getToken().startPos);
-        shared_obj val = 0;
+        shared_obj val = nullptr;
         if (e->getToken().is(Token::Type::INC)) val = value->get()->inc();
         else if (e->getToken().is(Token::Type::DEC)) val = value->get()->dec();
         else throw UndefinedOperationException(e->getToken().startPos, e->getToken().getValue(), value->get()->value.getStringType());
@@ -153,8 +153,8 @@ shared_obj Visitor::visit(Context& parent, CallFunctionExpression* e) {
     std::optional<shared_obj> decl = parent.symbols->get(e->getToken().getValue());
     if (!decl) throw UndefinedVariable(make_shared<Context>(parent), e->getToken().getValue(), e->getToken().startPos);
     vector<shared_obj> args;
-    for (int i = 0; i < e->params.size(); i++) {
-        args.push_back(e->params[i]->accept(parent, v));
+    for (auto & param : e->params) {
+        args.push_back(param->accept(parent, v));
     }
     return decl->get()->call(parent, args);
 }

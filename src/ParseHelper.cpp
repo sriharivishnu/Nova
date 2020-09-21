@@ -1,17 +1,16 @@
 #include "ParseHelper.h"
 #include "Statement.h"
-#include <iostream>
-shared_ptr<Expression> PrefixParser::parse(Parser& parser, Token token) {
+shared_ptr<Expression> PrefixParser::parse(Parser& parser, const Token& token) {
     return make_shared<Expression>();
 }
 
-shared_ptr<Expression> InfixParser::parse(Parser& parser, shared_ptr<Expression> left, Token token) {
+shared_ptr<Expression> InfixParser::parse(Parser& parser, shared_ptr<Expression> left, const Token& token) {
     return make_shared<Expression>();
 }
 int InfixParser::getPrecedence() {return -1;}
 
 
-shared_ptr<Expression> NameParser::parse(Parser& parser, Token token) {
+shared_ptr<Expression> NameParser::parse(Parser& parser, const Token& token) {
     if (parser.lookAhead(0).is(Token::Type::LPAREN)) {
         parser.consume();
         vector<shared_ptr<Expression>> params;
@@ -34,15 +33,15 @@ shared_ptr<Expression> NameParser::parse(Parser& parser, Token token) {
     return make_shared<NameExpression>(token.getValue(), token);
 }
 
-shared_ptr<Expression> NumberParser::parse(Parser& parser, Token token) {
+shared_ptr<Expression> NumberParser::parse(Parser& parser, const Token& token) {
     return make_shared<NumberExpression>(token);
 }
 
-shared_ptr<Expression> StringParser::parse(Parser& parser, Token token) {
+shared_ptr<Expression> StringParser::parse(Parser& parser, const Token& token) {
     return make_shared<StringExpression>(token);
 }
 
-shared_ptr<Expression> ListParser::parse(Parser& parser, Token token) {
+shared_ptr<Expression> ListParser::parse(Parser& parser, const Token& token) {
     vector<shared_ptr<Expression>> items;
     if (!parser.lookAhead(0).is(Token::Type::RSQUARE)) {
         shared_ptr<Expression> item = parser.parseExpression();
@@ -57,20 +56,20 @@ shared_ptr<Expression> ListParser::parse(Parser& parser, Token token) {
 }
 
 PrefixOperatorParser::PrefixOperatorParser(int precedence) : precedence(precedence) {}
-shared_ptr<Expression> PrefixOperatorParser::parse(Parser& parser, Token token) {
+shared_ptr<Expression> PrefixOperatorParser::parse(Parser& parser, const Token& token) {
     shared_ptr<Expression> right = parser.parseExpression(precedence);
     if (token.isOneOf(Token::Type::INC, Token::Type::DEC) && !right->getToken().is(Token::Type::IDENTIFIER)) {
         throw SyntaxError(right->getToken().startPos, "Expected an identifier"); 
     }
     return make_shared<PrefixExpression>(token, right);
 }
-int PrefixOperatorParser::getPrecedence() {
+int PrefixOperatorParser::getPrecedence() const {
     return precedence;
 }
 
 
 PostfixOperatorParser::PostfixOperatorParser(int precedence) : precedence(precedence) {}
-shared_ptr<Expression> PostfixOperatorParser::parse(Parser& parser, shared_ptr<Expression> left, Token token) {
+shared_ptr<Expression> PostfixOperatorParser::parse(Parser& parser, shared_ptr<Expression> left, const Token& token) {
     if (token.isOneOf(Token::Type::INC, Token::Type::DEC) && !left->getToken().is(Token::Type::IDENTIFIER)) {
         throw SyntaxError(left->getToken().startPos, "Expected an identifier"); 
     }
@@ -80,26 +79,26 @@ int PostfixOperatorParser::getPrecedence() {return precedence;}
 
 
 BinaryOperatorParser::BinaryOperatorParser(int precedence, bool isRight) : precedence(precedence), isRight(isRight){}
-shared_ptr<Expression> BinaryOperatorParser::parse(Parser& parser, shared_ptr<Expression> left, Token tok) {
+shared_ptr<Expression> BinaryOperatorParser::parse(Parser& parser, shared_ptr<Expression> left, const Token& token) {
     shared_ptr<Expression> right = parser.parseExpression(
         precedence - (isRight ? 1 : 0)
     );
-    return make_shared<BinOpExpression>(left, tok, right);
+    return make_shared<BinOpExpression>(left, token, right);
 }
 int BinaryOperatorParser::getPrecedence() {return precedence;}
 
-ComparisonParser::ComparisonParser() {}
+ComparisonParser::ComparisonParser() = default;
 
-shared_ptr<Expression> ComparisonParser::parse(Parser& parser, shared_ptr<Expression> left, Token tok) {
+shared_ptr<Expression> ComparisonParser::parse(Parser& parser, shared_ptr<Expression> left, const Token& token) {
     shared_ptr<Expression> right = parser.parseExpression(getPrecedence());
-    return make_shared<ComparisonExpression>(left, tok, right);
+    return make_shared<ComparisonExpression>(left, token, right);
 }
 int ComparisonParser::getPrecedence() {
     return Precedence::CONDITION;
 }
 
-AssignmentParser::AssignmentParser() {}
-shared_ptr<Expression> AssignmentParser::parse(Parser& parser, Token tok) {
+AssignmentParser::AssignmentParser() = default;
+shared_ptr<Expression> AssignmentParser::parse(Parser& parser, const Token& tok) {
     Token name = parser.consume(Token::Type::IDENTIFIER, ", expected an identifier");
     Token equals = parser.consume(Token::Type::EQUALS, ", expected '='");
     shared_ptr<Expression> right = parser.parseExpression(
@@ -109,20 +108,20 @@ shared_ptr<Expression> AssignmentParser::parse(Parser& parser, Token tok) {
 
 }
 
-UpdateOrAssignParser::UpdateOrAssignParser() {}
-shared_ptr<Expression> UpdateOrAssignParser::parse(Parser& parser, shared_ptr<Expression> left, Token tok) {
+UpdateOrAssignParser::UpdateOrAssignParser() = default;
+shared_ptr<Expression> UpdateOrAssignParser::parse(Parser& parser, shared_ptr<Expression> left, const Token& token) {
     if (!left->getToken().is(Token::Type::IDENTIFIER)) {
         throw SyntaxError(left->getToken().startPos, "Expected an identifier"); 
     }
     shared_ptr<Expression> right = parser.parseExpression(Precedence::ASSIGNMENT - 1);
-    return make_shared<UpdateExpression>(left->getToken().getValue(), right, tok);
+    return make_shared<UpdateExpression>(left->getToken().getValue(), right, token);
 }
 int UpdateOrAssignParser::getPrecedence() {
     return Precedence::ASSIGNMENT;
 }
 
-ConditionalParser::ConditionalParser() {}
-shared_ptr<Expression> ConditionalParser::parse(Parser& parser, Token tok) {
+ConditionalParser::ConditionalParser() = default;
+shared_ptr<Expression> ConditionalParser::parse(Parser& parser, const Token& token) {
     //IF
     parser.consume(Token::Type::LPAREN, ", expected '(");
     shared_ptr<Expression> condition = parser.parseExpression(Precedence::CONDITION -1 );
@@ -144,16 +143,16 @@ shared_ptr<Expression> ConditionalParser::parse(Parser& parser, Token tok) {
     //ELSE
     if (!next.is(Token::Type::ELSE)) throw SyntaxError(next.startPos, "Unexpected token: " +  next.getValue() + ", expected 'else' or 'elif'");
     shared_ptr<Expression> elseBranch = parser.parseExpression(Precedence::CONDITION - 1);
-    return make_shared<ConditionalExpression>(tok, condition, then, elif_conditions, elif_thens, elseBranch);
+    return make_shared<ConditionalExpression>(token, condition, then, elif_conditions, elif_thens, elseBranch);
 }
 
-shared_ptr<Expression> GroupParser::parse(Parser& parser, Token token) {
+shared_ptr<Expression> GroupParser::parse(Parser& parser, const Token& token) {
     shared_ptr<Expression> expression = parser.parseExpression();
     parser.consume(Token::Type::RPAREN, ", expected '}'");
     return expression;
 }
 
-shared_ptr<Expression> FuncDefParser::parse(Parser& parser, Token token) {
+shared_ptr<Expression> FuncDefParser::parse(Parser& parser, const Token& token) {
     std::string name;
     bool anonymous = false;
     if (parser.lookAhead(0).is(Token::Type::IDENTIFIER)) name = parser.consume(Token::Type::IDENTIFIER).getValue();
@@ -183,4 +182,3 @@ shared_ptr<Expression> FuncDefParser::parse(Parser& parser, Token token) {
     }
     return make_shared<FuncDefExpression>(token, name, params, toRun, anonymous);
 }
-

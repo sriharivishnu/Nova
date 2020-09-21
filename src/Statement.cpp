@@ -1,16 +1,18 @@
 #include "Statement.h"
+
+#include <utility>
 #include "Result.h"
 
 std::optional<shared_obj> simple_statement::execute(Context& context) {
     Visitor v;
     return expr->accept(context, v);
 };
-simple_statement::simple_statement(std::shared_ptr<Expression> expr_) : expr(expr_) {}
+simple_statement::simple_statement(std::shared_ptr<Expression> expr_) : expr(std::move(expr_)) {}
 
 while_statement::while_statement(
             expression_ptr condition_,
             statement_ptr statement_
-        ) : condition(condition_), statement(statement_) {}
+        ) : condition(std::move(condition_)), statement(std::move(statement_)) {}
 
 std::optional<shared_obj> while_statement::execute(Context& context) {
     Visitor v;
@@ -20,10 +22,10 @@ std::optional<shared_obj> while_statement::execute(Context& context) {
     return {};
 };
 
-block_statement::block_statement(vector<statement_ptr> statements) : statements(statements) {}
+block_statement::block_statement(vector<statement_ptr> statements) : statements(std::move(statements)) {}
 std::optional<shared_obj> block_statement::execute(Context& context) {
-    for (int i = 0; i < statements.size(); i++) {
-        statements[i]->execute(context);
+    for (auto & statement : statements) {
+        statement->execute(context);
     }
     return {};
 }
@@ -33,8 +35,8 @@ if_statement::if_statement(
     statement_ptr ifBlock, 
     std::vector<expression_ptr> elifConditions, 
     std::vector<statement_ptr> elifBlocks, 
-    statement_ptr elseBlock) : if_condition(ifCondition), if_block(ifBlock), elif_conditions(elifConditions),
-    elif_blocks(elifBlocks), else_block(elseBlock)
+    statement_ptr elseBlock) : if_condition(std::move(ifCondition)), if_block(std::move(ifBlock)), elif_conditions(std::move(elifConditions)),
+    elif_blocks(std::move(elifBlocks)), else_block(std::move(elseBlock))
 {
 
 }

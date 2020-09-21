@@ -147,10 +147,10 @@ shared_ptr<statement> Parser::parseStatement() {
 }
 
 void Parser::addType(Token::Type type, shared_ptr<PrefixParser> prefix) {
-    mPrefixParsables[type] = prefix;
+    mPrefixParsables[type] = std::move(prefix);
 }
 void Parser::addType(Token::Type type, shared_ptr<InfixParser> prefix) {
-    mInfixParsables[type] = prefix;
+    mInfixParsables[type] = std::move(prefix);
 }
 
 Token Parser::consume() {

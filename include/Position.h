@@ -3,7 +3,7 @@
 #define POSITION_CLASS
 class Position {
         public:
-            Position() {};
+            Position() = default;;
             Position(int cur, int ln, int col);
             Position(int cur, int ln, int col, std::string file, std::string fcontent);
             Position* advance(char current);

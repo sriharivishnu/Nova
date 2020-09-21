@@ -8,7 +8,7 @@
 #include "Token.h"
 #include "Context.h"
 namespace nova {
-    int run(std::string command, Context& context) {
+    int run(const std::string& command, Context& context) {
         Lexer lex("main", command.c_str());
         std::vector<Token> a;
         try {
@@ -20,7 +20,6 @@ namespace nova {
             std::cout << e.what() << std::endl;
             return 1;
         }
-        if (a.size() <= 1) return 0;
         Parser par(a);
         std::shared_ptr<statement> stmt;
         while (!par.lookAhead(0).is(Token::Type::END)) {

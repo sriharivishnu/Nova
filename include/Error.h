@@ -53,15 +53,15 @@ class TypeException: public Error {
 
 class UndefinedOperationException : public Error {
     public:
-        UndefinedOperationException(std::string t1, std::string t2);
+        UndefinedOperationException(const std::string& t1, const std::string& t2);
         UndefinedOperationException(Position pos, std::string op);
-        UndefinedOperationException(Position pos, std::string t1, std::string op);
-        UndefinedOperationException(Position pos, std::string t1, std::string op, std::string t2);
+        UndefinedOperationException(Position pos, std::string t1, const std::string& op);
+        UndefinedOperationException(Position pos, const std::string& t1, const std::string& op, const std::string& t2);
 };
 
 class UndefinedVariable : public RunTimeError {
     public:
-        UndefinedVariable(std::shared_ptr<Context> context, std::string name, Position pos);
+        UndefinedVariable(std::shared_ptr<Context> context, const std::string& name, Position pos);
 };
 /*
 RUNTIME ERRORS 

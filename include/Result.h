@@ -1,6 +1,7 @@
 #ifndef RESULT_H
 #define RESULT_H
 #include <memory>
+#include <utility>
 #include <variant>
 #include <string>
 #include <vector>
@@ -11,12 +12,12 @@ class TypeException;
 struct object;
 class identifier {
     public:
-        identifier() {};
+        identifier() = default;;
 };
 using type = std::variant<std::string, int, double, std::vector<std::shared_ptr<object>>, identifier>;
 struct Result {
     public:
-        Result(type a) : mResult(a) {};
+        explicit Result(type a) : mResult(std::move(a)) {};
         type getResult() {return mResult;}
         std::string getStringType() {
             return std::visit([&](auto&& arg) {
@@ -26,7 +27,7 @@ struct Result {
         }
 
         template<typename T> 
-        T getTypeOrThrow(Position pos) {
+        T getTypeOrThrow(const Position& pos) {
             if (auto i = std::get_if<T>(&mResult)) return *i;
             else {
                 std::string r = "Expected type: '" + getStringType<T>() + "', but instead got '" + getStringType() + "'";
@@ -46,7 +47,7 @@ struct Result {
             else return false;
         }
 
-        operator int() const { 
+        operator int() const {
             return std::visit([&](auto&& arg) {
                 using T = std::decay_t<decltype(arg)>;
                 if constexpr(std::is_same_v<T, int>) return std::get<int>(mResult);

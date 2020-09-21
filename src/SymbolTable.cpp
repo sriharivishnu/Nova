@@ -1,7 +1,9 @@
 #include "SymbolTable.h"
+
+#include <utility>
 #include "Statement.h"
-SymbolTable::SymbolTable(std::shared_ptr<SymbolTable> parent) : parent(parent) {}
-std::optional<shared_obj> SymbolTable::get(std::string name) {
+SymbolTable::SymbolTable(std::shared_ptr<SymbolTable> parent) : parent(std::move(parent)) {}
+std::optional<shared_obj> SymbolTable::get(const std::string& name) {
     auto it = symbols.find(name);
     if (it != symbols.end()) return it->second;
     else if (it == symbols.end() && parent) {
@@ -10,15 +12,15 @@ std::optional<shared_obj> SymbolTable::get(std::string name) {
     return {};
 }
 
-void SymbolTable::set(std::string name, shared_obj value) {
-    symbols[name] = value;
+void SymbolTable::set(const std::string& name, shared_obj value) {
+    symbols[name] = std::move(value);
 }
 
-void SymbolTable::set(std::string name, Result val) {
+void SymbolTable::set(const std::string& name, Result val) {
     symbols[name] = std::make_shared<object>(val);
 }
 
-bool SymbolTable::update(std::string name, shared_obj value) {
+bool SymbolTable::update(const std::string& name, const shared_obj& value) {
     if (symbols.find(name) != symbols.end()) {
         set(name, value);
         return true;
@@ -29,7 +31,7 @@ bool SymbolTable::update(std::string name, shared_obj value) {
     return false;
 }
 
-void SymbolTable::remove(std::string name) {
+void SymbolTable::remove(const std::string& name) {
     symbols.erase(name);
 }
 

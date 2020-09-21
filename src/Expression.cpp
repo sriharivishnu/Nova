@@ -1,10 +1,12 @@
+#include <utility>
+
 #include "Interpreter.h"
 using namespace std;
 
 /*
 GENERICS
 */
-Expression::Expression() {};
+Expression::Expression() = default;;
 std::string Expression::toString() {
     return "(null)";
 }
@@ -16,7 +18,7 @@ Token Expression::getToken() {return tok;}
 Expression::~Expression() = default;
 
 
-PostfixExpression::PostfixExpression(shared_ptr<Expression> left, Token tok_) : left(left){
+PostfixExpression::PostfixExpression(shared_ptr<Expression> left, Token tok_) : left(std::move(left)){
     tok = tok_;
 }
 shared_obj PostfixExpression::accept(Context& context, Visitor& v) {
@@ -26,8 +28,8 @@ std::string PostfixExpression::toString() {
     return "(" + left->toString() + tok.getValue() + ")";
 }
 
-PrefixExpression::PrefixExpression(Token tok_, shared_ptr<Expression> right) : right(right) {
-    tok = tok_;
+PrefixExpression::PrefixExpression(Token tok_, shared_ptr<Expression> right) : right(std::move(right)) {
+    tok = std::move(tok_);
 }
 std::string PrefixExpression::toString() {
     return "(" + tok.getValue() + right->toString() + ")";
@@ -41,7 +43,7 @@ SPECIFICS
 */
 
 //Identifier
-NameExpression::NameExpression(std::string name, Token tok_) : name(name) {
+NameExpression::NameExpression(std::string name, Token tok_) : name(std::move(name)) {
     tok = tok_;
 }
 shared_obj NameExpression::accept(Context& context, Visitor& v) {
@@ -52,7 +54,7 @@ std::string NameExpression::toString() {
 }
 
 //Number
-NumberExpression::NumberExpression(Token t) {
+NumberExpression::NumberExpression(const Token& t) {
     if (t.is(Token::Type::INT)) value = stoi(t.getValue());
     else if(t.is(Token::Type::DOUBLE)) value = stod(t.getValue());
     tok = t;
@@ -74,7 +76,7 @@ shared_obj NumberExpression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
 }
 
-StringExpression::StringExpression(Token t) {
+StringExpression::StringExpression(const Token& t) {
     tok = t;
     value = t.getValue();
 }
@@ -88,7 +90,7 @@ shared_obj StringExpression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
 }
 
-ListExpression::ListExpression(Token t, std::vector<shared_ptr<Expression>> values) : value(values) {
+ListExpression::ListExpression(Token t, std::vector<shared_ptr<Expression>> values) : value(std::move(values)) {
     tok = t;
 }
 std::string ListExpression::toString() {
@@ -108,7 +110,7 @@ vector<shared_ptr<Expression>> ListExpression::getValue() { return value;}
 
 //Binary Operation
 BinOpExpression::BinOpExpression(shared_ptr<Expression> left, Token op, shared_ptr<Expression> right) 
-    : left(left), right(right) { tok = op; }
+    : left(std::move(left)), right(std::move(right)) { tok = op; }
 std::string BinOpExpression::toString() {
     return "(" + left->toString() + tok.getValue()+ right->toString() + ")";
 }
@@ -117,8 +119,8 @@ shared_obj BinOpExpression::accept(Context& context, Visitor& v) {
 }
 
 ComparisonExpression::ComparisonExpression(shared_ptr<Expression> left, Token op, shared_ptr<Expression> right) 
-:left(left), right(right) {
-    tok = op;
+:left(std::move(left)), right(std::move(right)) {
+    tok = std::move(op);
 }
 std::string ComparisonExpression::toString() {
     return "(" + left->toString() + tok.getValue() + right->toString() + ")";
@@ -130,7 +132,7 @@ shared_obj ComparisonExpression::accept(Context& context, Visitor& v) {
 
 //Assignment
 AssignmentExpression::AssignmentExpression(std::string name, shared_ptr<Expression> right, Token eq) 
-: name(name), right(right) { tok = eq; }
+: name(std::move(name)), right(std::move(right)) { tok = std::move(eq); }
 std::string AssignmentExpression::toString() {
     return "(" + name + tok.getValue()+ right->toString() + ")";
 }
@@ -138,8 +140,8 @@ shared_obj AssignmentExpression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
 }
 
-UpdateExpression::UpdateExpression(std::string name, shared_ptr<Expression> right, Token eq) 
-: name(name), right(right) { tok = eq; }
+UpdateExpression::UpdateExpression(std::string name, shared_ptr<Expression> right, Token eq)
+: name(std::move(name)), right(std::move(right)) { tok = std::move(eq); }
 std::string UpdateExpression::toString() {
     return "(" + name + tok.getValue()+ right->toString() + ")";
 }
@@ -155,13 +157,13 @@ ConditionalExpression::ConditionalExpression(
             vector<shared_ptr<Expression>> elif_conditions_, 
             vector<shared_ptr<Expression>> elif_thens_, 
             shared_ptr<Expression> elseBranch_)
-: condition(condition_), 
-    thenBranch(then_), 
-    elif_conditions(elif_conditions_), 
-    elif_thens(elif_thens_), 
-    elseBranch(elseBranch_) 
+: condition(std::move(condition_)),
+    thenBranch(std::move(then_)),
+    elif_conditions(std::move(elif_conditions_)),
+    elif_thens(std::move(elif_thens_)),
+    elseBranch(std::move(elseBranch_))
 {
-    tok = tok_;
+    tok = std::move(tok_);
 }
 shared_obj ConditionalExpression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
@@ -173,7 +175,7 @@ std::string ConditionalExpression::toString() {
 CallFunctionExpression::CallFunctionExpression(
             Token tok_, 
             vector<shared_ptr<Expression>> params
-        ) : params(params) { tok = tok_;}
+        ) : params(std::move(params)) { tok = std::move(tok_);}
 shared_obj CallFunctionExpression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
 };
@@ -190,7 +192,7 @@ std::string CallFunctionExpression::toString() {
 IndexExpression::IndexExpression(
             Token tok_, 
             shared_ptr<Expression> index
-        ) : index(index) { tok = tok_; }
+        ) : index(std::move(index)) { tok = std::move(tok_); }
 shared_obj IndexExpression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
 }
@@ -204,11 +206,11 @@ FuncDefExpression::FuncDefExpression(
     vector<std::string> params, 
     shared_ptr<statement> toRun,
     bool anonymous) 
-: params(params), name(name), body(toRun), lambda(anonymous) { tok = tok_; }
+: params(std::move(params)), name(std::move(name)), body(std::move(toRun)), lambda(anonymous) { tok = tok_; }
 std::string FuncDefExpression::toString() {
     std::string ans = name + "(";
     for (int i = 0; i < params.size() -1; i++) ans += params[i] + ",";
-    if (params.size() > 0) ans += params[params.size() - 1];
+    if (!params.empty()) ans += params[params.size() - 1];
     return ans;
 }
 shared_obj FuncDefExpression::accept(Context& context, Visitor& v) {

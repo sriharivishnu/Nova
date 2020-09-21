@@ -21,40 +21,40 @@ enum Precedence {
 class Parser;
 class PrefixParser {
     public:
-        virtual shared_ptr<Expression> parse(Parser& parser, Token token);
+        virtual shared_ptr<Expression> parse(Parser& parser, const Token& token);
         virtual ~PrefixParser() = default;
 };
 class InfixParser {
     public:
-        virtual shared_ptr<Expression> parse(Parser& parser, shared_ptr<Expression> left, Token token);
+        virtual shared_ptr<Expression> parse(Parser& parser, shared_ptr<Expression> left, const Token& token);
         virtual int getPrecedence();
         virtual ~InfixParser() = default;
 };
 
 class NameParser : public PrefixParser {
     public:
-        shared_ptr<Expression> parse(Parser& parser, Token token) override;
+        shared_ptr<Expression> parse(Parser& parser, const Token& token) override;
 };
 
 class NumberParser : public PrefixParser {
     public:
-        shared_ptr<Expression> parse(Parser& parser, Token token) override;
+        shared_ptr<Expression> parse(Parser& parser, const Token& token) override;
 };
 class StringParser : public PrefixParser {
     public:
-        shared_ptr<Expression> parse(Parser& parser, Token token) override;
+        shared_ptr<Expression> parse(Parser& parser, const Token& token) override;
 };
 
 class ListParser : public PrefixParser {
     public:
-        shared_ptr<Expression> parse(Parser& parser, Token token) override;
+        shared_ptr<Expression> parse(Parser& parser, const Token& token) override;
 };
 
 class PrefixOperatorParser : public PrefixParser {
     public:
         PrefixOperatorParser(int precedence);
-        shared_ptr<Expression> parse(Parser& parser, Token token);
-        int getPrecedence();
+        shared_ptr<Expression> parse(Parser& parser, const Token& token);
+        int getPrecedence() const;
     private:
         int precedence;
 };
@@ -62,7 +62,7 @@ class PrefixOperatorParser : public PrefixParser {
 class PostfixOperatorParser : public InfixParser {
     public:
         PostfixOperatorParser(int precedence);
-        shared_ptr<Expression> parse(Parser& parser, shared_ptr<Expression> left, Token token) override;
+        shared_ptr<Expression> parse(Parser& parser, shared_ptr<Expression> left, const Token& token) override;
         int getPrecedence() override;
     private:
         int precedence = 0;
@@ -71,7 +71,7 @@ class PostfixOperatorParser : public InfixParser {
 class BinaryOperatorParser : public InfixParser {
     public:
         BinaryOperatorParser(int precedence, bool isRight);
-        shared_ptr<Expression> parse(Parser& parser, shared_ptr<Expression> left, Token tok) override;
+        shared_ptr<Expression> parse(Parser& parser, shared_ptr<Expression> left, const Token& token) override;
         int getPrecedence() override;
     private:
         int precedence = 0;
@@ -81,37 +81,37 @@ class BinaryOperatorParser : public InfixParser {
 class ComparisonParser : public InfixParser {
     public:
         ComparisonParser();
-        shared_ptr<Expression> parse(Parser& parser, shared_ptr<Expression> left, Token tok) override;
+        shared_ptr<Expression> parse(Parser& parser, shared_ptr<Expression> left, const Token& token) override;
         int getPrecedence() override;
 };
 
 class AssignmentParser : public PrefixParser {
     public:
         AssignmentParser();
-        shared_ptr<Expression> parse(Parser& parser, Token token) override;        
+        shared_ptr<Expression> parse(Parser& parser, const Token& token) override;
 };
 
 class UpdateOrAssignParser : public InfixParser {
     public:
         UpdateOrAssignParser();
-        shared_ptr<Expression> parse(Parser& parser, shared_ptr<Expression> left, Token tok) override;
+        shared_ptr<Expression> parse(Parser& parser, shared_ptr<Expression> left, const Token& token) override;
         int getPrecedence() override;
 };
 
 class ConditionalParser : public PrefixParser {
     public:
         ConditionalParser();
-        shared_ptr<Expression> parse(Parser& parser, Token tok) override;
+        shared_ptr<Expression> parse(Parser& parser, const Token& token) override;
 };
 
 class GroupParser : public PrefixParser {
     public:
-        shared_ptr<Expression> parse(Parser& parser, Token token) override;
+        shared_ptr<Expression> parse(Parser& parser, const Token& token) override;
 };
 
 class FuncDefParser : public PrefixParser {
     public:
-        shared_ptr<Expression> parse(Parser& parser, Token token) override;
+        shared_ptr<Expression> parse(Parser& parser, const Token& token) override;
 };
 
 #endif

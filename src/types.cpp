@@ -2,6 +2,7 @@
 #include "Error.h"
 #include "helper.h"
 #include <memory>
+#include <utility>
 using shared_obj = std::shared_ptr<object>;
 using std::visit;
 #define UNDEFINED_OP throw UndefinedOperationException(value.getStringType(), obj->value.getStringType());
@@ -9,7 +10,7 @@ using std::visit;
 #define MAKE_OBJ(ARG, ret) std::make_shared<ret>(ARG)
 
 object::object() : value(0) {}
-object::object(Result res) : value(res) {}
+object::object(Result res) : value(std::move(res)) {}
 shared_obj object::addBy(shared_obj obj) {
     UNDEFINED_OP
 }
@@ -95,7 +96,7 @@ integer_type::integer_type(int val) : object(Result(val)) {}
 shared_obj integer_type::addBy(shared_obj obj) {
     shared_obj ans = nullptr;
     std::visit(overloaded{
-        [&](std::string arg) {ans = MAKE_OBJ(std::to_string(getValue<int>()).append(arg), string_type);},
+        [&](const std::string& arg) {ans = MAKE_OBJ(std::to_string(getValue<int>()).append(arg), string_type);},
         [&](int arg) {ans = MAKE_OBJ(getValue<int>() + arg, integer_type);},
         [&](double arg) {ans = MAKE_OBJ(((double) getValue<int>()) + arg, double_type);},
         [&](auto arg) {UNDEFINED_OP}
@@ -117,7 +118,7 @@ shared_obj integer_type::subBy(shared_obj obj) {
 shared_obj integer_type::multBy(shared_obj obj) {
     shared_obj ans = nullptr;
     std::visit(overloaded{
-        [&](std::string arg) {
+        [&](const std::string& arg) {
                 std::string finalString = arg;
                 for (int i = 1; i < getValue<int>(); i++) {
                     finalString += arg;
@@ -350,7 +351,7 @@ shared_obj string_type::multBy(shared_obj obj) {
     shared_obj ans = nullptr;
     std::visit(overloaded{
         [&](int arg) {
-                std::string finalString = getValue<std::string>();
+                auto finalString = getValue<std::string>();
                 for (int i = 1; i < arg; i++) {
                     finalString += getValue<std::string>();
                 }
@@ -376,11 +377,12 @@ shared_obj list_type::addBy(shared_obj obj) {
     std::visit(overloaded{
         [&](std::vector<shared_obj> arg) {
             std::vector<shared_obj> finalArray;
+            finalArray.reserve(getValue<std::vector<shared_obj>>().size());
             for (int i = 0; i < getValue<std::vector<shared_obj>>().size(); i++) {
                 finalArray.push_back(getValue<std::vector<shared_obj>>()[i]);
             }
-            for (int i = 0; i < arg.size(); i++) {
-                finalArray.push_back(arg[i]);
+            for (const auto & i : arg) {
+                finalArray.push_back(i);
             }
             ans = MAKE_OBJ(finalArray, list_type);
             },
@@ -405,7 +407,7 @@ shared_obj list_type::index(shared_obj obj) {
     return getValue<std::vector<shared_obj>>()[toAccess];
 }
 std::string list_type::toString() {
-    std::vector<shared_obj> values = getValue<std::vector<shared_obj>>();
+    auto values = getValue<std::vector<shared_obj>>();
     std::string str("[");
     for (int i = 0 ; i < values.size(); i++) {
         if (values[i]) str += values[i]->toString();
@@ -417,7 +419,7 @@ std::string list_type::toString() {
 }
 
 func_type::func_type (std::string name, std::vector<std::string> params, std::shared_ptr<statement> toRun) 
-: object(Result(identifier())), name(name), params(params), toRun(toRun) {}
+: object(Result(identifier())), name(std::move(name)), params(std::move(params)), toRun(std::move(toRun)) {}
 shared_obj func_type::call(Context& parent, vector<shared_obj> args) {
     if (args.size() < params.size()) {
         throw Error("Function Call Exception", "Too few Params for " + name + ": expected, " + std::to_string(params.size()) + " params but called with " + std::to_string(args.size()));

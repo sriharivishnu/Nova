@@ -29,6 +29,7 @@ class Token {
             LCURL,
             RCURL,
             POWER,
+            EXIT,
             QUESTION,
             LSQUARE,
             RSQUARE,
@@ -67,15 +68,15 @@ class Token {
         Token(Type t, const char* start, const char* end, Position pos);
         Token(Type t, const char* start, size_t length, Position pos);
         
-        std::string getValue();
-        bool is(Type);
-        bool isOneOf(Type, Type);
+        std::string getValue() const;
+        [[nodiscard]] bool is(Type) const;
+        [[nodiscard]] bool isOneOf(Type, Type) const;
         template<typename... types>
-        bool isOneOf(Type t1, Type t2, types... args) {
+        bool isOneOf(Type t1, Type t2, types... args) const {
             return is(t1) || isOneOf(t2, args...);
         }
-        bool isOneOf(std::vector<Type> vec) {
-            for (int i = 0; i < vec.size() ; i++) {if (vec[i] == type) return true;}
+        [[nodiscard]] bool isOneOf(std::vector<Type> vec) const {
+            for (auto & i : vec) {if (i == type) return true;}
             return false;
         }
         friend std::ostream& operator<<(std::ostream& os, const Token& token) {

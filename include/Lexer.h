@@ -10,8 +10,7 @@ class Lexer {
     public:
         Lexer(std::string fileName, const char* text);
         std::vector<Token> getTokens();
-        std::vector<Error> getErrors();
-        Token advance();  
+        Token advance();
         bool isIdentifier(char c);
         bool isSpace(char c);
         Token makeNumber();

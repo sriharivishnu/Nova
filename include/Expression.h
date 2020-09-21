@@ -50,7 +50,7 @@ class NameExpression : public Expression {
 
 class NumberExpression : public Expression {
     public:
-        NumberExpression(Token t);
+        NumberExpression(const Token& t);
         std::string toString() override;
         int getInt();
         double getDouble();
@@ -61,7 +61,7 @@ class NumberExpression : public Expression {
 
 class StringExpression : public Expression {
     public:
-        StringExpression(Token t);
+        StringExpression(const Token& t);
         std::string toString() override;
         shared_obj accept(Context& context, Visitor& v) override;
         std::string getValue();

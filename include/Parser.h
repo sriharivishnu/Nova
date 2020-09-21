@@ -30,7 +30,6 @@ class Parser {
 
         shared_ptr<statement> parse();
 
-        bool match(Token::Type expected);
         Token lookAhead(int distance);
         int getPrecedence();
     private:

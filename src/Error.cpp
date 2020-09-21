@@ -1,6 +1,8 @@
 #include "Error.h"
 
-const char* Error::what() const throw() {
+#include <utility>
+
+const char* Error::what() const noexcept {
     std::string msg = "File<" + pos.file + ">" + 
     " Line " + std::to_string(pos.ln) + " Col " + std::to_string(pos.col) + 
     ": " + cause + ": "+ details;
@@ -8,11 +10,11 @@ const char* Error::what() const throw() {
 }
 
 Error::Error() {};
-Error::Error (std::string cause, std::string details) : cause(cause), details(details), pos(Position(0,0,0)) {};
-Error::Error (Position pos, std::string cause) : cause(cause), details(""), pos(pos) {};
-Error::Error (Position pos, std::string cause, std::string details) : cause(cause), details(details), pos(pos) {};
+Error::Error (std::string cause, std::string details) : cause(std::move(cause)), details(std::move(details)), pos(Position(0,0,0)) {};
+Error::Error (Position pos, std::string cause) : cause(std::move(cause)), details(""), pos(std::move(pos)) {};
+Error::Error (Position pos, std::string cause, std::string details) : cause(std::move(cause)), details(std::move(details)), pos(std::move(pos)) {};
 
-const char* RunTimeError::what() const throw() { 
+const char* RunTimeError::what() const noexcept {
     std::string traceback;
     Context tmp_ctx = *context;
     Position tmp_pos = pos;
@@ -27,41 +29,41 @@ const char* RunTimeError::what() const throw() {
 }
 
 RunTimeError::RunTimeError(std::shared_ptr<Context> context, Position pos, std::string cause, std::string details) 
-: Error(pos, cause, details), context(context) {};
+: Error(std::move(pos), std::move(cause), std::move(details)), context(std::move(context)) {};
 
 
 
-IllegalCharException::IllegalCharException(Position pos, std::string details) : Error(pos, "IllegalCharException", details) {}
+IllegalCharException::IllegalCharException(Position pos, std::string details) : Error(std::move(pos), "IllegalCharException", std::move(details)) {}
 
 
-ParseException::ParseException(Position pos, std::string details) : Error(pos, "ParseException", details) {}
+ParseException::ParseException(Position pos, std::string details) : Error(std::move(pos), "ParseException", std::move(details)) {}
 
 
 SyntaxError::SyntaxError(std::string details) : Error("SyntaxError", details) {};
-SyntaxError::SyntaxError(Position pos, std::string details) : Error(pos, "SyntaxError", details) {};
+SyntaxError::SyntaxError(Position pos, std::string details) : Error(std::move(pos), "SyntaxError", std::move(details)) {};
 
 
-TypeException::TypeException(Position pos, std::string details) : Error(pos, "TypeException", details) {};
+TypeException::TypeException(Position pos, std::string details) : Error(std::move(pos), "TypeException", std::move(details)) {};
 
 
 
-UndefinedOperationException::UndefinedOperationException(std::string t1, std::string t2) : Error("Undefined Operation", "") {
+UndefinedOperationException::UndefinedOperationException(const std::string& t1, const std::string& t2) : Error("Undefined Operation", "") {
     details = "Between " + t1 + " and " + t2;
 }
-UndefinedOperationException::UndefinedOperationException(Position pos, std::string t1, std::string op, std::string t2) : Error(pos, "Undefined Operation", "") {
+UndefinedOperationException::UndefinedOperationException(Position pos, const std::string& t1, const std::string& op, const std::string& t2) : Error(std::move(pos), "Undefined Operation", "") {
     details = "No operator " + op + " between " + t1 + " and " + t2;
 }
-UndefinedOperationException::UndefinedOperationException(Position pos, std::string op, std::string t1) : Error(pos, "Undefined Operation", "") {
+UndefinedOperationException::UndefinedOperationException(Position pos, std::string op, const std::string& t1) : Error(std::move(pos), "Undefined Operation", "") {
     details = "No operator " + op + " and " + t1;
 }
-UndefinedOperationException::UndefinedOperationException(Position pos, std::string op) : Error(pos, "Undefined Operation") {
+UndefinedOperationException::UndefinedOperationException(Position pos, std::string op) : Error(std::move(pos), "Undefined Operation") {
     details = "Unknown Operation Found: " + op;
 }        
 
 
 
-UndefinedVariable::UndefinedVariable(std::shared_ptr<Context> context, std::string name, Position pos) 
-: RunTimeError(context, pos, "Undefined Identifier", name + " is not defined") {}
+UndefinedVariable::UndefinedVariable(std::shared_ptr<Context> context, const std::string& name, Position pos)
+: RunTimeError(std::move(context), std::move(pos), "Undefined Identifier", name + " is not defined") {}
 
 /*
 RUNTIME ERRORS 
@@ -69,7 +71,7 @@ RUNTIME ERRORS
 
 
 DivisionByZero::DivisionByZero(std::shared_ptr<Context> context, Position pos) 
-: RunTimeError(context, pos, "Division By Zero", "Attempted division by zero") {}
+: RunTimeError(std::move(context), std::move(pos), "Division By Zero", "Attempted division by zero") {}
 
 IndexOutOfBounds::IndexOutOfBounds(std::shared_ptr<Context> context, Position pos, std::string details)
-: RunTimeError(context, pos, "IndexOutOfBounds", details) {}
+: RunTimeError(std::move(context), std::move(pos), "IndexOutOfBounds", std::move(details)) {}
