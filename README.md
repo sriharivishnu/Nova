@@ -43,10 +43,14 @@ nova>> var s = "srihari";
 srihari
 nova>> s * 3;
 sriharisriharisrihari
-nova>> var b = [1,"srihari", 2.0]
+nova>> var b = [1,"srihari", 2.0];
 [1, srihari, 2.0]
-nova>> [1,2] + [2,3]
+nova>> [1,2] + [2,3];
 [1,2,2,3]
+nova>> fun factorial(n) -> if (n == 1) 1 else n * factorial(n-1);
+function <factorial>
+nova>> factorial(10);
+3628800
 ```
 
 ### Mutli-line support
