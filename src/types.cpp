@@ -125,7 +125,7 @@ shared_obj integer_type::multBy(shared_obj obj) {
     std::visit(overloaded{
         [&](const std::string& arg) {
                 std::string finalString = arg;
-                for (int i = 1; i < getValue<int>(); i++) {
+                for (unsigned int i = 1; i < getValue<int>(); i++) {
                     finalString += arg;
                 }
                 ans = MAKE_OBJ(finalString, string_type);
@@ -357,7 +357,7 @@ shared_obj string_type::multBy(shared_obj obj) {
     std::visit(overloaded{
         [&](int arg) {
                 auto finalString = getValue<std::string>();
-                for (int i = 1; i < arg; i++) {
+                for (unsigned int i = 1; i < arg; i++) {
                     finalString += getValue<std::string>();
                 }
                 ans = MAKE_OBJ(finalString, string_type);
@@ -402,8 +402,8 @@ shared_obj list_type::addBy(shared_obj obj) {
         [&](std::vector<shared_obj> arg) {
             std::vector<shared_obj> finalArray;
             finalArray.reserve(getValue<std::vector<shared_obj>>().size());
-            for (int i = 0; i < getValue<std::vector<shared_obj>>().size(); i++) {
-                finalArray.push_back(getValue<std::vector<shared_obj>>()[i]);
+            for (const auto & i : getValue<std::vector<shared_obj>>()) {
+                finalArray.push_back(i);
             }
             for (const auto & i : arg) {
                 finalArray.push_back(i);
@@ -433,7 +433,7 @@ shared_obj list_type::index(shared_obj obj) {
 std::string list_type::toString() {
     auto values = getValue<std::vector<shared_obj>>();
     std::string str("[");
-    for (int i = 0 ; i < values.size(); i++) {
+    for (unsigned int i = 0 ; i < values.size(); i++) {
         if (values[i]) str += values[i]->toString();
         else str += "null";
         if (i != values.size() - 1) str += ", ";
@@ -462,7 +462,7 @@ shared_obj func_type::call(Context& parent, vector<shared_obj> args) {
         throw Error("Function Call Exception", "Too many Params for " + name + ": expected, " + std::to_string(params.size()) + " params but called with " + std::to_string(args.size()));
     }
     std::shared_ptr<SymbolTable> symbols = make_shared<SymbolTable>(parent.symbols);
-    for (int i = 0; i < params.size(); i++) {
+    for (unsigned int i = 0; i < params.size(); i++) {
         symbols->set(params[i], args[i]);
     }
     Context child(name, symbols);

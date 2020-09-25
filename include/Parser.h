@@ -30,7 +30,7 @@ class Parser {
 
         shared_ptr<statement> parse();
 
-        Token lookAhead(int distance);
+        Token lookAhead(unsigned int distance);
         int getPrecedence();
     private:
         int cur = 0;

@@ -168,7 +168,7 @@ Token Parser::consume(Token::Type expected, std::string expectedStr) {
     }
     return consume();
 }
-Token Parser::lookAhead(int distance)  {
+Token Parser::lookAhead(unsigned int distance)  {
     while (distance >= mRead.size()) {
         mRead.push_back(tokens[cur++]);
     }
@@ -181,7 +181,6 @@ int Parser::getPrecedence()  {
     if (it != mInfixParsables.end()) {
         return it->second->getPrecedence();
     }
-    // std::cout << "TY{" << next.type << "}" << endl;
     return -1;
 }
 

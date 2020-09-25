@@ -110,7 +110,7 @@ shared_obj Visitor::visit(Context& context, StringExpression* e) {
 }
 shared_obj Visitor::visit(Context& context, ListExpression* e) {
     vector<shared_obj> items;
-    for (int i = 0; i < e->getValue().size(); i++) {
+    for (unsigned int i = 0; i < e->getValue().size(); i++) {
         items.push_back(e->getValue()[i]->accept(context, *this));
     }
     return std::make_shared<list_type>(items);
@@ -139,7 +139,7 @@ shared_obj Visitor::visit(Context& context, ConditionalExpression* e) {
     if (e->condition->accept(context, *this)->value) {
         return e->thenBranch->accept(context, *this);
     } 
-    for (int i = 0; i< e->elif_conditions.size(); i++) {
+    for (unsigned int i = 0; i< e->elif_conditions.size(); i++) {
         if (e->elif_conditions[i]->accept(context, *this)->value) {
             return e->elif_thens[i]->accept(context, *this);
         }

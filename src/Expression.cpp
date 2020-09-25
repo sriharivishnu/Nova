@@ -97,7 +97,7 @@ ListExpression::ListExpression(Token t, std::vector<shared_ptr<Expression>> valu
 }
 std::string ListExpression::toString() {
     std::string str("[");
-    for (int i = 0 ; i < value.size(); i++) {
+    for (unsigned int i = 0 ; i < value.size(); i++) {
         if (value[i]) str += value[i]->toString();
         else str += "null";
         if (i != value.size() - 1) str += ", ";
@@ -183,7 +183,7 @@ shared_obj CallFunctionExpression::accept(Context& context, Visitor& v) {
 };
 std::string CallFunctionExpression::toString() {
     std::string call = tok.getValue() + "(";
-    for (int i = 0; i < params.size(); i++) {
+    for (unsigned int i = 0; i < params.size(); i++) {
         call += params[i]->toString();
         if (i != params.size() - 1) call.append(",");
     }
@@ -211,7 +211,7 @@ FuncDefExpression::FuncDefExpression(
 : params(std::move(params)), name(std::move(name)), body(std::move(toRun)), lambda(anonymous) { tok = tok_; }
 std::string FuncDefExpression::toString() {
     std::string ans = name + "(";
-    for (int i = 0; i < params.size() -1; i++) ans += params[i] + ",";
+    for (unsigned int i = 0; i < params.size() -1; i++) ans += params[i] + ",";
     if (!params.empty()) ans += params[params.size() - 1];
     return ans;
 }
@@ -224,7 +224,7 @@ MemberAccessExpression::MemberAccessExpression(shared_ptr<Expression> obj_, cons
 
 std::string MemberAccessExpression::toString() {
     std::string res = name + "(";
-    for (int i = 0; i < args.size() - 1; i++) {
+    for (unsigned int i = 0; i < args.size() - 1; i++) {
         res += args[i]->toString() + ", ";
     }
     res += args[args.size() - 1]->toString();
