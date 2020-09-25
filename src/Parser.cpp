@@ -28,6 +28,8 @@ Parser::Parser(vector<Token> tokens) : tokens(tokens) {
     addType(Token::Type::XOR, std::make_shared<BinaryOperatorParser>(Precedence::SUM, true));
     addType(Token::Type::BOR, std::make_shared<BinaryOperatorParser>(Precedence::SUM, true));
 
+    addType(Token::Type::DOT, std::make_shared<MemberAccessParser>());
+
     addType(Token::Type::VAR, std::make_shared<AssignmentParser>());
     addType(Token::Type::EQUALS, std::make_shared<UpdateOrAssignParser>());
     addType(Token::Type::INC, std::make_shared<PostfixOperatorParser>(Precedence::POSTFIX));

@@ -1,4 +1,6 @@
 #include <utility>
+#include <Expression.h>
+
 
 #include "Interpreter.h"
 using namespace std;
@@ -214,5 +216,21 @@ std::string FuncDefExpression::toString() {
     return ans;
 }
 shared_obj FuncDefExpression::accept(Context& context, Visitor& v) {
+    return v.visit(context, this);
+}
+
+MemberAccessExpression::MemberAccessExpression(shared_ptr<Expression> obj_, const Token &name_, const vector<shared_ptr<Expression>>& args_)
+: obj(std::move(obj_)), name(name_.getValue()), args(args_) {}
+
+std::string MemberAccessExpression::toString() {
+    std::string res = name + "(";
+    for (int i = 0; i < args.size() - 1; i++) {
+        res += args[i]->toString() + ", ";
+    }
+    res += args[args.size() - 1]->toString();
+    return res;
+}
+
+shared_obj MemberAccessExpression::accept(Context &context, Visitor &v) {
     return v.visit(context, this);
 }

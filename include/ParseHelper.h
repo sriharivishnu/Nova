@@ -114,4 +114,11 @@ class FuncDefParser : public PrefixParser {
         shared_ptr<Expression> parse(Parser& parser, const Token& token) override;
 };
 
+class MemberAccessParser : public InfixParser {
+    public:
+        MemberAccessParser();
+        shared_ptr<Expression> parse(Parser& parser, shared_ptr<Expression> left, const Token& token) override;
+        int getPrecedence() override;
+};
+
 #endif

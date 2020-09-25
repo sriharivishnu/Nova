@@ -165,4 +165,14 @@ class FuncDefExpression : public Expression {
         shared_ptr<statement> body;
         bool lambda = false;
 };
+
+class MemberAccessExpression : public Expression {
+    public:
+        MemberAccessExpression(shared_ptr<Expression> obj, const Token& name, const vector<shared_ptr<Expression>>& args);
+        std::string toString() override;
+        shared_obj accept(Context& context, Visitor& v) override;
+        shared_ptr<Expression> obj;
+        const std::string name;
+        const std::vector<shared_ptr<Expression>> args;
+};
 #endif

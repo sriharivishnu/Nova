@@ -4,7 +4,7 @@
 #include "Error.h"
 #include "Token.h"
 shared_obj Visitor::visit(Context& context, Expression* e) {
-    throw UndefinedOperationException(e->getToken().startPos, "Visited unknown expression");
+    throw UndefinedOperationException(e->getToken().startPos, "Visited unknown expression " + e->toString());
 }
 
 shared_obj Visitor::visit(Context& context, PrefixExpression* e) {
@@ -170,4 +170,11 @@ shared_obj Visitor::visit(Context& context, FuncDefExpression* e) {
     shared_ptr<func_type> fun = make_shared<func_type>(e->name, e->params, e->body); 
     if (!e->lambda) context.symbols->set(e->name, fun);
     return fun;
+}
+
+shared_obj Visitor::visit(Context &context, MemberAccessExpression *e) {
+    shared_obj left = e->obj->accept(context, *this);
+    vector<shared_obj> args;
+    for (auto & arg : e->args) args.push_back(arg->accept(context, *this));
+    return left->dot(e->name, args);
 }

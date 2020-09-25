@@ -35,7 +35,7 @@ struct object {
     virtual shared_obj prePlus();
     virtual shared_obj preMinus();
     virtual shared_obj preNot();
-
+    virtual shared_obj dot(const std::string& name, const std::vector<shared_obj>& args);
     virtual shared_obj call(Context& context, std::vector<shared_obj> args);
     virtual std::string toString();
 
@@ -45,6 +45,10 @@ struct object {
     }
     virtual ~object() = default;
     Result value;
+};
+
+struct null_type : object {
+    std::string toString() override;
 };
 
 struct integer_type : object {
@@ -99,7 +103,8 @@ struct string_type : object {
     shared_obj multBy(shared_obj obj) override;
     shared_obj toBool() override;
     std::string toString() override;
-
+    shared_obj index(shared_obj obj) override;
+    shared_obj dot(const std::string& name, const std::vector<shared_obj>& args) override;
 };
 
 struct list_type : object {
@@ -120,4 +125,11 @@ struct func_type : object {
     std::shared_ptr<statement> toRun;
     bool anonymous = false;
 };
+
+//struct user_obj : object {
+//    std::string name;
+//    std::unordered_map<std::string, func_type> member_functions;
+//    std::unordered_map<std::string, shared_obj> member_variables;
+//    std::vector<std::string> toString() override;
+//};
 #endif

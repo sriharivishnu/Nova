@@ -191,6 +191,8 @@ Token Lexer::advance() {
                 return Token(Token::Type::OR, "||", position);
             }
             return Token(Token::Type::BOR, '|', position);
+        case '.':
+            return Token(Token::Type::DOT, getLast(), position);
         case '~':
             return Token(Token::Type::BNOT, getLast(), position);
         case ':':

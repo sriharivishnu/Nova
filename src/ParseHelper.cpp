@@ -9,20 +9,21 @@ shared_ptr<Expression> InfixParser::parse(Parser& parser, shared_ptr<Expression>
 }
 int InfixParser::getPrecedence() {return -1;}
 
+#define GET_PARAMS vector<shared_ptr<Expression>> params;\
+    if (!parser.lookAhead(0).is(Token::Type::RPAREN)) {\
+        params.push_back(parser.parseExpression());\
+        while (parser.lookAhead(0).is(Token::Type::COMMA))\
+            {\
+                parser.consume();\
+                params.push_back(parser.parseExpression());\
+            }\
+    }\
+    parser.consume(Token::Type::RPAREN, ", expected ')'");
 
 shared_ptr<Expression> NameParser::parse(Parser& parser, const Token& token) {
     if (parser.lookAhead(0).is(Token::Type::LPAREN)) {
         parser.consume();
-        vector<shared_ptr<Expression>> params;
-        if (!parser.lookAhead(0).is(Token::Type::RPAREN)) {
-            params.push_back(parser.parseExpression());
-            while (parser.lookAhead(0).is(Token::Type::COMMA))
-            {   
-                parser.consume();
-                params.push_back(parser.parseExpression());
-            }
-        }
-        parser.consume(Token::Type::RPAREN, ", expected ')'");
+        GET_PARAMS
         return make_shared<CallFunctionExpression>(token, params);
     } else if (parser.lookAhead(0).is(Token::Type::LSQUARE)) {
         parser.consume();
@@ -182,3 +183,15 @@ shared_ptr<Expression> FuncDefParser::parse(Parser& parser, const Token& token) 
     }
     return make_shared<FuncDefExpression>(token, name, params, toRun, anonymous);
 }
+
+MemberAccessParser::MemberAccessParser() = default;
+shared_ptr<Expression> MemberAccessParser::parse(Parser& parser, shared_ptr<Expression> left, const Token& token) {
+    Token name = parser.consume(Token::Type::IDENTIFIER, ", expected an member name");
+    parser.consume(Token::Type::LPAREN);
+    GET_PARAMS
+    return make_shared<MemberAccessExpression>(left, name, params);
+}
+int MemberAccessParser::getPrecedence() {return Precedence::CALL;}
+
+#undef GET_PARAMS
+

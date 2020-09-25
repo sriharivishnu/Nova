@@ -22,6 +22,7 @@ class Token {
             MINUS_EQUAL,
             MULT_EQUAL,
             DIV_EQUAL,
+            DOT,
             INC,
             DEC,
             LPAREN,

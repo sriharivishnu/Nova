@@ -86,6 +86,11 @@ std::string object::toString() {
     return "<object>";
 }
 
+shared_obj object::dot(const std::string& name, const std::vector<shared_obj>& args) {
+    throw UndefinedOperationException(value.getStringType(), ".");
+}
+
+
 #define BOOL_NUMBER_OP(t, op) std::visit(overloaded{\
             [&](int arg) {ans = MAKE_OBJ(getValue<t>() op arg, integer_type);},\
             [&](double arg) {ans = MAKE_OBJ(getValue<t>() op arg, integer_type);},\
@@ -370,6 +375,25 @@ std::string string_type::toString() {
     return getValue<std::string>();
 }
 
+shared_obj string_type::dot(const std::string& name, const std::vector<shared_obj>& args) {
+    if (name == "length" || name == "len" || name == "size") {
+        if (!args.empty()) throw Error("Function Call Exception", "Too many Params for " + name + ": expected, " + std::to_string(0) + " params but called with " + std::to_string(args.size()));
+        return MAKE_OBJ(getValue<std::string>().length(), integer_type);
+    }
+    throw Error("Undefined Method", value.getStringType() + " has no member function " + name);
+}
+
+shared_obj string_type::index(shared_obj obj) {
+    if (!obj->value.isType<int>()) UNDEFINED_OP;
+    int toAccess = obj->getValue<int>();
+    int size = getValue<std::string>().length();
+    if (toAccess >=  size || toAccess < 0) {
+        throw Error("Index Out of Bounds", "Attempted to access index: " + std::to_string(toAccess) + ", with string size: " + std::to_string(size));
+    }
+    return MAKE_OBJ(std::to_string(getValue<std::string>()[toAccess]), string_type);
+}
+
+
 list_type::list_type(std::vector<shared_obj> val) : object(Result(val)) {}
 
 shared_obj list_type::addBy(shared_obj obj) {
@@ -441,3 +465,7 @@ std::string func_type::toString() {
 }
 
 #undef MAKE_OBJ
+
+std::string null_type::toString() {
+    return "null";
+}
