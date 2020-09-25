@@ -37,7 +37,7 @@ struct Result {
         }
 
         template<typename T> 
-        T getValue() {
+        T& getValue() {
             return std::get<T>(mResult);
         }
 

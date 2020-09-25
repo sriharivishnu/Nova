@@ -442,6 +442,16 @@ std::string list_type::toString() {
     return str;
 }
 
+shared_obj list_type::dot(const string &name, const vector<shared_obj> &args) {
+    if (name == "size" || name == "length" || name == "len") {
+        return MAKE_OBJ(getValue<std::vector<shared_obj>>().size(), integer_type);
+    } else if (name == "add" && args.size() == 1) {
+        getValue<std::vector<shared_obj>>().push_back(args[0]);
+        return std::make_shared<null_type>();
+    }
+    throw Error("Undefined Method", value.getStringType() + " has no member function " + name);
+}
+
 func_type::func_type (std::string name, std::vector<std::string> params, std::shared_ptr<statement> toRun) 
 : object(Result(identifier())), name(std::move(name)), params(std::move(params)), toRun(std::move(toRun)) {}
 shared_obj func_type::call(Context& parent, vector<shared_obj> args) {

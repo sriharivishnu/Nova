@@ -6,7 +6,6 @@
 #include "Statement.h"
 #include "Result.h"
 #include "Context.h"
-// class function_statement;
 struct object;
 class statement;
 using shared_obj = std::shared_ptr<object>;
@@ -40,7 +39,7 @@ struct object {
     virtual std::string toString();
 
     template <typename T>
-    T getValue() {
+    T& getValue() {
         return value.getValue<T>();
     }
     virtual ~object() = default;
@@ -113,6 +112,7 @@ struct list_type : object {
     shared_obj multBy(shared_obj obj) override;
     shared_obj toBool() override;
     shared_obj index(shared_obj obj) override;
+    shared_obj dot(const std::string& name, const std::vector<shared_obj>& args) override;
     std::string toString() override;
 };
 
