@@ -5,3 +5,7 @@ nova
 *.o
 autom4te.cache/
 autom4te.cache
+
+config.log
+config.status
+
