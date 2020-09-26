@@ -1,3 +1,6 @@
 build/
 nova
 .vscode/settings.json
+*.Po
+*.o
+autom4te.cache/
