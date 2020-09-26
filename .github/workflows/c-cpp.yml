@@ -13,8 +13,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: aclocal
-      run: aclocal
     - name: automake
       run: automake --add-missing
     - name: autoreconf
