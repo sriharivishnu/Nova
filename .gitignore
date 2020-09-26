@@ -4,3 +4,8 @@ nova
 *.Po
 *.o
 autom4te.cache/
+
+config/
+config.log
+config.status
+missing
