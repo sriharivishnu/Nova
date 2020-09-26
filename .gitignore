@@ -4,7 +4,8 @@ nova
 *.Po
 *.o
 autom4te.cache/
-
+autom4te.cache
+install-sh
 config/
 config.log
 config.status
