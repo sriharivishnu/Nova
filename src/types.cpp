@@ -343,7 +343,7 @@ string_type::string_type(std::string val) : object(Result(val)) {}
 shared_obj string_type::addBy(shared_obj obj) {
     shared_obj ans = nullptr;
     std::visit(overloaded{
-        [&](std::string& arg) {ans = MAKE_OBJ(getValue<std::string>().append(arg), string_type);},
+        [&](std::string arg) {ans = MAKE_OBJ(getValue<std::string>().append(arg), string_type);},
         [&](int arg) {ans = MAKE_OBJ(getValue<std::string>().append(std::to_string(arg)), string_type);},
         [&](double arg) {ans = MAKE_OBJ(getValue<std::string>().append(std::to_string(arg)), string_type);},
         [&](auto arg) {UNDEFINED_OP}
