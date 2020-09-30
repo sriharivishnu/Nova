@@ -126,23 +126,27 @@ class ConditionalExpression : public Expression {
 class CallFunctionExpression : public Expression {
     public:
         CallFunctionExpression(
+            shared_ptr<Expression> left,
             Token tok_, 
             vector<shared_ptr<Expression>> params
         );
         shared_obj accept(Context& context, Visitor& v) override;
         std::string toString() override;
-        vector<shared_ptr<Expression>> params;
+        shared_ptr<Expression> left;
+    vector<shared_ptr<Expression>> params;
 };
 
 class IndexExpression : public Expression {
     public:
         IndexExpression(
+            shared_ptr<Expression> left,
             Token tok_, 
             shared_ptr<Expression> index
         );
         shared_obj accept(Context& context, Visitor& v) override;
         std::string toString() override;
         shared_ptr<Expression> index;
+        shared_ptr<Expression> left;
 };
 
 class ListExpression : public Expression {

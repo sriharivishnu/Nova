@@ -1,7 +1,5 @@
 #ifndef PARSER_HELPER
 #define PARSER_HELPER
-#include "Expression.h"
-#include "Parser.h"
 #include "Token.h"
 #include <memory>
 #include <vector>
@@ -16,7 +14,10 @@ enum Precedence {
     EXPONENT = 5, 
     PREFIX = 6,
     POSTFIX = 7,
-    CALL = 8
+    INDEX = 8,
+    CALL = 9
 };
+//Infix
+int getTokenPrecedence(const Token& tok);
 
 #endif

@@ -19,16 +19,6 @@ shared_ptr<Expression> Parser::getPrefixExpression(const Token& tok) {
     switch (tok.type) {
         case Token::Type::BOOL:
         case Token::Type::IDENTIFIER:
-            if (lookAhead(0).is(Token::Type::LPAREN)) {
-                consume();
-                GET_PARAMS
-                return make_shared<CallFunctionExpression>(tok, params);
-            } else if (lookAhead(0).is(Token::Type::LSQUARE)) {
-                consume();
-                shared_ptr<Expression> index = parseExpression();
-                consume(Token::Type::RSQUARE, ", expected ']'");
-                return make_shared<IndexExpression>(tok, index);
-            }
             return make_shared<NameExpression>(tok.getValue(), tok);
         case Token::Type::INT:
         case Token::Type::DOUBLE:
@@ -49,7 +39,7 @@ shared_ptr<Expression> Parser::getPrefixExpression(const Token& tok) {
         }
         case Token::Type::LPAREN: {
             shared_ptr<Expression> expression = parseExpression();
-            consume(Token::Type::RPAREN, ", expected '}'");
+            consume(Token::Type::RPAREN, ", expected ')'");
             return expression;
         }
         case Token::Type::LSQUARE: {
@@ -172,6 +162,16 @@ shared_ptr<Expression> Parser::getInfixExpression(const shared_ptr<Expression>& 
             shared_ptr<Expression> right = parseExpression(Precedence::CONDITION);
             return make_shared<ComparisonExpression>(left, tok, right);
         }
+        case Token::Type::LSQUARE: {
+            shared_ptr<Expression> index = parseExpression();
+            consume(Token::Type::RSQUARE, ", expected ']'");
+            return make_shared<IndexExpression>(left, tok, index);
+        }
+        case Token::Type::LPAREN: {
+            GET_PARAMS
+            return make_shared<CallFunctionExpression>(left, tok, params);
+
+        }
         case Token::Type::DOT: {
             Token name = consume(Token::Type::IDENTIFIER, ", expected an member name");
             consume(Token::Type::LPAREN);
@@ -269,13 +269,6 @@ shared_ptr<statement> Parser::parseStatement() {
     return stmt;
 }
 
-void Parser::addType(Token::Type type, shared_ptr<PrefixParser> prefix) {
-    mPrefixParsables[type] = std::move(prefix);
-}
-void Parser::addType(Token::Type type, shared_ptr<InfixParser> prefix) {
-    mInfixParsables[type] = std::move(prefix);
-}
-
 Token Parser::consume() {
     Token start = lookAhead(0);
     mRead.erase(mRead.begin());
@@ -298,11 +291,7 @@ Token Parser::lookAhead(unsigned int distance)  {
 
 int Parser::getPrecedence()  {
     Token next = lookAhead(0);
-    auto it = mInfixParsables.find(next.type);
-    if (it != mInfixParsables.end()) {
-        return -1;
-    }
-    return -1;
+    return getTokenPrecedence(next);
 }
 #undef GET_PARAMS
 

@@ -18,8 +18,6 @@ class InfixParser;
 class Parser {
     public:
         Parser(std::vector<Token> tokens);
-        void addType(Token::Type type, shared_ptr<PrefixParser> prefix);
-        void addType(Token::Type type, shared_ptr<InfixParser> prefix);
         Token consume();
         Token consume(Token::Type expected, const std::string& expectedStr = std::string(""));
 
@@ -38,8 +36,6 @@ class Parser {
         int cur = 0;
         vector<Token> tokens;
         vector<Token> mRead;
-        unordered_map<Token::Type, std::shared_ptr<PrefixParser>> mPrefixParsables;
-        unordered_map<Token::Type, std::shared_ptr<InfixParser>> mInfixParsables;
 };
 
 #endif
