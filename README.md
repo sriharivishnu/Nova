@@ -3,21 +3,32 @@
 nova>> "Welcome to Nova! :)";
 Welcome to Nova! :)
 ```
-## Getting Started
+## Getting Started (Release)
 ### Linux/MacOS
-1. Clone this repository over https or SSH : `git clone https://github.com/sriharivishnu/Nova.git` or `git clone git@github.com:sriharivishnu/Nova.git`
-2. Navigate to the directory that was created, and run `make` in the command line. This should generate a build folder, and also a binary called nova.
-3. Run the executable from the command line with `./nova` to start the shell, or type in `./nova <filename>.nov` to run a file.
-4. Type in `1+1` and it should output `2`
-
+1. Download the [latest release](https://github.com/sriharivishnu/Nova/releases) from Github releases 
+2. Untar with `tar -xf nova-<latest-version>.tar.gz`
+3. Configure for your system with `./configure`
+4. Install to your system with `make install` (if permission denied, try `sudo make install`)
+5. Run nova: `nova <filename>.nov` or `nova` to enter the shell
 ### Windows
 Compiling/Building:
 - **Option 1**: Use GNUWin32 to use make
 - **Option 2**: Install make.exe from the GNU website
 - **Option 3**: Install `chocolatey` and the run `choco install make`
 - **Option 4**: Manually build all the source files by installing g++, and compiling all src files.
-
 The steps in the Linux/MacOS section can now be followed
+
+## Contributing
+### Linux/MacOS
+1. Clone this repository over https or SSH : `git clone https://github.com/sriharivishnu/Nova.git` or `git clone git@github.com:sriharivishnu/Nova.git`
+2. Navigate to the directory that was created
+3. run `autoreconf --install`
+4. run `./configure`
+5. run `make` to create a binary in the current directory or `make install` to install it to your system
+6. Run the executable from the command line with `./nova` (or `nova` if installed) to start the shell, or type in `./nova <filename>.nov` to run a file.
+
+### Windows
+- Please follow the steps above after installing the necessary GNU tools (autoreconf, make etc.)
 
 ## Examples
 ### Current Syntax
