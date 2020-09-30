@@ -16,6 +16,7 @@ Compiling/Building:
 - **Option 2**: Install make.exe from the GNU website
 - **Option 3**: Install `chocolatey` and the run `choco install make`
 - **Option 4**: Manually build all the source files by installing g++, and compiling all src files.
+
 The steps in the Linux/MacOS section can now be followed
 
 ## Contributing
