@@ -175,9 +175,10 @@ std::string ConditionalExpression::toString() {
 }
 
 CallFunctionExpression::CallFunctionExpression(
+            shared_ptr<Expression> left_,
             Token tok_, 
             vector<shared_ptr<Expression>> params
-        ) : params(std::move(params)) { tok = std::move(tok_);}
+        ) : left(std::move(left_)),params(std::move(params)) { tok = std::move(tok_);}
 shared_obj CallFunctionExpression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
 };
@@ -192,9 +193,10 @@ std::string CallFunctionExpression::toString() {
 };
 
 IndexExpression::IndexExpression(
+            shared_ptr<Expression> left_,
             Token tok_, 
             shared_ptr<Expression> index
-        ) : index(std::move(index)) { tok = std::move(tok_); }
+        ) : index(std::move(index)), left(std::move(left_)) { tok = std::move(tok_); }
 shared_obj IndexExpression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
 }

@@ -1,53 +1,187 @@
 #include "Parser.h"
 #include "iostream"
 #include <string>
+#include <utility>
 using namespace std;
-Parser::Parser(vector<Token> tokens) : tokens(tokens) {
-    addType(Token::Type::IDENTIFIER, std::make_shared<NameParser>());
-    addType(Token::Type::INT, std::make_shared<NumberParser>());
-    addType(Token::Type::DOUBLE, std::make_shared<NumberParser>());
-    addType(Token::Type::STRING, std::make_shared<StringParser>());
-    addType(Token::Type::BOOL, std::make_shared<NameParser>());
-    addType(Token::Type::LPAREN, std::make_shared<GroupParser>());
-    addType(Token::Type::LSQUARE, std::make_shared<ListParser>());
+Parser::Parser(vector<Token> tokens) : tokens(std::move(tokens)) {};
 
-    addType(Token::Type::PLUS, std::make_shared<PrefixOperatorParser>(Precedence::PREFIX));
-    addType(Token::Type::MINUS, std::make_shared<PrefixOperatorParser>(Precedence::PREFIX));
-    addType(Token::Type::NOT, std::make_shared<PrefixOperatorParser>(Precedence::PREFIX));
-    addType(Token::Type::BNOT, std::make_shared<PrefixOperatorParser>(Precedence::PREFIX));
+#define GET_PARAMS vector<shared_ptr<Expression>> params;\
+    if (!lookAhead(0).is(Token::Type::RPAREN)) {\
+        params.push_back(parseExpression());\
+        while (lookAhead(0).is(Token::Type::COMMA))\
+            {\
+                consume();\
+                params.push_back(parseExpression());\
+            }\
+    }\
+    consume(Token::Type::RPAREN, ", expected ')'");
+shared_ptr<Expression> Parser::getPrefixExpression(const Token& tok) {
+    switch (tok.type) {
+        case Token::Type::BOOL:
+        case Token::Type::IDENTIFIER:
+            return make_shared<NameExpression>(tok.getValue(), tok);
+        case Token::Type::INT:
+        case Token::Type::DOUBLE:
+            return make_shared<NumberExpression>(tok);
+        case Token::Type::STRING:
+            return make_shared<StringExpression>(tok);
+        case Token::Type::PLUS:
+        case Token::Type::MINUS:
+        case Token::Type::BNOT:
+        case Token::Type::NOT:
+        case Token::Type::INC:
+        case Token::Type::DEC: {
+            shared_ptr<Expression> right = parseExpression(Precedence::PREFIX);
+            if (tok.isOneOf(Token::Type::INC, Token::Type::DEC) && !right->getToken().is(Token::Type::IDENTIFIER)) {
+                throw SyntaxError(right->getToken().startPos, "Expected an identifier");
+            }
+            return make_shared<PrefixExpression>(tok, right);
+        }
+        case Token::Type::LPAREN: {
+            shared_ptr<Expression> expression = parseExpression();
+            consume(Token::Type::RPAREN, ", expected ')'");
+            return expression;
+        }
+        case Token::Type::LSQUARE: {
+            vector<shared_ptr<Expression>> items;
+            if (!lookAhead(0).is(Token::Type::RSQUARE)) {
+                shared_ptr<Expression> item = parseExpression();
+                items.push_back(item);
+                while (lookAhead(0).is(Token::Type::COMMA)) {
+                    consume(Token::Type::COMMA);
+                    items.push_back(parseExpression());
+                }
+            }
+            consume(Token::Type::RSQUARE, "expected ']'");
+            return make_shared<ListExpression>(tok, items);
+        }
+        case Token::Type::IF: {
+            //IF
+            consume(Token::Type::LPAREN, ", expected '(");
+            shared_ptr<Expression> condition = parseExpression(Precedence::CONDITION -1 );
+            consume(Token::Type::RPAREN, ", expected ')'");
+            shared_ptr<Expression> then = parseExpression(Precedence::CONDITION - 1);
 
-    addType(Token::Type::INC, std::make_shared<PrefixOperatorParser>(Precedence::PREFIX));
-    addType(Token::Type::DEC, std::make_shared<PrefixOperatorParser>(Precedence::PREFIX));
+            //ELIF
+            Token next = consume();
+            vector<shared_ptr<Expression>> elif_conditions;
+            vector<shared_ptr<Expression>> elif_thens;
+            while (next.is(Token::Type::ELIF)) {
+                consume(Token::Type::LPAREN, ", expected '(");
+                elif_conditions.push_back(parseExpression(Precedence::CONDITION -1 ));
+                consume(Token::Type::RPAREN, ", expected ')'");
+                elif_thens.push_back(parseExpression(Precedence::CONDITION -1));
+                next = consume();
+            }
 
-    addType(Token::Type::PLUS, std::make_shared<BinaryOperatorParser>(Precedence::SUM, false));            
-    addType(Token::Type::MINUS, std::make_shared<BinaryOperatorParser>(Precedence::SUM, false));            
-    addType(Token::Type::MULT, std::make_shared<BinaryOperatorParser>(Precedence::PRODUCT, false));            
-    addType(Token::Type::DIV, std::make_shared<BinaryOperatorParser>(Precedence::PRODUCT, false));    
-    addType(Token::Type::POWER, std::make_shared<BinaryOperatorParser>(Precedence::EXPONENT, true));
-    addType(Token::Type::BAND, std::make_shared<BinaryOperatorParser>(Precedence::SUM, true));
-    addType(Token::Type::XOR, std::make_shared<BinaryOperatorParser>(Precedence::SUM, true));
-    addType(Token::Type::BOR, std::make_shared<BinaryOperatorParser>(Precedence::SUM, true));
+            //ELSE
+            if (!next.is(Token::Type::ELSE)) throw SyntaxError(next.startPos, "Unexpected token: " +  next.getValue() + ", expected 'else' or 'elif'");
+            shared_ptr<Expression> elseBranch = parseExpression(Precedence::CONDITION - 1);
+            return make_shared<ConditionalExpression>(tok, condition, then, elif_conditions, elif_thens, elseBranch);
+        }
+        case Token::Type::VAR: {
+            Token name = consume(Token::Type::IDENTIFIER, ", expected an identifier");
+            Token equals = consume(Token::Type::EQUALS, ", expected '='");
+            shared_ptr<Expression> right = parseExpression(Precedence::ASSIGNMENT - 1);
+            return make_shared<AssignmentExpression>(name.getValue(), right, equals);
+        }
+        case Token::Type::FUNCTION: {
+            std::string name;
+            bool anonymous = false;
+            if (lookAhead(0).is(Token::Type::IDENTIFIER)) name = consume(Token::Type::IDENTIFIER).getValue();
+            else {
+                name = "anonymous";
+                anonymous = true;
+            }
 
-    addType(Token::Type::DOT, std::make_shared<MemberAccessParser>());
+            consume(Token::Type::LPAREN, "expected '(' for function definition of " + name);
+            vector<std::string> params;
+            if (!lookAhead(0).is(Token::Type::RPAREN)) {
+                Token p = consume(Token::Type::IDENTIFIER);
+                params.push_back(p.getValue());
+                while (lookAhead(0).is(Token::Type::COMMA)) {
+                    consume();
+                    p = consume(Token::Type::IDENTIFIER);
+                    params.push_back(p.getValue());
+                }
+            }
+            consume(Token::Type::RPAREN, ", expected ')'");
+            shared_ptr<statement> toRun;
+            if (lookAhead(0).is(Token::Type::ARROW)) {
+                consume(Token::Type::ARROW);
+                toRun = make_shared<simple_statement>(parseExpression());
+            } else {
+                toRun = parseStatement();
+            }
+            return make_shared<FuncDefExpression>(tok, name, params, toRun, anonymous);
+        }
+        default:
+            if (tok.is(Token::Type::END)) throw ParseException(tok.startPos, "Unexpected End of File while Parsing");
+            else if (tok.is(Token::Type::ELIF)) throw SyntaxError(tok.startPos, "'elif' without an 'if' statement");
+            else if (tok.is(Token::Type::ELSE)) throw SyntaxError(tok.startPos, "'else' without an 'if' statement");
+            else if (tok.is(Token::Type::STMT_END)) throw SyntaxError(tok.startPos, "unexpected end of statement");
+            throw SyntaxError(tok.startPos, "Could not parse: '" + tok.getValue() + "'");
+    }
+}
 
-    addType(Token::Type::VAR, std::make_shared<AssignmentParser>());
-    addType(Token::Type::EQUALS, std::make_shared<UpdateOrAssignParser>());
-    addType(Token::Type::INC, std::make_shared<PostfixOperatorParser>(Precedence::POSTFIX));
-    addType(Token::Type::DEC, std::make_shared<PostfixOperatorParser>(Precedence::POSTFIX));
+shared_ptr<Expression> Parser::getInfixExpression(const shared_ptr<Expression>& left, const Token& tok) {
+    switch(tok.type) {
+        case Token::Type::PLUS:
+        case Token::Type::MINUS:
+            return make_shared<BinOpExpression>(left, tok, parseExpression(Precedence::SUM));
+        case Token::Type::MULT:
+        case Token::Type::DIV:
+            return make_shared<BinOpExpression>(left, tok, parseExpression(Precedence::PRODUCT));
+        case Token::Type::POWER:
+            return make_shared<BinOpExpression>(left, tok, parseExpression(Precedence::EXPONENT - 1));
+        case Token::Type::BAND:
+        case Token::Type::XOR:
+        case Token::Type::BOR:
+            return make_shared<BinOpExpression>(left, tok, parseExpression(Precedence::SUM - 1));
+        case Token::Type::EQUALS: {
+            if (!left->getToken().is(Token::Type::IDENTIFIER)) {
+                throw SyntaxError(left->getToken().startPos, "Expected an identifier");
+            }
+            shared_ptr<Expression> right = parseExpression(Precedence::ASSIGNMENT - 1);
+            return make_shared<UpdateExpression>(left->getToken().getValue(), right, tok);
+        }
+        case Token::Type::INC:
+        case Token::Type::DEC:
+            if (tok.isOneOf(Token::Type::INC, Token::Type::DEC) && !left->getToken().is(Token::Type::IDENTIFIER)) {
+                throw SyntaxError(left->getToken().startPos, "Expected an identifier");
+            }
+            return make_shared<PostfixExpression>(left, tok);
+        case Token::Type::EE:
+        case Token::Type::NE:
+        case Token::Type::GE:
+        case Token::Type::LE:
+        case Token::Type::GT:
+        case Token::Type::LT:
+        case Token::Type::AND:
+        case Token::Type::OR: {
+            shared_ptr<Expression> right = parseExpression(Precedence::CONDITION);
+            return make_shared<ComparisonExpression>(left, tok, right);
+        }
+        case Token::Type::LSQUARE: {
+            shared_ptr<Expression> index = parseExpression();
+            consume(Token::Type::RSQUARE, ", expected ']'");
+            return make_shared<IndexExpression>(left, tok, index);
+        }
+        case Token::Type::LPAREN: {
+            GET_PARAMS
+            return make_shared<CallFunctionExpression>(left, tok, params);
 
-    addType(Token::Type::EE, std::make_shared<ComparisonParser>());
-    addType(Token::Type::NE, std::make_shared<ComparisonParser>());
-    addType(Token::Type::GE, std::make_shared<ComparisonParser>());
-    addType(Token::Type::LE, std::make_shared<ComparisonParser>());
-    addType(Token::Type::GT, std::make_shared<ComparisonParser>());
-    addType(Token::Type::LT, std::make_shared<ComparisonParser>());
-    addType(Token::Type::AND, std::make_shared<ComparisonParser>());
-    addType(Token::Type::OR, std::make_shared<ComparisonParser>());
-
-    addType(Token::Type::IF, std::make_shared<ConditionalParser>());
-
-    addType(Token::Type::FUNCTION, std::make_shared<FuncDefParser>());
-};
+        }
+        case Token::Type::DOT: {
+            Token name = consume(Token::Type::IDENTIFIER, ", expected an member name");
+            consume(Token::Type::LPAREN);
+            GET_PARAMS
+            return make_shared<MemberAccessExpression>(left, name, params);
+        }
+        default:
+            throw UndefinedOperationException(tok.startPos, tok.getValue());
+    }
+}
 
 shared_ptr<statement> Parser::parse() {
     return parseStatement();
@@ -55,23 +189,10 @@ shared_ptr<statement> Parser::parse() {
 
 shared_ptr<Expression> Parser::parseExpression(int precedence) {
     Token token = consume();
-    auto it = mPrefixParsables.find(token.type);
-    if (it == mPrefixParsables.end()) {
-        if (token.is(Token::Type::END)) throw ParseException(token.startPos, "Unexpected End of File while Parsing");
-        else if (token.is(Token::Type::ELIF)) throw SyntaxError(token.startPos, "'elif' without an 'if' statement");
-        else if (token.is(Token::Type::ELSE)) throw SyntaxError(token.startPos, "'else' without an 'if' statement");
-        else if (token.is(Token::Type::STMT_END)) throw SyntaxError(token.startPos, "unexpected end of statement");
-        throw SyntaxError(token.startPos, "Could not parse: '" + token.getValue() + "'");
-    }
-
-    shared_ptr<PrefixParser> prefix = it->second;
-    shared_ptr<Expression> left = prefix->parse(*this, token);
+    shared_ptr<Expression> left = getPrefixExpression(token);
     while (precedence < getPrecedence()) {
         token = consume();
-        auto it2 = mInfixParsables.find(token.type);
-        if (it2 == mInfixParsables.end()) throw UndefinedOperationException(token.startPos, token.getValue());
-        shared_ptr<InfixParser> infix = it2->second;
-        left = infix->parse(*this, left, token);
+        left = getInfixExpression(left, token);
     }
     return left;
 }
@@ -148,19 +269,12 @@ shared_ptr<statement> Parser::parseStatement() {
     return stmt;
 }
 
-void Parser::addType(Token::Type type, shared_ptr<PrefixParser> prefix) {
-    mPrefixParsables[type] = std::move(prefix);
-}
-void Parser::addType(Token::Type type, shared_ptr<InfixParser> prefix) {
-    mInfixParsables[type] = std::move(prefix);
-}
-
 Token Parser::consume() {
     Token start = lookAhead(0);
     mRead.erase(mRead.begin());
     return start;
 }
-Token Parser::consume(Token::Type expected, std::string expectedStr) {
+Token Parser::consume(Token::Type expected, const std::string& expectedStr) {
     Token token = lookAhead(0);
     if (token.type != expected) {
         if (token.is(Token::Type::END) && expectedStr.empty()) throw ParseException(token.startPos, "Unexpected EOF while parsing");
@@ -177,10 +291,7 @@ Token Parser::lookAhead(unsigned int distance)  {
 
 int Parser::getPrecedence()  {
     Token next = lookAhead(0);
-    auto it = mInfixParsables.find(next.type);
-    if (it != mInfixParsables.end()) {
-        return it->second->getPrecedence();
-    }
-    return -1;
+    return getTokenPrecedence(next);
 }
+#undef GET_PARAMS
 

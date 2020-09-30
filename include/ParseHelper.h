@@ -1,7 +1,5 @@
 #ifndef PARSER_HELPER
 #define PARSER_HELPER
-#include "Expression.h"
-#include "Parser.h"
 #include "Token.h"
 #include <memory>
 #include <vector>
@@ -16,109 +14,10 @@ enum Precedence {
     EXPONENT = 5, 
     PREFIX = 6,
     POSTFIX = 7,
-    CALL = 8
+    INDEX = 8,
+    CALL = 9
 };
-class Parser;
-class PrefixParser {
-    public:
-        virtual shared_ptr<Expression> parse(Parser& parser, const Token& token);
-        virtual ~PrefixParser() = default;
-};
-class InfixParser {
-    public:
-        virtual shared_ptr<Expression> parse(Parser& parser, shared_ptr<Expression> left, const Token& token);
-        virtual int getPrecedence();
-        virtual ~InfixParser() = default;
-};
-
-class NameParser : public PrefixParser {
-    public:
-        shared_ptr<Expression> parse(Parser& parser, const Token& token) override;
-};
-
-class NumberParser : public PrefixParser {
-    public:
-        shared_ptr<Expression> parse(Parser& parser, const Token& token) override;
-};
-class StringParser : public PrefixParser {
-    public:
-        shared_ptr<Expression> parse(Parser& parser, const Token& token) override;
-};
-
-class ListParser : public PrefixParser {
-    public:
-        shared_ptr<Expression> parse(Parser& parser, const Token& token) override;
-};
-
-class PrefixOperatorParser : public PrefixParser {
-    public:
-        PrefixOperatorParser(int precedence);
-        shared_ptr<Expression> parse(Parser& parser, const Token& token);
-        int getPrecedence() const;
-    private:
-        int precedence;
-};
-
-class PostfixOperatorParser : public InfixParser {
-    public:
-        PostfixOperatorParser(int precedence);
-        shared_ptr<Expression> parse(Parser& parser, shared_ptr<Expression> left, const Token& token) override;
-        int getPrecedence() override;
-    private:
-        int precedence = 0;
-};
-
-class BinaryOperatorParser : public InfixParser {
-    public:
-        BinaryOperatorParser(int precedence, bool isRight);
-        shared_ptr<Expression> parse(Parser& parser, shared_ptr<Expression> left, const Token& token) override;
-        int getPrecedence() override;
-    private:
-        int precedence = 0;
-        bool isRight = false;
-};
-
-class ComparisonParser : public InfixParser {
-    public:
-        ComparisonParser();
-        shared_ptr<Expression> parse(Parser& parser, shared_ptr<Expression> left, const Token& token) override;
-        int getPrecedence() override;
-};
-
-class AssignmentParser : public PrefixParser {
-    public:
-        AssignmentParser();
-        shared_ptr<Expression> parse(Parser& parser, const Token& token) override;
-};
-
-class UpdateOrAssignParser : public InfixParser {
-    public:
-        UpdateOrAssignParser();
-        shared_ptr<Expression> parse(Parser& parser, shared_ptr<Expression> left, const Token& token) override;
-        int getPrecedence() override;
-};
-
-class ConditionalParser : public PrefixParser {
-    public:
-        ConditionalParser();
-        shared_ptr<Expression> parse(Parser& parser, const Token& token) override;
-};
-
-class GroupParser : public PrefixParser {
-    public:
-        shared_ptr<Expression> parse(Parser& parser, const Token& token) override;
-};
-
-class FuncDefParser : public PrefixParser {
-    public:
-        shared_ptr<Expression> parse(Parser& parser, const Token& token) override;
-};
-
-class MemberAccessParser : public InfixParser {
-    public:
-        MemberAccessParser();
-        shared_ptr<Expression> parse(Parser& parser, shared_ptr<Expression> left, const Token& token) override;
-        int getPrecedence() override;
-};
+//Infix
+int getTokenPrecedence(const Token& tok);
 
 #endif

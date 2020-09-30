@@ -147,24 +147,18 @@ shared_obj Visitor::visit(Context& context, ConditionalExpression* e) {
     return e->elseBranch->accept(context, *this);
 }
 
-shared_obj Visitor::visit(Context& parent, CallFunctionExpression* e) {
-
-    Visitor v;
-    std::optional<shared_obj> decl = parent.symbols->get(e->getToken().getValue());
-    if (!decl) throw UndefinedVariable(make_shared<Context>(parent), e->getToken().getValue(), e->getToken().startPos);
+shared_obj Visitor::visit(Context& context, CallFunctionExpression* e) {
+    shared_obj decl = e->left->accept(context, *this);
     vector<shared_obj> args;
     for (auto & param : e->params) {
-        args.push_back(param->accept(parent, v));
+        args.push_back(param->accept(context, *this));
     }
-    return decl->get()->call(parent, args);
+    return decl->call(context, args);
 }
 
 shared_obj Visitor::visit(Context& context, IndexExpression* e) {
-    std::optional<shared_obj> value = context.symbols->get(e->getToken().getValue());
-    if (!value) {
-        throw UndefinedVariable(make_shared<Context>(context), e->getToken().getValue(), e->getToken().startPos);
-    }
-    return value->get()->index(e->index->accept(context, *this));
+    shared_obj index_obj = e->index->accept(context, *this);
+    return e->left->accept(context, *this)->index(index_obj);
 }
 shared_obj Visitor::visit(Context& context, FuncDefExpression* e) {
     shared_ptr<func_type> fun = make_shared<func_type>(e->name, e->params, e->body); 
