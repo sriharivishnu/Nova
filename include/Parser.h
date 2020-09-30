@@ -21,8 +21,10 @@ class Parser {
         void addType(Token::Type type, shared_ptr<PrefixParser> prefix);
         void addType(Token::Type type, shared_ptr<InfixParser> prefix);
         Token consume();
-        Token consume(Token::Type expected, std::string expectedStr = std::string(""));
+        Token consume(Token::Type expected, const std::string& expectedStr = std::string(""));
 
+        shared_ptr<Expression> getPrefixExpression(const Token& tok);
+        shared_ptr<Expression> getInfixExpression(const shared_ptr<Expression>& left, const Token& tok);
         shared_ptr<Expression> parseExpression(int precedence);
         shared_ptr<Expression> parseExpression();
 
