@@ -341,15 +341,7 @@ std::string double_type::toString() {
 #undef BOOL_NUMBER_OP
 string_type::string_type(std::string val) : object(Result(val)) {}
 shared_obj string_type::addBy(shared_obj obj) {
-    shared_obj ans = nullptr;
-    std::visit(overloaded{
-        [&](std::string arg) {ans = MAKE_OBJ(getValue<std::string>().append(arg), string_type);},
-        [&](int arg) {ans = MAKE_OBJ(getValue<std::string>().append(std::to_string(arg)), string_type);},
-        [&](double arg) {ans = MAKE_OBJ(getValue<std::string>().append(std::to_string(arg)), string_type);},
-        [&](auto arg) {UNDEFINED_OP}
-    }, obj->value.getResult());
-    if (ans) return ans;
-    UNDEFINED_OP
+    return MAKE_OBJ(getValue<std::string>().append(obj->toString()), string_type);
 
 }
 shared_obj string_type::multBy(shared_obj obj) {
