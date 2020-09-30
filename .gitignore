@@ -9,3 +9,11 @@ autom4te.cache
 config.log
 config.status
 
+aclocal.m4
+config/compile
+config/depcomp
+config/install-sh
+config/missing
+configure
+Makefile
+Makefile.in
