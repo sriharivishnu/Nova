@@ -111,8 +111,6 @@ The `parseExpression()` method is more complicated, since one must consider the 
 - Parse a 'prefix expression', which can be (++, a string, number) anything that can occur first in an expression. (if not found, throw error)
 - While the precedence of the next 'infix operator' is less than the precedence of the next token, keep parsing the expression.
 
-A hashmap is used to quickly check whether there exists a prefix or infix expression for a given token type respectively.
-
 ```
 1 + 2 * (5+3)
 ```
@@ -120,23 +118,10 @@ A hashmap is used to quickly check whether there exists a prefix or infix expres
 ```c++
 shared_ptr<Expression> Parser::parseExpression(int precedence) {
     Token token = consume();
-    auto it = mPrefixParsables.find(token.type);
-    if (it == mPrefixParsables.end()) {
-        if (token.is(Token::Type::END)) throw ParseException(token.startPos, "Unexpected End of File while Parsing");
-        else if (token.is(Token::Type::ELIF)) throw SyntaxError(token.startPos, "'elif' without an 'if' statement");
-        else if (token.is(Token::Type::ELSE)) throw SyntaxError(token.startPos, "'else' without an 'if' statement");
-        else if (token.is(Token::Type::STMT_END)) throw SyntaxError(token.startPos, "unexpected end of statement");
-        throw SyntaxError(token.startPos, "Could not parse: '" + token.getValue() + "'");
-    }
-
-    shared_ptr<PrefixParser> prefix = it->second;
-    shared_ptr<Expression> left = prefix->parse(*this, token);
+    shared_ptr<Expression> left = getPrefixExpression(token);
     while (precedence < getPrecedence()) {
         token = consume();
-        auto it2 = mInfixParsables.find(token.type);
-        if (it2 == mInfixParsables.end()) throw UndefinedOperationException(token.startPos, token.getValue());
-        shared_ptr<InfixParser> infix = it2->second;
-        left = infix->parse(*this, left, token);
+        left = getInfixExpression(left, token);
     }
     return left;
 }
