@@ -4,7 +4,7 @@ AUTOMAKE_OPTIONS=foreign
 # extra macros
 ACLOCAL_AMFLAGS=-I config
 
-EXTRA_DIST = include/ 
+EXTRA_DIST = include
 AM_CXXFLAGS= -I$(top_srcdir)/include/ -std="c++17" -g
 bin_PROGRAMS = nova
 
