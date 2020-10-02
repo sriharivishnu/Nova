@@ -73,6 +73,10 @@ shared_obj Visitor::visit(Context& context, BinOpExpression* e) {
             return left->bor(right);
         case Token::Type::XOR:
             return left->bxor(right);
+        case Token::Type::LSHIFT:
+            return left->lshift(right);
+        case Token::Type::RSHIFT:
+            return left->rshift(right);
         default:
             throw UndefinedOperationException(e->getToken().startPos, e->getToken().getValue());
     }

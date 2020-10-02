@@ -63,6 +63,13 @@ shared_obj object::bor(const shared_obj& obj) {
 shared_obj object::bxor(const shared_obj& obj) {
     UNDEFINED_OP
 }
+shared_obj object::lshift(const shared_obj& obj) {
+    UNDEFINED_OP
+}
+
+shared_obj object::rshift(const shared_obj& obj) {
+    UNDEFINED_OP
+}
 shared_obj object::index(const shared_obj& obj) {
     UNDEFINED_OP
 }
@@ -94,7 +101,6 @@ std::string object::toString() {
 shared_obj object::dot(const std::string& name, const std::vector<shared_obj>& args) {
     throw UndefinedOperationException(value.getStringType(), ".");
 }
-
 
 #define BOOL_NUMBER_OP(t, op) std::visit(overloaded{\
             [&](int arg) {ans = MAKE_OBJ(getValue<t>() op arg, integer_type);},\
@@ -219,6 +225,12 @@ shared_obj integer_type::bor(const shared_obj& obj) {
 }
 shared_obj integer_type::bxor(const shared_obj& obj) {
     BINARY_OP_INT(^)
+}
+shared_obj integer_type::lshift(const shared_obj &obj) {
+    BINARY_OP_INT(<<)
+}
+shared_obj integer_type::rshift(const shared_obj& obj) {
+    BINARY_OP_INT(>>)
 }
 #undef BINARY_OP_INT
 

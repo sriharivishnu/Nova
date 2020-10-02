@@ -10,6 +10,8 @@ int getTokenPrecedence(const Token& tok) {
         case Token::Type::MULT:
         case Token::Type::DIV:
         case Token::Type::MOD:
+        case Token::Type::LSHIFT:
+        case Token::Type::RSHIFT:
             return Precedence::PRODUCT;
         case Token::Type::POWER:
             return Precedence::EXPONENT;

@@ -29,6 +29,8 @@ struct object {
     virtual shared_obj band(const shared_obj& obj);
     virtual shared_obj bor(const shared_obj& obj);
     virtual shared_obj bxor(const shared_obj& obj);
+    virtual shared_obj lshift(const shared_obj& obj);
+    virtual shared_obj rshift(const shared_obj& obj);
     virtual shared_obj index(const shared_obj& obj);
     virtual shared_obj bnot();
     virtual shared_obj inc();
@@ -69,6 +71,8 @@ struct integer_type : object {
     shared_obj band(const shared_obj& obj) override;
     shared_obj bor(const shared_obj& obj) override;
     shared_obj bxor(const shared_obj& obj) override;
+    shared_obj lshift(const shared_obj& obj) override;
+    shared_obj rshift(const shared_obj& obj) override;
     shared_obj bnot() override;
     shared_obj inc() override;
     shared_obj dec() override;
