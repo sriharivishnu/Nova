@@ -17,6 +17,7 @@ class Token {
             MINUS,
             MULT,
             DIV,
+            MOD,
             EQUALS,
             PLUS_EQUAL,
             MINUS_EQUAL,
@@ -60,16 +61,18 @@ class Token {
             BOR,
             XOR,
             BNOT,
+            LSHIFT,
+            RSHIFT,
             END
         };
-        Token() {};
+        Token() = default;;
         Token(Type t, Position pos);
         Token(Type t, std::string value, Position pos);
         Token(Type t, char value, Position pos);
         Token(Type t, const char* start, const char* end, Position pos);
         Token(Type t, const char* start, size_t length, Position pos);
         
-        std::string getValue() const;
+        [[nodiscard]] std::string getValue() const;
         [[nodiscard]] bool is(Type) const;
         [[nodiscard]] bool isOneOf(Type, Type) const;
         template<typename... types>

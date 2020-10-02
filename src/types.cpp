@@ -1,6 +1,5 @@
 #include "types.h"
 #include "Error.h"
-#include "helper.h"
 #include <memory>
 #include <utility>
 using shared_obj = std::shared_ptr<object>;
@@ -11,19 +10,22 @@ using std::visit;
 
 object::object() : value(0) {}
 object::object(Result res) : value(std::move(res)) {}
-shared_obj object::addBy(shared_obj obj) {
+shared_obj object::addBy(const shared_obj& obj) {
     UNDEFINED_OP
 }
-shared_obj object::subBy(shared_obj obj) {
+shared_obj object::subBy(const shared_obj& obj) {
     UNDEFINED_OP
 }
-shared_obj object::multBy(shared_obj obj) {
+shared_obj object::multBy(const shared_obj& obj) {
     UNDEFINED_OP
 }
-shared_obj object::divBy(shared_obj obj) {
+shared_obj object::divBy(const shared_obj& obj) {
     UNDEFINED_OP
 }
-shared_obj object::powBy(shared_obj obj) {
+shared_obj object::powBy(const shared_obj& obj) {
+    UNDEFINED_OP
+}
+shared_obj object::mod(const shared_obj& obj) {
     UNDEFINED_OP
 }
 shared_obj object::toBool() {
@@ -34,35 +36,38 @@ shared_obj object::toBool() {
         return MAKE_OBJ(0, integer_type);
     }
 }
-shared_obj object::gt(shared_obj obj) {
+shared_obj object::gt(const shared_obj& obj) {
     UNDEFINED_OP
 }
-shared_obj object::lt(shared_obj obj) {
+shared_obj object::lt(const shared_obj& obj) {
     UNDEFINED_OP
 }
-shared_obj object::gte(shared_obj obj) {
+shared_obj object::gte(const shared_obj& obj) {
     UNDEFINED_OP
 }
-shared_obj object::lte(shared_obj obj) {
+shared_obj object::lte(const shared_obj& obj) {
     UNDEFINED_OP
 }
-shared_obj object::ee(shared_obj obj) {
+shared_obj object::ee(const shared_obj& obj) {
     UNDEFINED_OP
 }
-shared_obj object::ne(shared_obj obj) {
+shared_obj object::ne(const shared_obj& obj) {
     UNDEFINED_OP
 }
-shared_obj object::band(shared_obj obj) {
+shared_obj object::band(const shared_obj& obj) {
     UNDEFINED_OP
 }
-shared_obj object::bor(shared_obj obj) {
+shared_obj object::bor(const shared_obj& obj) {
     UNDEFINED_OP
 }
-shared_obj object::bxor(shared_obj obj) {
+shared_obj object::bxor(const shared_obj& obj) {
     UNDEFINED_OP
 }
-shared_obj object::index(shared_obj obj) {
+shared_obj object::index(const shared_obj& obj) {
     UNDEFINED_OP
+}
+shared_obj object::bnot() {
+    UNDEFINED_UNARY("~")
 }
 shared_obj object::inc() {
     UNDEFINED_UNARY("++")
@@ -98,7 +103,7 @@ shared_obj object::dot(const std::string& name, const std::vector<shared_obj>& a
         }, obj->value.getResult());
 
 integer_type::integer_type(int val) : object(Result(val)) {}
-shared_obj integer_type::addBy(shared_obj obj) {
+shared_obj integer_type::addBy(const shared_obj& obj) {
     shared_obj ans = nullptr;
     std::visit(overloaded{
         [&](const std::string& arg) {ans = MAKE_OBJ(std::to_string(getValue<int>()).append(arg), string_type);},
@@ -109,7 +114,7 @@ shared_obj integer_type::addBy(shared_obj obj) {
     if (ans) return ans;
     UNDEFINED_OP
 }
-shared_obj integer_type::subBy(shared_obj obj) {
+shared_obj integer_type::subBy(const shared_obj& obj) {
     shared_obj ans = nullptr;
     std::visit(overloaded{
         [&](int arg) {ans = MAKE_OBJ(getValue<int>() - arg, integer_type);},
@@ -120,7 +125,7 @@ shared_obj integer_type::subBy(shared_obj obj) {
     UNDEFINED_OP
 
 }
-shared_obj integer_type::multBy(shared_obj obj) {
+shared_obj integer_type::multBy(const shared_obj& obj) {
     shared_obj ans = nullptr;
     std::visit(overloaded{
         [&](const std::string& arg) {
@@ -138,7 +143,7 @@ shared_obj integer_type::multBy(shared_obj obj) {
     UNDEFINED_OP
 
 }
-shared_obj integer_type::divBy(shared_obj obj) {
+shared_obj integer_type::divBy(const shared_obj& obj) {
     shared_obj ans = nullptr;
     std::visit(overloaded{
         [&](int arg) {ans = MAKE_OBJ(getValue<int>() / arg, integer_type);},
@@ -148,7 +153,7 @@ shared_obj integer_type::divBy(shared_obj obj) {
     if (ans) return ans;
     UNDEFINED_OP
 }
-shared_obj integer_type::powBy(shared_obj obj) {
+shared_obj integer_type::powBy(const shared_obj& obj) {
     shared_obj ans = nullptr;
     std::visit(overloaded{
         [&](int arg) {ans = MAKE_OBJ((int) pow(getValue<int>(), arg), integer_type);},
@@ -158,38 +163,42 @@ shared_obj integer_type::powBy(shared_obj obj) {
     if (ans) return ans;
     UNDEFINED_OP
 }
+shared_obj integer_type::mod(const shared_obj& obj) {
+    if (!obj->value.isType<int>()) UNDEFINED_OP
+    return MAKE_OBJ(getValue<int>() % obj->getValue<int>(), integer_type);
+}
 
-shared_obj integer_type::ee(shared_obj obj) {
+shared_obj integer_type::ee(const shared_obj& obj) {
     shared_obj ans = nullptr;
     BOOL_NUMBER_OP(int, ==)
     if (ans) return ans;
     UNDEFINED_OP
 }
-shared_obj integer_type::ne(shared_obj obj) {
+shared_obj integer_type::ne(const shared_obj& obj) {
     shared_obj ans = nullptr;
     BOOL_NUMBER_OP(int, !=)
     if (ans) return ans;
     UNDEFINED_OP
 }
-shared_obj integer_type::gt(shared_obj obj) {
+shared_obj integer_type::gt(const shared_obj& obj) {
     shared_obj ans = nullptr;
     BOOL_NUMBER_OP(int, >)
     if (ans) return ans;
     UNDEFINED_OP
 }
-shared_obj integer_type::lt(shared_obj obj) {
+shared_obj integer_type::lt(const shared_obj& obj) {
     shared_obj ans = nullptr;
     BOOL_NUMBER_OP(int, <)
     if (ans) return ans;
     UNDEFINED_OP
 }
-shared_obj integer_type::gte(shared_obj obj) {
+shared_obj integer_type::gte(const shared_obj& obj) {
     shared_obj ans = nullptr;
     BOOL_NUMBER_OP(int, >=)
     if (ans) return ans;
     UNDEFINED_OP
 }
-shared_obj integer_type::lte(shared_obj obj) {
+shared_obj integer_type::lte(const shared_obj& obj) {
     shared_obj ans = nullptr;
     BOOL_NUMBER_OP(int, <=)
     if (ans) return ans;
@@ -202,13 +211,13 @@ shared_obj integer_type::lte(shared_obj obj) {
     if (ans) return ans;\
     UNDEFINED_OP
 
-shared_obj integer_type::band(shared_obj obj) {
+shared_obj integer_type::band(const shared_obj& obj) {
     BINARY_OP_INT(&)
 }
-shared_obj integer_type::bor(shared_obj obj) {
+shared_obj integer_type::bor(const shared_obj& obj) {
     BINARY_OP_INT(|)
 }
-shared_obj integer_type::bxor(shared_obj obj) {
+shared_obj integer_type::bxor(const shared_obj& obj) {
     BINARY_OP_INT(^)
 }
 #undef BINARY_OP_INT
@@ -225,7 +234,9 @@ shared_obj integer_type::prePlus() {
 shared_obj integer_type::preMinus() {
     return MAKE_OBJ(getValue<int>() * -1, integer_type);
 }
-
+shared_obj integer_type::bnot() {
+    return MAKE_OBJ(~getValue<int>(), integer_type);
+}
 shared_obj integer_type::toBool() {
     return MAKE_OBJ(getValue<int>() != 0, integer_type);
 }
@@ -233,16 +244,15 @@ std::string integer_type::toString() {
     return std::to_string(getValue<int>());
 }
 
-
 #define DOUBLE_BIN_OP(op) std::visit(overloaded{\
         [&](int arg) {ans = MAKE_OBJ(getValue<double>() op ((double) arg), double_type);},\
         [&](double arg) {ans = MAKE_OBJ(getValue<double>() op arg, double_type);},\
         [&](auto arg) {UNDEFINED_OP}\
     }, obj->value.getResult());
 
-double_type::double_type(double val) : object(Result(val)) {};
+double_type::double_type(double val) : object(Result(val)) {}
 
-shared_obj double_type::addBy(shared_obj obj) {
+shared_obj double_type::addBy(const shared_obj& obj) {
     shared_obj ans = nullptr;
     std::visit(overloaded{
         [&](std::string& arg) {ans = MAKE_OBJ(std::to_string(getValue<double>()).append(arg), string_type);},
@@ -254,27 +264,27 @@ shared_obj double_type::addBy(shared_obj obj) {
     UNDEFINED_OP
 
 }
-shared_obj double_type::subBy(shared_obj obj) {
+shared_obj double_type::subBy(const shared_obj& obj) {
     shared_obj ans = nullptr;
     DOUBLE_BIN_OP(-)
     if (ans) return ans;
     UNDEFINED_OP
 
 }
-shared_obj double_type::multBy(shared_obj obj) {
+shared_obj double_type::multBy(const shared_obj& obj) {
     shared_obj ans = nullptr;
     DOUBLE_BIN_OP(*)
     if (ans) return ans;
     UNDEFINED_OP
 
 }
-shared_obj double_type::divBy(shared_obj obj) {
+shared_obj double_type::divBy(const shared_obj& obj) {
     shared_obj ans = nullptr;
     DOUBLE_BIN_OP(/)
     if (ans) return ans;
     UNDEFINED_OP
 }
-shared_obj double_type::powBy(shared_obj obj) {
+shared_obj double_type::powBy(const shared_obj& obj) {
     shared_obj ans = nullptr;
     std::visit(overloaded{
         [&](int arg) {ans = MAKE_OBJ(pow(getValue<double>(), (double) arg), double_type);},
@@ -294,37 +304,37 @@ shared_obj double_type::dec() {
 shared_obj double_type::toBool() {
     return MAKE_OBJ(getValue<double>() != 0, double_type);
 }
-shared_obj double_type::ee(shared_obj obj) {
+shared_obj double_type::ee(const shared_obj& obj) {
     shared_obj ans = nullptr;
     BOOL_NUMBER_OP(double, ==)
     if (ans) return ans;
     UNDEFINED_OP
 }
-shared_obj double_type::ne(shared_obj obj) {
+shared_obj double_type::ne(const shared_obj& obj) {
     shared_obj ans = nullptr;
     BOOL_NUMBER_OP(double, !=)
     if (ans) return ans;
     UNDEFINED_OP
 }
-shared_obj double_type::gt(shared_obj obj) {
+shared_obj double_type::gt(const shared_obj& obj) {
     shared_obj ans = nullptr;
     BOOL_NUMBER_OP(double, >)
     if (ans) return ans;
     UNDEFINED_OP
 }
-shared_obj double_type::lt(shared_obj obj) {
+shared_obj double_type::lt(const shared_obj& obj) {
     shared_obj ans = nullptr;
     BOOL_NUMBER_OP(double, <)
     if (ans) return ans;
     UNDEFINED_OP
 }
-shared_obj double_type::gte(shared_obj obj) {
+shared_obj double_type::gte(const shared_obj& obj) {
     shared_obj ans = nullptr;
     BOOL_NUMBER_OP(double, >=)
     if (ans) return ans;
     UNDEFINED_OP
 }
-shared_obj double_type::lte(shared_obj obj) {
+shared_obj double_type::lte(const shared_obj& obj) {
     shared_obj ans = nullptr;
     BOOL_NUMBER_OP(double, <=)
     if (ans) return ans;
@@ -340,11 +350,11 @@ std::string double_type::toString() {
 #undef DOUBLE_BIN_OP
 #undef BOOL_NUMBER_OP
 string_type::string_type(std::string val) : object(Result(val)) {}
-shared_obj string_type::addBy(shared_obj obj) {
+shared_obj string_type::addBy(const shared_obj& obj) {
     return MAKE_OBJ(getValue<std::string>().append(obj->toString()), string_type);
 
 }
-shared_obj string_type::multBy(shared_obj obj) {
+shared_obj string_type::multBy(const shared_obj& obj) {
     shared_obj ans = nullptr;
     std::visit(overloaded{
         [&](int arg) {
@@ -375,7 +385,7 @@ shared_obj string_type::dot(const std::string& name, const std::vector<shared_ob
     throw Error("Undefined Method", value.getStringType() + " has no member function " + name);
 }
 
-shared_obj string_type::index(shared_obj obj) {
+shared_obj string_type::index(const shared_obj& obj) {
     if (!obj->value.isType<int>()) UNDEFINED_OP;
     int toAccess = obj->getValue<int>();
     int size = getValue<std::string>().length();
@@ -388,7 +398,7 @@ shared_obj string_type::index(shared_obj obj) {
 
 list_type::list_type(std::vector<shared_obj> val) : object(Result(val)) {}
 
-shared_obj list_type::addBy(shared_obj obj) {
+shared_obj list_type::addBy(const shared_obj& obj) {
     shared_obj ans = nullptr;
     std::visit(overloaded{
         [&](std::vector<shared_obj> arg) {
@@ -407,14 +417,14 @@ shared_obj list_type::addBy(shared_obj obj) {
     if (ans) return ans;
     UNDEFINED_OP
 }
-shared_obj list_type::multBy(shared_obj obj) {
+shared_obj list_type::multBy(const shared_obj& obj) {
     UNDEFINED_OP
 }
 shared_obj list_type::toBool() {
     return MAKE_OBJ(getValue<std::vector<shared_obj>>().empty(), integer_type);
 }
-shared_obj list_type::index(shared_obj obj) {
-    if (!obj->value.isType<int>()) UNDEFINED_OP;
+shared_obj list_type::index(const shared_obj& obj) {
+    if (!obj->value.isType<int>()) UNDEFINED_OP
     int toAccess = obj->getValue<int>();
     int size = getValue<std::vector<shared_obj>>().size();
     if (toAccess >=  size || toAccess < 0) {
