@@ -5,6 +5,7 @@ nova>> "Welcome to Nova! :)";
 Welcome to Nova! :)
 ```
 ## Getting Started (Release)
+For a detailed description of the usage of Nova, please visit the [Nova Wiki](https://github.com/sriharivishnu/Nova/wiki)
 ### Linux/MacOS
 1. Download the [latest release](https://github.com/sriharivishnu/Nova/releases) from Github releases 
 2. Untar with `tar -xf nova-<latest-version>.tar.gz`
@@ -32,56 +33,8 @@ The steps in the Linux/MacOS section can now be followed
 ### Windows
 - Please follow the steps above after installing the necessary GNU tools (autoreconf, make etc.)
 
-## Examples
-### Current Syntax
-
-```
-nova>> var a = var b = 10;
-10
-nova>> ++a;
-11
-nova>> fun inc() -> a++;
-nova>> inc();
-11
-nova>> inc();
-12
-nova>> a;
-13
-nova>> while (a > 0) a--;
-nova>> a;
-0
-nova>> var res = if (a < 0) 20 elif (a == 10) 10 else -100;
--100
-nova>> var s = "srihari";
-srihari
-nova>> s * 3;
-sriharisriharisrihari
-nova>> var b = [1,"srihari", 2.0];
-[1, srihari, 2.0]
-nova>> [1,2] + [2,3];
-[1,2,2,3]
-nova>> fun factorial(n) -> if (n == 1) 1 else n * factorial(n-1);
-function <factorial>
-nova>> factorial(10);
-3628800
-```
-
-### Mutli-line support
-
-```
-fun add(a, b) {
-    a + b;
-}
-//While loop
-var a = 10;
-while (a > 0) {
-    a--;
-}
-a;
------------------
-output: 0
-```
-
+### Syntax
+- For a detailed description of the current syntax, please view the [Nova Wiki](https://github.com/sriharivishnu/Nova/wiki)
 ---
 
 ## Description
