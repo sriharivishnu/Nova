@@ -9,6 +9,7 @@ int getTokenPrecedence(const Token& tok) {
             return Precedence::SUM;
         case Token::Type::MULT:
         case Token::Type::DIV:
+        case Token::Type::MOD:
             return Precedence::PRODUCT;
         case Token::Type::POWER:
             return Precedence::EXPONENT;

@@ -26,6 +26,8 @@ shared_obj Visitor::visit(Context& context, PrefixExpression* e) {
         case Token::Type::NOT: {
             return rightSide->preNot();
         }
+        case Token::Type::BNOT:
+            return rightSide->bnot();
         default:
             throw UndefinedOperationException(e->getToken().startPos, "Visited unknown unary expression: " + e->getToken().getValue());
     }
@@ -61,6 +63,8 @@ shared_obj Visitor::visit(Context& context, BinOpExpression* e) {
             return left->multBy(right);
         case Token::Type::DIV:
             return left->divBy(right);
+        case Token::Type::MOD:
+            return left->mod(right);
         case Token::Type::POWER:
             return left->powBy(right);
         case Token::Type::BAND:

@@ -131,6 +131,7 @@ shared_ptr<Expression> Parser::getInfixExpression(const shared_ptr<Expression>& 
             return make_shared<BinOpExpression>(left, tok, parseExpression(Precedence::SUM));
         case Token::Type::MULT:
         case Token::Type::DIV:
+        case Token::Type::MOD:
             return make_shared<BinOpExpression>(left, tok, parseExpression(Precedence::PRODUCT));
         case Token::Type::POWER:
             return make_shared<BinOpExpression>(left, tok, parseExpression(Precedence::EXPONENT - 1));
