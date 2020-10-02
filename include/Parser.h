@@ -13,8 +13,6 @@
 #include "ParseHelper.h"
 #include "Error.h"
 using std::vector;
-class PrefixParser;
-class InfixParser;
 class Parser {
     public:
         Parser(std::vector<Token> tokens);

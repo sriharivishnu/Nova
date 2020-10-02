@@ -169,18 +169,29 @@ Token Lexer::advance() {
                 return Token(Token::Type::NE, "!=", position);
             }
             return Token(Token::Type::NOT, '!', position);
-        case '>':
-            if (get() == '=') {
+        case '>': {
+            char next = get();
+            if (next == '=') {
                 get();
                 return Token(Token::Type::GE, ">=", position);
+            } else if (next == '>') {
+                get();
+                return Token(Token::Type::RSHIFT, ">>", position);
             }
             return Token(Token::Type::GT, '>', position);
-        case '<':
-            if (get() == '=') {
+        }
+        case '<': {
+            char next = get();
+            if (next == '=') {
                 get();
                 return Token(Token::Type::LE, "<=", position);
             }
+            else if (next == '<') {
+                get();
+                return Token(Token::Type::LSHIFT, "<<", position);
+            }
             return Token(Token::Type::LT, '<', position);
+        }
         case '&':
             if (get() == '&') {
                 get();
