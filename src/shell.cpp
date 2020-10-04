@@ -3,8 +3,10 @@
 #include <string>
 #include <vector>
 #include <fstream>
-
+#include <functional>
 #include "nova.h"
+#include "stdfuncs.h"
+using natFun = std::function<std::optional<std::variant<std::string, int, double, std::vector<shared_obj>, identifier>>(std::vector<shared_obj>)>;
 int main(int arg_count, char * arg_list[]) {
     std::string toRun;
     std::string command;
@@ -12,6 +14,7 @@ int main(int arg_count, char * arg_list[]) {
     symbols->set("false", Result(0.0));
     symbols->set("true", Result(1));
     Context global("<main>", symbols);
+    addStdFunctions(global);
     if (arg_count == 1) {
         while (true) {
             std::cout << "nova>> ";

@@ -34,22 +34,9 @@ bool SymbolTable::update(const std::string& name, const shared_obj& value) {
 void SymbolTable::remove(const std::string& name) {
     symbols.erase(name);
 }
+using type = std::variant<std::string, int, double, std::vector<std::shared_ptr<object>>, identifier>;
 
-// FunctionTable::FunctionTable(std::shared_ptr<FunctionTable> parent) : parent(parent) {}
-
-// std::shared_ptr<function_statement> FunctionTable::get(std::string name) {
-//     auto it = funcs.find(name);
-//     if (it != funcs.end()) return it->second;
-//     else if (it == funcs.end() && parent) {
-//         return parent->get(name);
-//     }
-//     return nullptr;
-// }
-
-// void FunctionTable::add(std::string name, std::shared_ptr<function_statement> value) {
-//     funcs[name] = value;
-// }
-
-// void FunctionTable::remove(std::string name) {
-//     funcs.erase(name);
-// }
+void SymbolTable::addFunction(const std::string& name, const natFun& func, int numParams) {
+    shared_obj t = make_shared<native_func>(name, func, numParams);
+    set(name, t);
+}

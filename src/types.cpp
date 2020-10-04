@@ -493,3 +493,38 @@ std::string func_type::toString() {
 std::string null_type::toString() {
     return "null";
 }
+
+native_func::native_func(std::string name_, std::function<std::optional<type>(std::vector<shared_obj>)>  func_, int numParams = -1) :
+name(std::move(name_)), numberOfParams(numParams), toRun(std::move(func_)) {}
+
+shared_obj native_func::call(Context &context, std::vector<shared_obj> args) {
+    if (numberOfParams != -1) {
+        if (args.size() > numberOfParams) {
+            throw Error("Function Call Exception", "Too many Params for " + name + ": expected, " + std::to_string(numberOfParams) + " params but called with " + std::to_string(args.size()));
+        }
+        else if (args.size() < numberOfParams) {
+            throw Error("Function Call Exception", "Too few Params for " + name + ": expected, " + std::to_string(numberOfParams) + " params but called with " + std::to_string(args.size()));
+        }
+    }
+    std::optional<type> got = toRun(args);
+    if (!got) return make_shared<null_type>();
+    shared_obj ret;
+    std::visit(overloaded{
+            [&](std::vector<shared_obj> arg) {
+                ret = make_shared<list_type>(arg);
+            },
+            [&](int arg) {
+                ret = make_shared<integer_type>(arg);
+            },
+            [&](double arg) {
+                ret = make_shared<double_type>(arg);
+            },
+            [&](std::string arg) {
+                ret = make_shared<string_type>(arg);
+            },
+            [&](auto arg) {
+                throw Error("Unknown Error", "Unknown return type when running: " + name);
+            }
+    }, *got);
+    return ret;
+}
