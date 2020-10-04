@@ -7,7 +7,7 @@ Welcome to Nova! :)
 ## Getting Started (Release)
 For a detailed description of the usage of Nova, please visit the [Nova Wiki](https://github.com/sriharivishnu/Nova/wiki)
 ### Linux/MacOS
-1. Download the [latest release](https://github.com/sriharivishnu/Nova/releases) from Github releases 
+1. Download the [latest release](https://github.com/sriharivishnu/Nova/releases/latest) from Github releases 
 2. Untar with `tar -xf nova-<latest-version>.tar.gz`
 3. Configure for your system with `./configure`
 4. Install to your system with `make install` (if permission denied, try `sudo make install`)
