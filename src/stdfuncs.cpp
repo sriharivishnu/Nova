@@ -32,7 +32,7 @@ void addStdFunctions(const Context& context) {
     context.symbols->addFunction("int", [&](std::vector<shared_obj> arg) {
         if (arg[0]->value.isType<std::string>()) {
             try {
-                std::stoi(arg[0]->getValue<std::string>());
+                return std::stoi(arg[0]->getValue<std::string>());
             } catch (exception& e) {
                 throw Error("Conversion Exception", "Cannot convert string to integer");
             }
