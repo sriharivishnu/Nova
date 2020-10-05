@@ -9,7 +9,9 @@
 // class function_statement;
 struct object;
 struct Result;
+struct identifier;
 using shared_obj = std::shared_ptr<object>;
+using natFun = std::function<std::optional<std::variant<std::string, int, double, std::vector<std::shared_ptr<object>>, identifier>>(std::vector<shared_obj>)>;
 class SymbolTable {
     public:
         SymbolTable() {}
@@ -20,6 +22,7 @@ class SymbolTable {
         void set(const std::string& name, shared_obj value);
         void set(const std::string& name, Result val);
         void remove(const std::string& name);
+        void addFunction(const std::string& name, const natFun& func, int numParams);
     private:
         std::unordered_map<std::string, shared_obj> symbols;
 };

@@ -15,7 +15,7 @@
 using std::vector;
 class Parser {
     public:
-        Parser(std::vector<Token> tokens);
+        explicit Parser(std::vector<Token> tokens);
         Token consume();
         Token consume(Token::Type expected, const std::string& expectedStr = std::string(""));
 

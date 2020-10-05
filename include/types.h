@@ -3,6 +3,7 @@
 #include <variant>
 #include <optional>
 #include <memory>
+#include <functional>
 #include "Statement.h"
 #include "Result.h"
 #include "Context.h"
@@ -131,9 +132,17 @@ struct func_type : object {
     std::string name;
     std::vector<std::string> params; 
     std::shared_ptr<statement> toRun;
-    bool anonymous = false;
 };
 
+using type = std::variant<std::string, int, double, std::vector<std::shared_ptr<object>>, identifier>;
+
+struct native_func : object {
+    native_func(std::string name_, std::function<std::optional<type>(std::vector<shared_obj>)>  func_, int numParams);
+    shared_obj call(Context& context, std::vector<shared_obj> args) override;
+    std::string name;
+    int numberOfParams = 0;
+    std::function<std::optional<type>(std::vector<shared_obj>)> toRun;
+};
 //struct user_obj : object {
 //    std::string name;
 //    std::unordered_map<std::string, func_type> member_functions;

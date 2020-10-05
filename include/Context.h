@@ -7,6 +7,7 @@
 class SymbolTable;
 struct Result;
 using symbol_table = std::shared_ptr<SymbolTable>;
+
 struct Context {
     Context() {};
     Context(std::string _name, symbol_table _symbols) : name(_name), parent(nullptr), symbols(_symbols) {}
