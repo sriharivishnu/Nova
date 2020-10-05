@@ -1,7 +1,7 @@
 # Nova
 ![build status](https://github.com/sriharivishnu/Nova/workflows/build/badge.svg)
 ```
-nova>> "Welcome to Nova! :)";
+nova>> print("Welcome to Nova! :)");
 Welcome to Nova! :)
 ```
 ## Getting Started (Release)
