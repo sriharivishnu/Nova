@@ -33,7 +33,7 @@ namespace nova {
             if (!stmt) continue;
             try {
                 std::optional<shared_obj> res = stmt->execute(context);
-                if (res) std::cout << res->get()->toString() << std::endl;
+//                if (res) std::cout << res->get()->toString() << std::endl;
             } catch (std::exception& e) {
                 std::cout << e.what() << std::endl;
                 return 1;

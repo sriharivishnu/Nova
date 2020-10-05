@@ -404,7 +404,7 @@ shared_obj string_type::index(const shared_obj& obj) {
     if (toAccess >=  size || toAccess < 0) {
         throw Error("Index Out of Bounds", "Attempted to access index: " + std::to_string(toAccess) + ", with string size: " + std::to_string(size));
     }
-    return MAKE_OBJ(std::to_string(getValue<std::string>()[toAccess]), string_type);
+    return MAKE_OBJ(std::string(1, getValue<std::string>()[toAccess]), string_type);
 }
 
 
