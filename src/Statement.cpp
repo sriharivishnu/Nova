@@ -3,7 +3,7 @@
 #include <utility>
 #include "Result.h"
 
-std::optional<shared_obj> simple_statement::execute(Context& context) {
+flow simple_statement::execute(Context& context) {
     Visitor v;
     return expr->accept(context, v);
 };
@@ -14,7 +14,7 @@ while_statement::while_statement(
             statement_ptr statement_
         ) : condition(std::move(condition_)), statement(std::move(statement_)) {}
 
-std::optional<shared_obj> while_statement::execute(Context& context) {
+flow while_statement::execute(Context& context) {
     Visitor v;
     while (condition->accept(context, v)->value) {
         statement->execute(context);
@@ -23,9 +23,12 @@ std::optional<shared_obj> while_statement::execute(Context& context) {
 };
 
 block_statement::block_statement(vector<statement_ptr> statements) : statements(std::move(statements)) {}
-std::optional<shared_obj> block_statement::execute(Context& context) {
+flow block_statement::execute(Context& context) {
     for (auto & statement : statements) {
-        statement->execute(context);
+        flow ret = statement->execute(context);
+        if (ret.flow_type == flow::type::RETURN) {
+            
+        }
     }
     return {};
 }
@@ -41,7 +44,7 @@ if_statement::if_statement(
 
 }
 
-std::optional<shared_obj> if_statement::execute(Context& context) {
+flow if_statement::execute(Context& context) {
     Visitor v;
     if (if_condition->accept(context, v)->value) {
         return if_block->execute(context);

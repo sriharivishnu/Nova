@@ -257,6 +257,11 @@ shared_ptr<statement> Parser::parseStatement() {
                 stmt = make_shared<block_statement>(statements);
                 break;
             }
+        case Token::Type::RETURN: {
+            consume();
+            shared_ptr<Expression> toReturn = parseExpression();
+        }
+
         case Token::Type::WHILE: {
             consume(Token::Type::WHILE);
             consume(Token::Type::LPAREN, ", expected a '('");

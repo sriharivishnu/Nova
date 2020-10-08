@@ -12,10 +12,23 @@ class Expression;
 struct Context;
 using expression_ptr = std::shared_ptr<Expression>;
 using shared_obj = std::shared_ptr<object>;
+
+class flow {
+    public:
+        enum class type {
+            SIMPLE,
+            RETURN,
+            CONTINUE,
+            BREAK
+        };
+        type flow_type;
+        std::optional<shared_obj> value;
+};
+
 class statement {
 	public:
 		statement() = default;
-		virtual std::optional<shared_obj> execute(Context& context) {
+		virtual flow execute(Context& context) {
             return {};
         };
 		virtual ~statement() = default;
@@ -24,7 +37,7 @@ using statement_ptr = std::shared_ptr<statement>;
 
 class simple_statement : public statement {
     public:
-        std::optional<shared_obj> execute(Context& context) override;
+        flow execute(Context& context) override;
         simple_statement(expression_ptr expr);
     private:
         expression_ptr expr;
@@ -39,7 +52,7 @@ class if_statement : public statement {
             std::vector<statement_ptr> elifBlocks, 
             statement_ptr elseBlock);
 
-        std::optional<shared_obj> execute(Context& context) override;
+        flow execute(Context& context) override;
     private:
         expression_ptr if_condition;
         statement_ptr if_block;
@@ -54,7 +67,7 @@ class while_statement : public statement {
             expression_ptr condition_,
             statement_ptr statement_
         );
-        std::optional<shared_obj> execute(Context& context) override;
+        flow execute(Context& context) override;
     private:
         expression_ptr condition;
         statement_ptr statement; 
@@ -76,7 +89,7 @@ class while_statement : public statement {
 class block_statement : public statement {
     public:
         block_statement(std::vector<statement_ptr> statements);
-        std::optional<shared_obj> execute(Context& context) override;
+        flow execute(Context& context) override;
     private:
         std::vector<statement_ptr> statements;
 };
