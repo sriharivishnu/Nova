@@ -33,6 +33,7 @@ struct object {
     virtual shared_obj lshift(const shared_obj& obj);
     virtual shared_obj rshift(const shared_obj& obj);
     virtual shared_obj index(const shared_obj& obj);
+    virtual shared_obj indexUpdate(const shared_obj& index, const shared_obj& newObj);
     virtual shared_obj bnot();
     virtual shared_obj inc();
     virtual shared_obj dec();
@@ -121,6 +122,7 @@ struct list_type : object {
     shared_obj multBy(const shared_obj& obj) override;
     shared_obj toBool() override;
     shared_obj index(const shared_obj& obj) override;
+    shared_obj indexUpdate(const shared_obj& obj, const shared_obj& newObj) override;
     shared_obj dot(const std::string& name, const std::vector<shared_obj>& args) override;
     std::string toString() override;
 };

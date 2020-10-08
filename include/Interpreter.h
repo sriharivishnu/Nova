@@ -23,6 +23,7 @@ class StringExpression;
 class ListExpression;
 class AssignmentExpression;
 class UpdateExpression;
+class ObjectIndexUpdateExpression;
 class NameExpression;
 class ConditionalExpression;
 class CallFunctionExpression;
@@ -42,6 +43,7 @@ class Visitor {
         shared_obj visit(Context& context, ListExpression* e);
         shared_obj visit(Context& context, AssignmentExpression* e);
         shared_obj visit(Context& context, UpdateExpression* e);
+        shared_obj visit(Context& context, ObjectIndexUpdateExpression* e);
         shared_obj visit(Context& context, NameExpression* e);
         shared_obj visit(Context& context, ConditionalExpression* e);
         shared_obj visit(Context& context, CallFunctionExpression* e);
