@@ -151,6 +151,20 @@ shared_obj UpdateExpression::accept(Context& context, Visitor& v) {
     return v.visit(context, this);
 }
 
+ObjectIndexUpdateExpression::ObjectIndexUpdateExpression(
+            const Token& tok, 
+            shared_ptr<Expression> objToUpdate,
+            shared_ptr<Expression> index, 
+            shared_ptr<Expression> newVal) : 
+            tok(tok), objToUpdate(objToUpdate), index(index), newVal(newVal)
+{}
+shared_obj ObjectIndexUpdateExpression::accept(Context& context, Visitor& v) {
+    return v.visit(context, this);
+}
+std::string ObjectIndexUpdateExpression::toString() {
+    return tok.getValue() + index->toString() + "]" + " = " + newVal->toString();
+}
+
 //Conditional
 ConditionalExpression::ConditionalExpression(
             Token tok_, 

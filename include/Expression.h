@@ -105,6 +105,21 @@ class UpdateExpression : public Expression {
         shared_ptr<Expression> right;
 };
 
+class ObjectIndexUpdateExpression : public Expression {
+    public:
+        ObjectIndexUpdateExpression(
+            const Token& tok, 
+            shared_ptr<Expression> objToUpdate,
+            shared_ptr<Expression> index, 
+            shared_ptr<Expression> newVal);
+        shared_obj accept(Context& context, Visitor& v) override;
+        std::string toString() override;
+        Token tok;
+        shared_ptr<Expression> objToUpdate;
+        shared_ptr<Expression> index;
+        shared_ptr<Expression> newVal;
+};
+
 class ConditionalExpression : public Expression {
     public:
         ConditionalExpression(

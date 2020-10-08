@@ -73,6 +73,9 @@ shared_obj object::rshift(const shared_obj& obj) {
 shared_obj object::index(const shared_obj& obj) {
     UNDEFINED_OP
 }
+shared_obj object::indexUpdate(const shared_obj& obj, const shared_obj& newObj) {
+    UNDEFINED_OP
+}
 shared_obj object::bnot() {
     UNDEFINED_UNARY("~")
 }
@@ -443,6 +446,16 @@ shared_obj list_type::index(const shared_obj& obj) {
         throw Error("Index Out of Bounds", "Attempted to access index: " + std::to_string(toAccess) + ", with list size: " + std::to_string(size));
     }
     return getValue<std::vector<shared_obj>>()[toAccess];
+}
+shared_obj list_type::indexUpdate(const shared_obj& obj, const shared_obj& newObj) {
+    if (!obj->value.isType<int>()) UNDEFINED_OP
+    int toAccess = obj->getValue<int>();
+    int size = getValue<std::vector<shared_obj>>().size();
+    if (toAccess >=  size || toAccess < 0) {
+        throw Error("Index Out of Bounds", "Attempted to access index: " + std::to_string(toAccess) + ", with list size: " + std::to_string(size));
+    }
+    getValue<std::vector<shared_obj>>()[toAccess] = newObj;
+    return std::make_shared<null_type>();
 }
 std::string list_type::toString() {
     auto values = getValue<std::vector<shared_obj>>();

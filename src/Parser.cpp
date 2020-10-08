@@ -142,11 +142,11 @@ shared_ptr<Expression> Parser::getInfixExpression(const shared_ptr<Expression>& 
         case Token::Type::BOR:
             return make_shared<BinOpExpression>(left, tok, parseExpression(Precedence::SUM - 1));
         case Token::Type::EQUALS: {
-            if (!left->getToken().is(Token::Type::IDENTIFIER)) {
-                throw SyntaxError(left->getToken().startPos, "Expected an identifier");
+            if (left->getToken().is(Token::Type::IDENTIFIER)) {
+                shared_ptr<Expression> right = parseExpression(Precedence::ASSIGNMENT - 1);
+                return make_shared<UpdateExpression>(left->getToken().getValue(), right, tok);
             }
-            shared_ptr<Expression> right = parseExpression(Precedence::ASSIGNMENT - 1);
-            return make_shared<UpdateExpression>(left->getToken().getValue(), right, tok);
+            throw SyntaxError(left->getToken().startPos, "Expected an identifier but instead got " + left->getToken().getValue());
         }
         case Token::Type::INC:
         case Token::Type::DEC:
@@ -168,6 +168,12 @@ shared_ptr<Expression> Parser::getInfixExpression(const shared_ptr<Expression>& 
         case Token::Type::LSQUARE: {
             shared_ptr<Expression> index = parseExpression();
             consume(Token::Type::RSQUARE, ", expected ']'");
+            if (lookAhead(0).is(Token::Type::EQUALS)) {
+                consume(Token::Type::EQUALS);
+                shared_ptr<Expression> newObj = parseExpression();
+                return make_shared<ObjectIndexUpdateExpression>(tok, left, index, newObj);
+            }
+            
             return make_shared<IndexExpression>(left, tok, index);
         }
         case Token::Type::LPAREN: {

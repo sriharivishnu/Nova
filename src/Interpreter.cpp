@@ -135,6 +135,16 @@ shared_obj Visitor::visit(Context& context, UpdateExpression* e) {
     throw UndefinedVariable(make_shared<Context>(context), e->name, e->getToken().startPos);
 }
 
+shared_obj Visitor::visit(Context& context, ObjectIndexUpdateExpression* e) {
+    shared_obj res = e->newVal->accept(context, *this);
+    shared_obj obj = e->objToUpdate->accept(context, *this);
+    shared_obj index = e->index->accept(context, *this);
+    shared_obj newValue = e->newVal->accept(context, *this);
+    
+    return obj->indexUpdate(index, newValue);
+}
+
+
 shared_obj Visitor::visit(Context& context, NameExpression* e) {
     std::optional<shared_obj> value = context.symbols->get(e->name);
     if (value) {
