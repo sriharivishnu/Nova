@@ -131,8 +131,33 @@ shared_obj Visitor::visit(Context& context, AssignmentExpression* e) {
 }
 shared_obj Visitor::visit(Context& context, UpdateExpression* e) {
     shared_obj res = e->right->accept(context, *this);
-    if (context.symbols->update(e->name, res)) return res;
-    throw UndefinedVariable(make_shared<Context>(context), e->name, e->getToken().startPos);
+    if (e->getToken().type == Token::Type::EQUALS) {
+        if (context.symbols->update(e->name, res)) return res;
+        else throw UndefinedVariable(make_shared<Context>(context), e->name, e->getToken().startPos);
+    }
+    std::optional<shared_obj> cur = context.symbols->get(e->name);
+    if (!cur) throw UndefinedVariable(make_shared<Context>(context), e->name, e->getToken().startPos);
+    switch(e->getToken().type) {
+        case Token::Type::PLUS_EQUAL:
+            cur = cur->get()->addBy(res);
+            break;
+        case Token::Type::MINUS_EQUAL:
+            cur = cur->get()->subBy(res);
+            break;
+        case Token::Type::MULT_EQUAL:
+            cur = cur->get()->multBy(res);
+            break;
+        case Token::Type::DIV_EQUAL:
+            cur = cur->get()->divBy(res);
+            break;
+        case Token::Type::MOD_EQUAL:
+            cur = cur->get()->mod(res);
+            break;
+        default:
+            throw UndefinedOperationException(e->getToken().startPos, "Undefined Operation", e->getToken().getValue());
+    }
+    context.symbols->update(e->name, *cur);
+    return make_shared<null_type>();
 }
 
 shared_obj Visitor::visit(Context& context, ObjectIndexUpdateExpression* e) {

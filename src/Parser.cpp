@@ -141,7 +141,12 @@ shared_ptr<Expression> Parser::getInfixExpression(const shared_ptr<Expression>& 
         case Token::Type::XOR:
         case Token::Type::BOR:
             return make_shared<BinOpExpression>(left, tok, parseExpression(getTokenPrecedence(tok) - 1));
-        case Token::Type::EQUALS: {
+        case Token::Type::EQUALS:
+        case Token::Type::PLUS_EQUAL:
+        case Token::Type::MINUS_EQUAL:
+        case Token::Type::MULT_EQUAL:
+        case Token::Type::DIV_EQUAL:
+        case Token::Type::MOD_EQUAL: {
             if (left->getToken().is(Token::Type::IDENTIFIER)) {
                 shared_ptr<Expression> right = parseExpression(getTokenPrecedence(tok) - 1);
                 return make_shared<UpdateExpression>(left->getToken().getValue(), right, tok);

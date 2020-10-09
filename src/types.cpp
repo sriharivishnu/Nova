@@ -501,6 +501,9 @@ std::string func_type::toString() {
     return "function <" + name + ">";
 }
 
+null_type::null_type() {
+    value = Result(null());
+}
 std::string null_type::toString() {
     return "null";
 }

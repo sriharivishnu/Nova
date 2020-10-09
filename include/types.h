@@ -53,6 +53,7 @@ struct object {
 };
 
 struct null_type : object {
+    null_type();
     std::string toString() override;
 };
 

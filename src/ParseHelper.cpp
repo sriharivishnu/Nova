@@ -17,6 +17,11 @@ int getTokenPrecedence(const Token& tok) {
         case Token::Type::POWER:
             return Precedence::EXPONENT;
         case Token::Type::EQUALS:
+        case Token::Type::PLUS_EQUAL:
+        case Token::Type::MINUS_EQUAL:
+        case Token::Type::MULT_EQUAL:
+        case Token::Type::DIV_EQUAL:
+        case Token::Type::MOD_EQUAL:
             return Precedence::ASSIGNMENT;
         case Token::Type::EE:
         case Token::Type::NE:
