@@ -20,7 +20,7 @@ int main(int arg_count, char * arg_list[]) {
             std::cout << "nova>> ";
             std::getline(std::cin, command);
             if (command == "exit") break;
-            nova::run(command, global);
+            nova::run(command, global, true);
         }
     }
     else if (arg_count == 2) {
@@ -35,7 +35,7 @@ int main(int arg_count, char * arg_list[]) {
         } else {
             std::cout << "Could not open file";
         }
-        nova::run(toRun, global);
+        nova::run(toRun, global, false);
     }
     return 0;
 }

@@ -10,23 +10,32 @@ int getTokenPrecedence(const Token& tok) {
         case Token::Type::MULT:
         case Token::Type::DIV:
         case Token::Type::MOD:
+            return Precedence::PRODUCT;
         case Token::Type::LSHIFT:
         case Token::Type::RSHIFT:
-            return Precedence::PRODUCT;
+            return Precedence::SHIFT;
         case Token::Type::POWER:
             return Precedence::EXPONENT;
         case Token::Type::EQUALS:
+            return Precedence::ASSIGNMENT;
         case Token::Type::EE:
         case Token::Type::NE:
+            return Precedence::EQUALITY;
         case Token::Type::LE:
         case Token::Type::GE:
         case Token::Type::GT:
         case Token::Type::LT:
+            return Precedence::INEQUALITY;
         case Token::Type::AND:
+            return Precedence::AND;
         case Token::Type::BAND:
+            return Precedence::BAND;
         case Token::Type::OR:
+            return Precedence::OR;
         case Token::Type::BOR:
+            return Precedence::BOR;
         case Token::Type::XOR:
+            return Precedence::XOR;
         case Token::Type::IF:
             return Precedence::CONDITION;
         case Token::Type::DOT:

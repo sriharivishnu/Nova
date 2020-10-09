@@ -31,7 +31,7 @@ shared_ptr<Expression> Parser::getPrefixExpression(const Token& tok) {
         case Token::Type::NOT:
         case Token::Type::INC:
         case Token::Type::DEC: {
-            shared_ptr<Expression> right = parseExpression(Precedence::PREFIX);
+            shared_ptr<Expression> right = parseExpression(getTokenPrecedence(tok));
             if (tok.isOneOf(Token::Type::INC, Token::Type::DEC) && !right->getToken().is(Token::Type::IDENTIFIER)) {
                 throw SyntaxError(right->getToken().startPos, "Expected an identifier");
             }
@@ -82,7 +82,7 @@ shared_ptr<Expression> Parser::getPrefixExpression(const Token& tok) {
         case Token::Type::VAR: {
             Token name = consume(Token::Type::IDENTIFIER, ", expected an identifier");
             Token equals = consume(Token::Type::EQUALS, ", expected '='");
-            shared_ptr<Expression> right = parseExpression(Precedence::ASSIGNMENT - 1);
+            shared_ptr<Expression> right = parseExpression(getTokenPrecedence(equals) - 1);
             return make_shared<AssignmentExpression>(name.getValue(), right, equals);
         }
         case Token::Type::FUNCTION: {
@@ -128,22 +128,22 @@ shared_ptr<Expression> Parser::getInfixExpression(const shared_ptr<Expression>& 
     switch(tok.type) {
         case Token::Type::PLUS:
         case Token::Type::MINUS:
-            return make_shared<BinOpExpression>(left, tok, parseExpression(Precedence::SUM));
+            return make_shared<BinOpExpression>(left, tok, parseExpression(getTokenPrecedence(tok)));
         case Token::Type::MULT:
         case Token::Type::DIV:
         case Token::Type::MOD:
         case Token::Type::LSHIFT:
         case Token::Type::RSHIFT:
-            return make_shared<BinOpExpression>(left, tok, parseExpression(Precedence::PRODUCT));
+            return make_shared<BinOpExpression>(left, tok, parseExpression(getTokenPrecedence(tok)));
         case Token::Type::POWER:
-            return make_shared<BinOpExpression>(left, tok, parseExpression(Precedence::EXPONENT - 1));
+            return make_shared<BinOpExpression>(left, tok, parseExpression(getTokenPrecedence(tok) - 1));
         case Token::Type::BAND:
         case Token::Type::XOR:
         case Token::Type::BOR:
-            return make_shared<BinOpExpression>(left, tok, parseExpression(Precedence::SUM - 1));
+            return make_shared<BinOpExpression>(left, tok, parseExpression(getTokenPrecedence(tok) - 1));
         case Token::Type::EQUALS: {
             if (left->getToken().is(Token::Type::IDENTIFIER)) {
-                shared_ptr<Expression> right = parseExpression(Precedence::ASSIGNMENT - 1);
+                shared_ptr<Expression> right = parseExpression(getTokenPrecedence(tok) - 1);
                 return make_shared<UpdateExpression>(left->getToken().getValue(), right, tok);
             }
             throw SyntaxError(left->getToken().startPos, "Expected an identifier but instead got " + left->getToken().getValue());
@@ -162,7 +162,7 @@ shared_ptr<Expression> Parser::getInfixExpression(const shared_ptr<Expression>& 
         case Token::Type::LT:
         case Token::Type::AND:
         case Token::Type::OR: {
-            shared_ptr<Expression> right = parseExpression(Precedence::CONDITION);
+            shared_ptr<Expression> right = parseExpression(getTokenPrecedence(tok));
             return make_shared<ComparisonExpression>(left, tok, right);
         }
         case Token::Type::LSQUARE: {
@@ -261,12 +261,13 @@ shared_ptr<statement> Parser::parseStatement() {
             consume();
             if (lookAhead(0).is(Token::Type::STMT_END)) {
                 stmt = make_shared<return_statement>();
-                consume();
             }
             else {
                 shared_ptr<Expression> toReturn = parseExpression();
                 stmt = make_shared<return_statement>(toReturn);
             }
+            ENSURE_END
+            consume();
             break;
         }
         case Token::Type::CONTINUE: {
