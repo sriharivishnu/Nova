@@ -8,7 +8,7 @@
 #include "Token.h"
 #include "Context.h"
 namespace nova {
-    int run(const std::string& command, Context& context) {
+    int run(const std::string& command, Context& context, bool shell = false) {
         Lexer lex("main", command.c_str());
         std::vector<Token> a;
         try {
@@ -25,7 +25,7 @@ namespace nova {
         while (!par.lookAhead(0).is(Token::Type::END)) {
             try {
                 stmt = par.parse();
-                // std::cout << expression->toString() << std::endl;
+                // std::cout << stmt->toString() << std::endl;
             } catch (std::exception& e) {
                 std::cout << e.what() << std::endl;
                 return 1;
@@ -43,9 +43,8 @@ namespace nova {
                     throw SyntaxError("Continue called outside of loops or structures");
                 }
                 else if (res.isType(flow::type::SIMPLE)) {
-                    std::cout << res.value->get()->toString() << std::endl;
+                    if (shell) std::cout << res.value->get()->toString() << std::endl;
                 }
-//                if (res) std::cout << res->get()->toString() << std::endl;
             } catch (std::exception& e) {
                 std::cout << e.what() << std::endl;
                 return 1;
