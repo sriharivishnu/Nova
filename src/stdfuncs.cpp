@@ -24,7 +24,7 @@ void addStdFunctions(const Context& context) {
             res += i->toString();
         }
         std::cout << std::endl;
-        return res;
+        return null();
     }, -1);
     context.symbols->addFunction("str", [&](std::vector<shared_obj> arg) {
         return arg[0]->toString();

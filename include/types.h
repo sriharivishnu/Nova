@@ -136,7 +136,7 @@ struct func_type : object {
     std::shared_ptr<statement> toRun;
 };
 
-using type = std::variant<std::string, int, double, std::vector<std::shared_ptr<object>>, identifier>;
+using type = std::variant<std::string, int, double, std::vector<std::shared_ptr<object>>, identifier, null>;
 
 struct native_func : object {
     native_func(std::string name_, std::function<std::optional<type>(std::vector<shared_obj>)>  func_, int numParams);

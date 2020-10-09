@@ -6,7 +6,7 @@
 #include <functional>
 #include "nova.h"
 #include "stdfuncs.h"
-using natFun = std::function<std::optional<std::variant<std::string, int, double, std::vector<shared_obj>, identifier>>(std::vector<shared_obj>)>;
+using natFun = std::function<std::optional<std::variant<std::string, int, double, std::vector<shared_obj>, identifier, null>>(std::vector<shared_obj>)>;
 int main(int arg_count, char * arg_list[]) {
     std::string toRun;
     std::string command;

@@ -34,7 +34,7 @@ bool SymbolTable::update(const std::string& name, const shared_obj& value) {
 void SymbolTable::remove(const std::string& name) {
     symbols.erase(name);
 }
-using type = std::variant<std::string, int, double, std::vector<std::shared_ptr<object>>, identifier>;
+using type = std::variant<std::string, int, double, std::vector<std::shared_ptr<object>>, identifier, null>;
 
 void SymbolTable::addFunction(const std::string& name, const natFun& func, int numParams) {
     shared_obj t = make_shared<native_func>(name, func, numParams);

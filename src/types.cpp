@@ -533,6 +533,9 @@ shared_obj native_func::call(Context &context, std::vector<shared_obj> args) {
             [&](std::string arg) {
                 ret = MAKE_OBJ(arg, string_type);
             },
+            [&](null arg) {
+                ret = std::make_shared<null_type>();
+            },
             [&](auto arg) {
                 throw Error("Unknown Error", "Unknown return type when running: " + name);
             }
