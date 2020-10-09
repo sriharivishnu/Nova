@@ -134,8 +134,14 @@ Token Lexer::advance() {
                 }
                 return Token(Token::Type::DIV, '/', position);
             }
-            case '%':
+            case '%': {
+                char next = get();
+                if (next == '=') {
+                    get();
+                    return Token(Token::Type::MOD_EQUAL, "/=", position);
+                }
                 return Token(Token::Type::MOD, getLast(), position);
+            }
         case '\"':
             get();
             return makeString();
