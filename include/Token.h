@@ -46,6 +46,7 @@ class Token {
             FUNCTION,
             RETURN,
             CONTINUE,
+            BREAK,
             ARROW, //->
             COMMA, //,
             NOT, //!

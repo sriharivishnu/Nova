@@ -19,17 +19,21 @@ class flow {
             SIMPLE,
             RETURN,
             CONTINUE,
-            BREAK
+            BREAK,
+            NONE
         };
         type flow_type;
         std::optional<shared_obj> value;
+        bool isType(type a);
+        flow(type, shared_obj obj);
+        flow(type);
 };
 
 class statement {
 	public:
 		statement() = default;
 		virtual flow execute(Context& context) {
-            return {};
+            return flow(flow::type::NONE);
         };
 		virtual ~statement() = default;
 };
@@ -93,5 +97,25 @@ class block_statement : public statement {
     private:
         std::vector<statement_ptr> statements;
 };
-    
+
+class return_statement : public statement {
+    public:
+        return_statement(expression_ptr toReturn);
+        return_statement();
+        flow execute(Context& context) override;
+    private:
+        std::optional<expression_ptr> toReturn;
+};
+
+class break_statement : public statement {
+    public:
+        break_statement();
+        flow execute(Context& context) override;
+};
+
+class continue_statement : public statement {
+    public:
+            continue_statement();
+            flow execute(Context& context) override;
+};
 #endif

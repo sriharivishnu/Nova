@@ -32,7 +32,19 @@ namespace nova {
             }
             if (!stmt) continue;
             try {
-                std::optional<shared_obj> res = stmt->execute(context);
+                flow res = stmt->execute(context);
+                if (res.isType(flow::type::RETURN)) {
+                    throw SyntaxError("No matching function for return");
+                }
+                else if (res.isType(flow::type::BREAK)) {
+                    throw SyntaxError("Break called outside of loops or structures");
+                }
+                else if (res.isType(flow::type::CONTINUE)) {
+                    throw SyntaxError("Continue called outside of loops or structures");
+                }
+                else if (res.isType(flow::type::SIMPLE)) {
+                    std::cout << res.value->get()->toString() << std::endl;
+                }
 //                if (res) std::cout << res->get()->toString() << std::endl;
             } catch (std::exception& e) {
                 std::cout << e.what() << std::endl;
