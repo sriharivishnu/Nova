@@ -9,9 +9,10 @@
 // class function_statement;
 struct object;
 struct Result;
-struct identifier;
+class identifier;
+struct null;
 using shared_obj = std::shared_ptr<object>;
-using natFun = std::function<std::optional<std::variant<std::string, int, double, std::vector<std::shared_ptr<object>>, identifier>>(std::vector<shared_obj>)>;
+using natFun = std::function<std::optional<std::variant<std::string, int, double, std::vector<std::shared_ptr<object>>, identifier, null>>(std::vector<shared_obj>)>;
 class SymbolTable {
     public:
         SymbolTable() {}

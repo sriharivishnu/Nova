@@ -257,6 +257,28 @@ shared_ptr<statement> Parser::parseStatement() {
                 stmt = make_shared<block_statement>(statements);
                 break;
             }
+        case Token::Type::RETURN: {
+            consume();
+            if (lookAhead(0).is(Token::Type::STMT_END)) {
+                stmt = make_shared<return_statement>();
+                consume();
+            }
+            else {
+                shared_ptr<Expression> toReturn = parseExpression();
+                stmt = make_shared<return_statement>(toReturn);
+            }
+            break;
+        }
+        case Token::Type::CONTINUE: {
+            consume();
+            stmt = make_shared<continue_statement>();
+            break;
+        }
+        case Token::Type::BREAK: {
+            consume();
+            stmt = make_shared<break_statement>();
+            break;
+        }
         case Token::Type::WHILE: {
             consume(Token::Type::WHILE);
             consume(Token::Type::LPAREN, ", expected a '('");

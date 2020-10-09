@@ -12,9 +12,12 @@ class TypeException;
 struct object;
 class identifier {
     public:
-        identifier() = default;;
+        identifier() = default;
 };
-using type = std::variant<std::string, int, double, std::vector<std::shared_ptr<object>>, identifier>;
+struct null {
+    null() = default;
+};
+using type = std::variant<std::string, int, double, std::vector<std::shared_ptr<object>>, identifier, null>;
 struct Result {
     public:
         explicit Result(type a) : mResult(std::move(a)) {};
@@ -73,7 +76,8 @@ struct Result {
             else if constexpr(std::is_same_v<T, identifier>) return "function";
             else if constexpr(std::is_same_v<T, std::shared_ptr<object>>) return "object";
             else if constexpr(std::is_same_v<T,std::vector<std::shared_ptr<object>>>) return "list";
-            else return "null";
+            else if constexpr(std::is_same_v<T, null>) return "null";
+            else return "unknown";
         }
 };
 #endif

@@ -493,15 +493,13 @@ shared_obj func_type::call(Context& parent, vector<shared_obj> args) {
         symbols->set(params[i], args[i]);
     }
     Context child(name, symbols);
-    std::optional<shared_obj> temp = toRun->execute(child);
-    if (temp) return *temp;
-    else return {};
+    flow temp = toRun->execute(child);
+    if (temp.value) return *temp.value;
+    else return std::make_shared<null_type>();
 }
 std::string func_type::toString() {
     return "function <" + name + ">";
 }
-
-#undef MAKE_OBJ
 
 std::string null_type::toString() {
     return "null";
@@ -524,16 +522,19 @@ shared_obj native_func::call(Context &context, std::vector<shared_obj> args) {
     shared_obj ret;
     std::visit(overloaded{
             [&](std::vector<shared_obj> arg) {
-                ret = make_shared<list_type>(arg);
+                ret = MAKE_OBJ(arg, list_type);
             },
             [&](int arg) {
-                ret = make_shared<integer_type>(arg);
+                ret = MAKE_OBJ(arg, integer_type);
             },
             [&](double arg) {
-                ret = make_shared<double_type>(arg);
+                ret = MAKE_OBJ(arg, double_type);
             },
             [&](std::string arg) {
-                ret = make_shared<string_type>(arg);
+                ret = MAKE_OBJ(arg, string_type);
+            },
+            [&](null arg) {
+                ret = std::make_shared<null_type>();
             },
             [&](auto arg) {
                 throw Error("Unknown Error", "Unknown return type when running: " + name);
@@ -541,3 +542,7 @@ shared_obj native_func::call(Context &context, std::vector<shared_obj> args) {
     }, *got);
     return ret;
 }
+
+
+#undef MAKE_OBJ
+
