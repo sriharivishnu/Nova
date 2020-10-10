@@ -88,13 +88,6 @@ All expressions are implemented with the visitor pattern, implementing an accept
 
 The interpreter goes through all statements, and executes them. Each statement implements an execute() method, which invokes its function. 
 
-## Work in Progress
-
-- For loops
-- Functions
-- Strings
-- Add built-in functions for common data types
-
 ## Potential Cool Unique Features to Add:
 - User-defined operations
 
