@@ -42,6 +42,7 @@ struct object {
     virtual shared_obj preNot();
     virtual shared_obj dot(const std::string& name, const std::vector<shared_obj>& args);
     virtual shared_obj call(Context& context, std::vector<shared_obj> args);
+    // virtual shared_obj iterate(statement_ptr toRun);
     virtual std::string toString();
 
     template <typename T>
