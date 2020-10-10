@@ -278,11 +278,15 @@ shared_ptr<statement> Parser::parseStatement() {
         case Token::Type::CONTINUE: {
             consume();
             stmt = make_shared<continue_statement>();
+            ENSURE_END
+            consume();
             break;
         }
         case Token::Type::BREAK: {
             consume();
             stmt = make_shared<break_statement>();
+            ENSURE_END
+            consume();
             break;
         }
         case Token::Type::WHILE: {
