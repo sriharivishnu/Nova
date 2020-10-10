@@ -294,11 +294,34 @@ shared_ptr<statement> Parser::parseStatement() {
             stmt = make_shared<while_statement>(condition, statement);
             break;
         }
-            
+        case Token::Type::FOR: {
+            consume(Token::Type::FOR);
+            Token identifier = consume(Token::Type::IDENTIFIER, ", expected an identifier");
+            consume(Token::Type::IN, ", expected 'in'");
+            if (lookAhead(0).is(Token::Type::LPAREN)) {
+                consume();
+                shared_ptr<Expression> start = parseExpression();
+                consume(Token::Type::COMMA, ", expected ','");
+                shared_ptr<Expression> end = parseExpression();
+                shared_ptr<Expression> step = nullptr;
+                if (lookAhead(0).is(Token::Type::COMMA)) {
+                    consume();
+                    step = parseExpression();
+                }
+                consume(Token::Type::RPAREN, ", expected ')'");
+                shared_ptr<statement> toRun = parseStatement();
+                stmt = make_shared<for_statement>(identifier, start, end, toRun, step);
+            }
+            else {
+                throw SyntaxError(lookAhead(0).startPos, "Unexpected token in for loop");
+            }
+            break;
+        }
         default: {
             shared_ptr<Expression> expression = parseExpression();
             stmt = make_shared<simple_statement>(expression);
             ENSURE_END
+            if (lookAhead(0).is(Token::Type::STMT_END)) consume();
             break;
         }
             

@@ -1,0 +1,18 @@
+
+
+fun getFibonacci(n) {
+	var arr = [];
+	if (n < 0) {
+		return [];
+	}
+	for i in (0,n) {
+		if (i == 0 || i == 1) arr.add(i);
+		else {
+			arr.add(arr[i-1] + arr[i-2]);
+		}
+	}
+	return arr;
+};
+
+print (getFibonacci(10));
+	

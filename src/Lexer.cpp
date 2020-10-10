@@ -39,6 +39,7 @@ Token Lexer::makeIdentifier() {
     else if (value == "else") return Token(Token::Type::ELSE, value, position);
     else if (value == "while") return Token(Token::Type::WHILE, value, position);
     else if (value == "for") return Token(Token::Type::FOR, value, position);
+    else if (value == "in") return Token(Token::Type::IN, value, position); 
     else if (value == "var") return Token(Token::Type::VAR, value, position);
     else if (value == "fun") return Token(Token::Type::FUNCTION, value, position);
     else if (value == "true" || value == "false") return Token(Token::Type::BOOL, value, position);

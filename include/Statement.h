@@ -77,18 +77,24 @@ class while_statement : public statement {
         statement_ptr statement; 
 };
 
-// class for_statement : public statement {
-//     public:
-//         for_statement(
-
-//         );
-//         std::optional<Result> execute(Context& context) override;
-//     private:
-//         Token identifier; 
-//         expression_ptr start;
-//         expression_ptr end;
+class for_statement : public statement {
+    public:
+        for_statement(
+            Token identifier, 
+            expression_ptr start,
+            expression_ptr end,
+            statement_ptr toRun,
+            expression_ptr step = nullptr
+        );
+        flow execute(Context& context) override;
+    private:
+        Token identifier; 
+        expression_ptr start;
+        expression_ptr end;
+        expression_ptr step;
+        statement_ptr toRun;
         
-// };
+};
 
 class block_statement : public statement {
     public:
