@@ -41,6 +41,7 @@ class Token {
             ELSE,
             WHILE,
             FOR,
+            IN,
             COLON,//:
             VAR,
             STMT_END,

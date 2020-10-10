@@ -8,8 +8,8 @@
 #include "Token.h"
 #include "Context.h"
 namespace nova {
-    int run(const std::string& command, Context& context, bool shell = false) {
-        Lexer lex("main", command.c_str());
+    int run(const std::string& command, Context& context, bool shell = false, std::string fileName = "main") {
+        Lexer lex(fileName, command.c_str());
         std::vector<Token> a;
         try {
             a = lex.getTokens();
