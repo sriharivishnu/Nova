@@ -34,8 +34,9 @@ int main(int arg_count, char * arg_list[]) {
             myfile.close();
         } else {
             std::cout << "Could not open file " << arg_list[1] << std::endl;
+            return 1;
         }
-        nova::run(toRun, global, false);
+        nova::run(toRun, global, false, arg_list[1]);
     }
     return 0;
 }

@@ -34,6 +34,19 @@ void addStdFunctions(const Context& context) {
         std::getline(std::cin, line);
         return line;
     }, 0);
+    context.symbols->addFunction("getnum", [&](std::vector<shared_obj> arg) {
+        int num;
+        if (!scanf("%d", &num)) {
+            throw Error("Conversion Exception", "Cannot convert string to integer");
+        };
+        return num;
+    }, 0);
+    context.symbols->addFunction("getword", [&](std::vector<shared_obj> arg) {
+        std::string s;
+        std::cin >> s;
+        return s;
+    }, 0);
+
     context.symbols->addFunction("int", [&](std::vector<shared_obj> arg) {
         if (arg[0]->value.isType<std::string>()) {
             try {
