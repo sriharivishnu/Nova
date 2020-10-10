@@ -232,17 +232,14 @@ shared_ptr<statement> Parser::parseStatement() {
                 shared_ptr<statement> ifBlock = parseStatement();
                 vector<shared_ptr<Expression>> elifConditions;
                 vector<shared_ptr<statement>> elifBlocks;
-                // if (lookAhead(0).is(Token::Type::STMT_END)) consume();
                 while (lookAhead(0).is(Token::Type::ELIF)) {
                     consume();
                     consume(Token::Type::LPAREN, ", expected a '('");
                     elifConditions.push_back(parseExpression());
                     consume(Token::Type::RPAREN, ", expected a ')'");
                     elifBlocks.push_back(parseStatement());
-                    // if (lookAhead(0).is(Token::Type::STMT_END)) consume();
                 }
                 shared_ptr<statement> elseBlock = nullptr;
-                // if (lookAhead(0).is(Token::Type::STMT_END)) consume();
                 if (lookAhead(0).is(Token::Type::ELSE)) {
                     consume();
                     elseBlock = parseStatement();
