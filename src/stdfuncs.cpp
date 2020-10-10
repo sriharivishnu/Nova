@@ -29,6 +29,11 @@ void addStdFunctions(const Context& context) {
     context.symbols->addFunction("str", [&](std::vector<shared_obj> arg) {
         return arg[0]->toString();
     }, 1);
+    context.symbols->addFunction("input", [&](std::vector<shared_obj> arg) {
+        std::string line;
+        std::getline(std::cin, line);
+        return line;
+    }, 0);
     context.symbols->addFunction("int", [&](std::vector<shared_obj> arg) {
         if (arg[0]->value.isType<std::string>()) {
             try {

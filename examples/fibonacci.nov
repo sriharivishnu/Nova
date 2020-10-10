@@ -13,6 +13,7 @@ fun getFibonacci(n) {
 	}
 	return arr;
 };
-
-print (getFibonacci(10));
+print("Please enter a valid integer: ");
+var n = int(input());
+print (getFibonacci(n));
 	
