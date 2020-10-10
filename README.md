@@ -1,4 +1,5 @@
-# Nova
+![nova_logo_2 0](https://user-images.githubusercontent.com/37857112/95665390-b3986c00-0b1d-11eb-8870-a33562fa6332.png)
+
 ![build status](https://github.com/sriharivishnu/Nova/workflows/build/badge.svg)
 ```
 nova>> print("Welcome to Nova! :)");
