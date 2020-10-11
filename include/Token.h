@@ -68,7 +68,7 @@ class Token {
             RSHIFT,
             END
         };
-        Token() = default;;
+        Token() = default;
         Token(Type t, Position pos);
         Token(Type t, std::string value, Position pos);
         Token(Type t, char value, Position pos);
