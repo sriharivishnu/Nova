@@ -11,11 +11,13 @@ AC_CONFIG_AUX_DIR(config)
 # Init Automake subsystem
 #
 AM_INIT_AUTOMAKE([subdir-objects])
+
 # AM_CONFIG_HEADER(config.h)
 
 # Need the C++ Compiler, Installer and ranlib to strip libraries
 #
 AC_PROG_CC
+AC_PROG_CXXCPP
 AC_PROG_CXX
 AC_PROG_INSTALL
 AC_C_CONST
