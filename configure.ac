@@ -23,7 +23,7 @@ AC_C_CONST
 AC_C_INLINE
 AC_TYPE_SIZE_T
 AC_CONFIG_FILES([Makefile])
-AC_CHECK_LIB(readline, readline, [echo "readline depedency found"], [sudo apt-get install libreadline-dev])
+AC_CHECK_LIB(readline, readline, [echo "readline dependency found"], [sudo apt-get install libreadline-dev])
 AC_OUTPUT
 
 SRC_DIR="src"
