@@ -17,7 +17,7 @@ class flow {
     public:
         enum class type {
             SIMPLE,
-            RETURN,
+            RET_T,
             CONTINUE,
             BREAK,
             NONE

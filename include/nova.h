@@ -33,7 +33,7 @@ namespace nova {
             if (!stmt) continue;
             try {
                 flow res = stmt->execute(context);
-                if (res.isType(flow::type::RETURN)) {
+                if (res.isType(flow::type::RET_T)) {
                     throw SyntaxError("No matching function for return");
                 }
                 else if (res.isType(flow::type::BREAK)) {

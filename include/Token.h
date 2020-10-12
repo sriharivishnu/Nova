@@ -46,7 +46,7 @@ class Token {
             VAR,
             STMT_END,
             FUNCTION,
-            RETURN,
+            RET_T,
             CONTINUE,
             BREAK,
             ARROW, //->

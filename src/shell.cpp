@@ -13,7 +13,7 @@ int main(int arg_count, char * arg_list[]) {
     std::string toRun;
     std::string command;
     std::shared_ptr<SymbolTable> symbols = std::make_shared<SymbolTable>();
-    symbols->set("false", Result(0.0));
+    symbols->set("false", Result(0));
     symbols->set("true", Result(1));
     Context global("<main>", symbols);
     addStdFunctions(global);

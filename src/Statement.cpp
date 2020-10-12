@@ -24,7 +24,7 @@ flow while_statement::execute(Context& context) {
     while (condition->accept(context, v)->value) {
         flow ret = statement->execute(context);
         if (ret.isType(flow::type::BREAK)) break;
-        else if (ret.isType(flow::type::RETURN)) return ret;
+        else if (ret.isType(flow::type::RET_T)) return ret;
     }
     return flow(flow::type::NONE);
 };
@@ -59,7 +59,7 @@ flow for_statement::execute(Context& parent) {
             symbols->set(identifier.getValue(), make_shared<integer_type>(i));
             flow ret = toRun->execute(context);
             if (ret.isType(flow::type::BREAK)) break;
-            else if (ret.isType(flow::type::RETURN)) return ret;
+            else if (ret.isType(flow::type::RET_T)) return ret;
         }
     }
     else {    
@@ -67,7 +67,7 @@ flow for_statement::execute(Context& parent) {
             symbols->set(identifier.getValue(), make_shared<integer_type>(i));
             flow ret = toRun->execute(context);
             if (ret.isType(flow::type::BREAK)) break;
-            else if (ret.isType(flow::type::RETURN)) return ret;
+            else if (ret.isType(flow::type::RET_T)) return ret;
         }
     }
     return flow(flow::type::NONE);
@@ -78,7 +78,7 @@ flow block_statement::execute(Context& context) {
     for (auto & statement : statements) {
         flow ret = statement->execute(context);
         switch(ret.flow_type) {
-            case flow::type::RETURN:
+            case flow::type::RET_T:
             case flow::type::BREAK:
             case flow::type::CONTINUE:
                 return ret;
@@ -118,10 +118,10 @@ return_statement::return_statement(expression_ptr toReturn) : toReturn(toReturn)
 flow return_statement::execute(Context& context) {
     Visitor v;
     if (toReturn) {
-        return flow(flow::type::RETURN, toReturn->get()->accept(context, v));
+        return flow(flow::type::RET_T, toReturn->get()->accept(context, v));
     }
     else {
-        return flow(flow::type::RETURN, std::make_shared<null_type>());
+        return flow(flow::type::RET_T, std::make_shared<null_type>());
     }
 }
 
