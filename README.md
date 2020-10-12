@@ -13,7 +13,7 @@ For a detailed description of the usage of Nova, please visit the [Nova Wiki](ht
 3. Configure for your system with `./configure`
 4. Install to your system with `make install` (if permission denied, try `sudo make install`)
 5. Run nova: `nova <filename>.nov` or `nova` to enter the shell
-### Windows
+### Windows test
 Compiling/Building:
 - **Option 1**: Use GNUWin32 to use make
 - **Option 2**: Install make.exe from the GNU website
