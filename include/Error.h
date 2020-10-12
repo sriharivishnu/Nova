@@ -8,19 +8,21 @@
 struct Context;
 class Error : public std::exception {
     public:
-        std::string cause;
-        std::string details;
+        std::string msg;
+        // std::string cause;
+        // std::string details;
         Position pos;
+        void makeMessage(const std::string& cause, const std::string& details);
         Error();
-        Error (std::string cause, std::string details);
-        Error (Position pos, std::string cause);
-        Error (Position pos, std::string cause, std::string details);
+        Error (const std::string& cause, const std::string& details);
+        Error (Position pos, const std::string& cause);
+        Error (Position pos, const std::string& cause, const std::string& details);
         virtual const char* what() const throw() override;
 };
 
 class RunTimeError : public Error {
     public:
-        RunTimeError (std::shared_ptr<Context> context, Position pos, std::string cause, std::string details);
+        RunTimeError (std::shared_ptr<Context> context, Position pos, const std::string& cause, const std::string& details);
         virtual const char* what() const throw() override;
     protected:
         std::shared_ptr<Context> context;
@@ -32,23 +34,23 @@ EXCEPTIONS
 
 class IllegalCharException : public Error {
     public:
-        IllegalCharException(Position pos, std::string details);
+        IllegalCharException(Position pos, const std::string& details);
 };
 
 class ParseException : public Error {
     public:
-        ParseException(Position pos, std::string details);
+        ParseException(Position pos, const std::string& details);
 };
 
 class SyntaxError : public Error {
     public:
-        SyntaxError(std::string details);
-        SyntaxError(Position pos, std::string details);
+        SyntaxError(const std::string& details);
+        SyntaxError(Position pos, const std::string& details);
 };
 
 class TypeException: public Error {
     public:
-        TypeException(Position pos, std::string details);
+        TypeException(Position pos, const std::string& details);
 };
 
 class UndefinedOperationException : public Error {
@@ -74,6 +76,6 @@ class DivisionByZero : public RunTimeError {
 
 class IndexOutOfBounds : public RunTimeError {
     public:
-        IndexOutOfBounds(std::shared_ptr<Context> context, Position pos, std::string details);
+        IndexOutOfBounds(std::shared_ptr<Context> context, Position pos, const std::string& details);
 };
 #endif
