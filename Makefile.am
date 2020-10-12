@@ -10,3 +10,5 @@ bin_PROGRAMS = nova
 
 nova_CXXFLAGS = $(AM_CXXFLAGS)
 nova_SOURCES = src/Error.cpp src/Expression.cpp src/Interpreter.cpp src/Lexer.cpp src/ParseHelper.cpp src/Parser.cpp src/Position.cpp src/shell.cpp src/Statement.cpp src/SymbolTable.cpp src/Token.cpp src/types.cpp src/stdfuncs.cpp
+
+nova_LDADD = -lreadline

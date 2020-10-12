@@ -11,6 +11,7 @@ AC_CONFIG_AUX_DIR(config)
 # Init Automake subsystem
 #
 AM_INIT_AUTOMAKE([subdir-objects])
+
 # AM_CONFIG_HEADER(config.h)
 
 # Need the C++ Compiler, Installer and ranlib to strip libraries
@@ -21,9 +22,8 @@ AC_PROG_INSTALL
 AC_C_CONST
 AC_C_INLINE
 AC_TYPE_SIZE_T
-
 AC_CONFIG_FILES([Makefile])
-
+AC_CHECK_LIB(readline, readline, [echo "readline dependency found"], [sudo apt-get install libreadline-dev])
 AC_OUTPUT
 
 SRC_DIR="src"

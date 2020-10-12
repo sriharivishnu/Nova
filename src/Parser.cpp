@@ -262,7 +262,7 @@ shared_ptr<statement> Parser::parseStatement() {
                 stmt = make_shared<block_statement>(statements);
                 break;
             }
-        case Token::Type::RETURN: {
+        case Token::Type::RET_T: {
             consume();
             if (lookAhead(0).is(Token::Type::STMT_END)) {
                 stmt = make_shared<return_statement>();
