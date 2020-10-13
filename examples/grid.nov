@@ -1,0 +1,19 @@
+//Prints a grid of numbers
+
+var grid = [];
+print("Input rows:");
+var n = getnum();
+print("Input columns:");
+var m = getnum();
+print("Input matrix data: ");
+for i in (0, n) {
+	var temp = [];
+	for j in (0,m) {
+		temp.add(getnum());
+	}
+	grid.add(temp);
+}
+
+print(grid);
+
+
