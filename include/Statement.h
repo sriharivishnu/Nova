@@ -35,6 +35,7 @@ class statement {
 		virtual flow execute(Context& context) {
             return flow(flow::type::NONE);
         };
+        virtual std::string toString() {return "";};
 		virtual ~statement() = default;
 };
 using statement_ptr = std::shared_ptr<statement>;
@@ -42,6 +43,7 @@ using statement_ptr = std::shared_ptr<statement>;
 class simple_statement : public statement {
     public:
         flow execute(Context& context) override;
+        std::string toString() override;
         simple_statement(expression_ptr expr);
     private:
         expression_ptr expr;
@@ -57,6 +59,7 @@ class if_statement : public statement {
             statement_ptr elseBlock);
 
         flow execute(Context& context) override;
+        std::string toString() override;
     private:
         expression_ptr if_condition;
         statement_ptr if_block;
@@ -72,6 +75,7 @@ class while_statement : public statement {
             statement_ptr statement_
         );
         flow execute(Context& context) override;
+        std::string toString() override;
     private:
         expression_ptr condition;
         statement_ptr statement; 
@@ -86,6 +90,7 @@ class for_statement : public statement {
             statement_ptr toRun,
             expression_ptr step = nullptr
         );
+        std::string toString() override;
         flow execute(Context& context) override;
     private:
         Token identifier; 
@@ -100,6 +105,7 @@ class block_statement : public statement {
     public:
         block_statement(std::vector<statement_ptr> statements);
         flow execute(Context& context) override;
+        std::string toString() override;
     private:
         std::vector<statement_ptr> statements;
 };
@@ -109,6 +115,7 @@ class return_statement : public statement {
         return_statement(expression_ptr toReturn);
         return_statement();
         flow execute(Context& context) override;
+        std::string toString() override;
     private:
         std::optional<expression_ptr> toReturn;
 };
@@ -117,11 +124,14 @@ class break_statement : public statement {
     public:
         break_statement();
         flow execute(Context& context) override;
+        std::string toString() override;
+
 };
 
 class continue_statement : public statement {
     public:
             continue_statement();
             flow execute(Context& context) override;
+            std::string toString() override;
 };
 #endif
