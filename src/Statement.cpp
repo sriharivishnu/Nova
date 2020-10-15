@@ -13,6 +13,9 @@ flow simple_statement::execute(Context& context) {
     return flow(flow::type::SIMPLE, expr->accept(context, v));
 };
 simple_statement::simple_statement(std::shared_ptr<Expression> expr_) : expr(std::move(expr_)) {}
+std::string simple_statement::toString() {
+    return expr->toString();
+}
 
 while_statement::while_statement(
             expression_ptr condition_,
@@ -28,6 +31,13 @@ flow while_statement::execute(Context& context) {
     }
     return flow(flow::type::NONE);
 };
+std::string while_statement::toString() {
+    std::string res = "while (";
+    res += condition->toString();
+    res += ")";
+    res += statement->toString();
+    return res;
+}
 
 for_statement::for_statement(
             Token identifier_, 
@@ -73,6 +83,19 @@ flow for_statement::execute(Context& parent) {
     return flow(flow::type::NONE);
 }
 
+std::string for_statement::toString() {
+    std::string res = "for (int i = ";
+    res += start->toString();
+    res += "; i < ";
+    res += end->toString();
+    res += ";";
+    if (step) res += "i += " + step->toString();
+    else res += "i++";
+    res += ")";
+    res += toRun->toString();
+    return res;
+}
+
 block_statement::block_statement(vector<statement_ptr> statements) : statements(std::move(statements)) {}
 flow block_statement::execute(Context& context) {
     for (auto & statement : statements) {
@@ -88,6 +111,14 @@ flow block_statement::execute(Context& context) {
     }
     return flow(flow::type::NONE);
 }
+std::string block_statement::toString() {
+    std::string res = "{\n";
+    for (auto & statement : statements) {
+        res += statement->toString() + "\n";
+    }
+    res += "}";
+    return res;
+}
 
 if_statement::if_statement(
     expression_ptr ifCondition, 
@@ -97,7 +128,6 @@ if_statement::if_statement(
     statement_ptr elseBlock) : if_condition(std::move(ifCondition)), if_block(std::move(ifBlock)), elif_conditions(std::move(elifConditions)),
     elif_blocks(std::move(elifBlocks)), else_block(std::move(elseBlock))
 {}
-
 flow if_statement::execute(Context& context) {
     Visitor v;
     if (if_condition->accept(context, v)->value) {
@@ -113,6 +143,20 @@ flow if_statement::execute(Context& context) {
     }
     return flow(flow::type::NONE);
 }
+std::string if_statement::toString() {
+    std::string res = "if (";
+    res += if_condition->toString() + ")";
+    res += if_block->toString();
+    for (unsigned int i = 0; i < elif_conditions.size(); i++) {
+        res += elif_conditions[i]->toString();
+        res += elif_blocks[i]->toString();
+    }
+    if (else_block) {
+        res += "else";
+        res += else_block->toString();
+    }
+    return res;
+}
 return_statement::return_statement() = default;
 return_statement::return_statement(expression_ptr toReturn) : toReturn(toReturn) {}
 flow return_statement::execute(Context& context) {
@@ -124,13 +168,22 @@ flow return_statement::execute(Context& context) {
         return flow(flow::type::RET_T, std::make_shared<null_type>());
     }
 }
+std::string return_statement::toString() {
+    return "return;";
+}
 
 break_statement::break_statement() = default;
 flow break_statement::execute(Context& context) {
     return flow(flow::type::BREAK);
 }
+std::string break_statement::toString() {
+    return "break;";
+}
 
 continue_statement::continue_statement() = default;
 flow continue_statement::execute(Context& context) {
     return flow(flow::type::CONTINUE);
+}
+std::string continue_statement::toString() {
+    return "continue;";
 }

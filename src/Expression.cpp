@@ -229,6 +229,8 @@ std::string FuncDefExpression::toString() {
     std::string ans = name + "(";
     for (unsigned int i = 0; i < params.size() -1; i++) ans += params[i] + ",";
     if (!params.empty()) ans += params[params.size() - 1];
+    ans += ")";
+    ans += body->toString();
     return ans;
 }
 shared_obj FuncDefExpression::accept(Context& context, Visitor& v) {

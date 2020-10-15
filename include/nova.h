@@ -25,6 +25,7 @@ namespace nova {
         while (!par.lookAhead(0).is(Token::Type::END)) {
             try {
                 stmt = par.parse();
+                std::cout << stmt->toString() << std::endl;
                 // std::cout << stmt->toString() << std::endl;
             } catch (std::exception& e) {
                 std::cout << e.what() << std::endl;
