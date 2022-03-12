@@ -2,8 +2,8 @@
 
 ![build status](https://github.com/sriharivishnu/Nova/workflows/build/badge.svg)
 ```
-nova>> print("Welcome to Nova! :)");
-Welcome to Nova! :)
+nova>> print("Hi! Welcome to Nova! :)");
+Hi! Welcome to Nova! :)
 ```
 ## Getting Started (Release)
 For a detailed description of the usage of Nova, please visit the [Nova Wiki](https://github.com/sriharivishnu/Nova/wiki)
